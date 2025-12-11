@@ -211,12 +211,11 @@ public class Arena {
                     players.add(name);
                     player_kills.put(kills, players);
                 });
-                List<Integer> kills_top = new ArrayList<Integer>();
-                kills_top.addAll(player_kills.keySet());
+                List<Integer> kills_top = new ArrayList<>(player_kills.keySet());
                 Collections.sort(kills_top);
                 Collections.reverse(kills_top);
-                List<String> player_rank_name = new ArrayList<String>();
-                List<Integer> player_rank_kills = new ArrayList<Integer>();
+                List<String> player_rank_name = new ArrayList<>();
+                List<Integer> player_rank_kills = new ArrayList<>();
                 for (Integer kills : kills_top) {
                     for (String name : player_kills.get(kills)) {
                         if (player_rank_name.size() < 3) {
@@ -229,17 +228,17 @@ public class Arena {
                 }
                 int size = player_rank_name.size();
                 for (int i = 0; i < 3 - size; i++) {
-                    player_rank_name.add("none");
+                    player_rank_name.add("无");
                     player_rank_kills.add(0);
                 }
-                String win_team_player_list = "";
+                StringBuilder win_team_player_list = new StringBuilder();
                 for (Player player : winner.getPlayers()) {
-                    win_team_player_list += win_team_player_list.length() > 0 ? ", " + player.getName() : player.getName();
+                    win_team_player_list.append((win_team_player_list.length() > 0) ? ", " + player.getName() : player.getName());
                 }
                 for (Player player : game.getPlayers()) {
                     for (String msg : Config.overstats_message) {
                         msg = PlaceholderAPIUtil.setPlaceholders(player, msg);
-                        player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
+                        player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list.toString()).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
                     }
                 }
             }
@@ -247,9 +246,7 @@ public class Arena {
     }
 
     public void onEnd() {
-        gameTasks.forEach(task -> {
-            task.cancel();
-        });
+        gameTasks.forEach(BukkitTask::cancel);
         teamShop.onEnd();
         noBreakBed.onEnd();
         holographic.remove();

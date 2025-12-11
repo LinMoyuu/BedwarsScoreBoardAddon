@@ -176,7 +176,6 @@ public class Respawn {
                         if (!Config.respawn_respawn_message.isEmpty()) {
                             player.sendMessage(Config.respawn_respawn_message);
                         }
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5, 0), true);
                         Bukkit.getPluginManager().callEvent(new BoardAddonPlayerRespawnEvent(game, player));
                         return;
                     }
