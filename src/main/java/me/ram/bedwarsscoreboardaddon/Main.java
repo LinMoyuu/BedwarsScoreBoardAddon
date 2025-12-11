@@ -19,7 +19,6 @@ import me.ram.bedwarsscoreboardaddon.manager.ArenaManager;
 import me.ram.bedwarsscoreboardaddon.manager.EditHolographicManager;
 import me.ram.bedwarsscoreboardaddon.manager.HolographicManager;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
-import me.ram.bedwarsscoreboardaddon.network.UpdateCheck;
 import org.bstats.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -227,7 +226,6 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);
         Bukkit.getPluginManager().registerEvents(new LobbyScoreBoard(), this);
         Bukkit.getPluginManager().registerEvents(new SpawnNoBuild(), this);
-        Bukkit.getPluginManager().registerEvents(new UpdateCheck(), this);
         if (enabledCitizens) {
             Bukkit.getPluginManager().registerEvents(new ShopListener(), this);
         }

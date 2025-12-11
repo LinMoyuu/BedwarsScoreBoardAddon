@@ -5,7 +5,6 @@ import io.github.bedwarsrel.game.Game;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
-import me.ram.bedwarsscoreboardaddon.network.UpdateCheck;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -39,15 +38,6 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage("");
                 sender.sendMessage("§f=====================================================");
                 return true;
-            }
-            if (args[0].equalsIgnoreCase("upcheck")) {
-                if (!sender.hasPermission("bedwarsscoreboardaddon.updatecheck")) {
-                    sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.no_permission"));
-                    return true;
-                } else {
-                    UpdateCheck.upCheck(sender);
-                    return true;
-                }
             }
             if (args[0].equalsIgnoreCase("reload")) {
                 if (sender.hasPermission("bedwarsscoreboardaddon.reload")) {
