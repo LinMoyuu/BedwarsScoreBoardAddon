@@ -7,13 +7,23 @@
 
 这是一个依赖BedwarsRel运行的插件，它可以拓展你的起床战争，为你的起床战争增添更多乐趣  
 
-This is a plugin running on BedwarsRel. It can expand your BedWars function. Make your BedWars like Hypixel!  
+This is a plugin running on BedwarsRel. It can expand your BedWars function. ~~Make your BedWars like Hypixel!~~
 
-## ✅ 下载/Donwloads
+## > 为什么会有这个分支?
+
+[网络游戏花雨庭停服通知](https://mc.163.com/news/20251210/29175_1275702.html)
+
+因此，本分支存在的意义是为了复刻“花雨庭”起床战争游戏体验。
+
+当此插件完成修改时，笔者将会释出示例端使用。
+
+可能有一些破坏性更改(即原有某些功能失效)，太懒了orz。
+
+## ✅ 下载/Downloads
 
 > 插件/Plugin:
-- 下载地址: https://www.mcbbs.net/thread-814322-1-1.html  
-- Download: https://www.spigotmc.org/resources/74991/
+- 下载地址: https://github.com/LinMoyuu/BedwarsScoreBoardAddon/releases
+- Download: https://github.com/LinMoyuu/BedwarsScoreBoardAddon/releases
 
 > 前置依赖/Depends：
 - [BedwarsRel 1.3.6](https://www.spigotmc.org/resources/6799/)
@@ -35,7 +45,6 @@ This is a plugin running on BedwarsRel. It can expand your BedWars function. Mak
 | /bwsba  | 显示插件信息 | | |
 | /bwsba help  | 显示帮助菜单 | |
 | /bwsba reload  | 重新载入配置文件 | bedwarsscoreboardaddon.reload |
-| /bwsba upcheck  | 检查版本更新 | bedwarsscoreboardaddon.updatecheck |
 | /bwsba edit <游戏>  | 编辑游戏 | bedwarsscoreboardaddon.edit |
 | /bwsba shop list <游戏>  | 已设置商店列表 | bedwarsscoreboardaddon.shop.list |
 | /bwsba shop remove <ID>  | 移除一个商店 | bedwarsscoreboardaddon.shop.remove |
@@ -53,7 +62,6 @@ This is a plugin running on BedwarsRel. It can expand your BedWars function. Mak
 | /bwsba  | Plugin info | | |
 | /bwsba help  | Get help | |
 | /bwsba reload  | Reload configuration | bedwarsscoreboardaddon.reload |
-| /bwsba upcheck  | Update check | bedwarsscoreboardaddon.updatecheck |
 | /bwsba edit <Game>  | Edit game | bedwarsscoreboardaddon.edit |
 | /bwsba shop list <Game>  | Shop list | bedwarsscoreboardaddon.shop.list |
 | /bwsba shop remove <ID>  | Remove a shop | bedwarsscoreboardaddon.shop.remove |
@@ -90,21 +98,21 @@ This is a plugin running on BedwarsRel. It can expand your BedWars function. Mak
 1.Open folder "plugins\BedwarsScoreBoardAddon\locale\"  
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/locale.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/locale.png)
 
 ```ini
 2.找到要切换的语言并进入目录  
 2.Find the language you want to change, and enter this folder  
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/language.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/language.png)
 
 ```ini
 3.将目录下的所有文件复制，替换掉 "plugins\BedwarsScoreBoardAddon\" 目录下的原文件  
 3.Copy all files in this folder, replace the original file in the "plugins\BedwarsScoreBoardAddon\" folder  
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/replace_language.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/replace_language.png)
 
 ```ini
 4.执行指令 "/bwsba reload" 重载配置文件  
@@ -118,14 +126,14 @@ This is a plugin running on BedwarsRel. It can expand your BedWars function. Mak
 1.Use command "/bwsba edit <Game>" to enter game edit mode，Click "Set item/team shop"
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/set_shop.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/set_shop.png)
 
 ```ini
 2.执行命令 "/bw join <游戏>" 进行测试
 2.Use command "/bw join <Game>" to test
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/shop.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/shop.png)
 
 ###  > 添加钻石资源/Add Diamond Resources
 
@@ -145,18 +153,18 @@ This is a plugin running on BedwarsRel. It can expand your BedWars function. Mak
 
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/edit_bwr_config.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/edit_bwr_config.png)
 
 ```ini
 2.执行命令 "/bwsba edit <游戏>" 进入游戏编辑模式，点击 "设置资源生成点-游戏资源生成点-钻石"
 3.Use command "/bwsba edit <Game>" to enter game edit mode，Click "Set resource spawner-Game resource spawner-Diamond"
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/add_diamond.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/add_diamond.png)
 
 ```ini
 2.执行命令 "/bw join <游戏>" 进行测试
 2.Use command "/bw join <Game>" to test
 ```
 
-![](https://raw.githubusercontent.com/TheRamU/BedwarsScoreBoardAddon/master/images/diamond_generator.png)
+![](https://raw.githubusercontent.com/LinMoyuu/BedwarsScoreBoardAddon/master/images/diamond_generator.png)
