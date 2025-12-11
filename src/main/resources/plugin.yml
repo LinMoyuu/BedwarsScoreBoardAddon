@@ -10,7 +10,7 @@ description: |
   ##############################################
 name: BedwarsScoreBoardAddon
 main: me.ram.bedwarsscoreboardaddon.Main
-version: ${versionstring}
+version: ${version}
 author: Ram
 website: https://github.com/TheRamU/BedwarsScoreBoardAddon
 depends: [BedwarsRel, ProtocolLib]

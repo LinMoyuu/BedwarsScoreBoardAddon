@@ -99,12 +99,8 @@ public class Respawn {
 		PacketContainer packet = man.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
 		packet.getIntegers().write(0, 3);
 		packet.getFloat().write(0, (float) mode);
-		try {
-			man.sendServerPacket(player, packet, false);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
+        man.sendServerPacket(player, packet, false);
+    }
 
 	public void onRespawn(Player player, boolean rejoin) {
 		if (!Config.respawn_enabled || game.isSpectator(player) || (game.getPlayerTeam(player).isDead(game) && !rejoin) || players.contains(player)) {
@@ -285,10 +281,6 @@ public class Respawn {
 		packet.getIntegers().write(0, 0);
 		packet.getIntegers().write(1, slot);
 		packet.getItemModifier().write(0, new ItemStack(Material.AIR));
-		try {
-			man.sendServerPacket(player, packet);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
+        man.sendServerPacket(player, packet);
+    }
 }

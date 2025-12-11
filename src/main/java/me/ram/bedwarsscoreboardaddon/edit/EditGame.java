@@ -375,17 +375,13 @@ public class EditGame implements Listener {
 		player.setGameMode(GameMode.CREATIVE);
 		player.closeInventory();
 		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-		try {
-			PacketContainer packet = pm.createPacket(PacketType.Play.Server.OPEN_WINDOW);
-			packet.getIntegers().write(0, 0);
-			packet.getIntegers().write(1, 0);
-			packet.getIntegers().write(2, 0);
-			packet.getStrings().write(0, "minecraft:anvil");
-			pm.sendServerPacket(player, packet);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		new BukkitRunnable() {
+        PacketContainer packet = pm.createPacket(PacketType.Play.Server.OPEN_WINDOW);
+        packet.getIntegers().write(0, 0);
+        packet.getIntegers().write(1, 0);
+        packet.getIntegers().write(2, 0);
+        packet.getStrings().write(0, "minecraft:anvil");
+        pm.sendServerPacket(player, packet);
+        new BukkitRunnable() {
 			@Override
 			public void run() {
 				setAnvilItem(player, game, str);
@@ -797,23 +793,19 @@ public class EditGame implements Listener {
 
 	private static void setAnvilItem(Player player, String game, String str) {
 		ProtocolManager pm = ProtocolLibrary.getProtocolManager();
-		try {
-			PacketContainer pack = pm.createPacket(PacketType.Play.Server.SET_SLOT);
-			pack.getIntegers().write(0, 0);
-			pack.getIntegers().write(1, 0);
-			ItemStack itemStack = new ItemStack(Material.NAME_TAG);
-			ItemMeta itemMeta = itemStack.getItemMeta();
-			itemMeta.setDisplayName(game);
-			String lore = str;
-			lore = "§" + lore.replaceAll("(.{1})", "$1§");
-			itemMeta.setLore(Arrays.asList(lore.substring(0, lore.length() - 1)));
-			itemStack.setItemMeta(itemMeta);
-			pack.getItemModifier().write(0, itemStack);
-			pm.sendServerPacket(player, pack);
-		} catch (InvocationTargetException ex) {
-			ex.printStackTrace();
-		}
-	}
+        PacketContainer pack = pm.createPacket(PacketType.Play.Server.SET_SLOT);
+        pack.getIntegers().write(0, 0);
+        pack.getIntegers().write(1, 0);
+        ItemStack itemStack = new ItemStack(Material.NAME_TAG);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(game);
+        String lore = str;
+        lore = "§" + lore.replaceAll("(.{1})", "$1§");
+        itemMeta.setLore(Arrays.asList(lore.substring(0, lore.length() - 1)));
+        itemStack.setItemMeta(itemMeta);
+        pack.getItemModifier().write(0, itemStack);
+        pm.sendServerPacket(player, pack);
+    }
 
 	private void alignLocation(Player player) {
 		Location location = player.getLocation().clone();

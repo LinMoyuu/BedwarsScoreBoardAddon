@@ -226,12 +226,8 @@ public class Shop {
 			}
 			packet.getWatchableCollectionModifier().write(0, wrappedDataWatcher.getWatchableObjects());
 			for (Player player : game.getPlayers()) {
-				try {
-					man.sendServerPacket(player, packet, false);
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
+                man.sendServerPacket(player, packet, false);
+            }
 		}, 1L);
 	}
 

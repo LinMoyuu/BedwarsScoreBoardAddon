@@ -151,12 +151,8 @@ public class HolographicAPI {
 							}
 							packet.getWatchableCollectionModifier().write(0, wrappedDataWatcher.getWatchableObjects());
 						}
-						try {
-							protocolManager.sendServerPacket(player, packet);
-						} catch (InvocationTargetException e) {
-							e.printStackTrace();
-						}
-					}
+                        protocolManager.sendServerPacket(player, packet);
+                    }
 				}
 			}
 		}
