@@ -25,6 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -46,13 +47,13 @@ public class TeamShop {
     public TeamShop(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        upgrades = new HashMap<Team, List<Upgrade>>();
-        upgrades_trap = new HashMap<Team, List<Upgrade>>();
-        player_cooldown = new HashMap<Team, Map<Player, Long>>();
-        immune_players = new ArrayList<Player>();
-        listeners = new ArrayList<Listener>();
+        upgrades = new HashMap<>();
+        upgrades_trap = new HashMap<>();
+        player_cooldown = new HashMap<>();
+        immune_players = new ArrayList<>();
+        listeners = new ArrayList<>();
         for (Team team : game.getTeams().values()) {
-            List<Upgrade> list = new ArrayList<Upgrade>();
+            List<Upgrade> list = new ArrayList<>();
             list.add(new Protection(game, team, 0));
             list.add(new Sharpness(game, team, 0));
             IronForge ironForge = new IronForge(game, team, 0);
@@ -65,13 +66,9 @@ public class TeamShop {
 
             @Override
             public void run() {
-                upgrades.values().forEach(list -> {
-                    list.forEach(upgrade -> {
-                        upgrade.runUpgrade();
-                    });
-                });
+                upgrades.values().forEach(list -> list.forEach(Upgrade::runUpgrade));
                 upgrades_trap.values().forEach(list -> {
-                    if (list.size() > 0) {
+                    if (!list.isEmpty()) {
                         list.get(0).runUpgrade();
                     }
                 });
@@ -124,9 +121,7 @@ public class TeamShop {
     }
 
     public void onEnd() {
-        listeners.forEach(listener -> {
-            HandlerList.unregisterAll(listener);
-        });
+        listeners.forEach(HandlerList::unregisterAll);
     }
 
     public void setTeamShopTrapItem(Player player, Inventory inventory) {
@@ -140,7 +135,7 @@ public class TeamShop {
                 itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS);
                 int level = getPlayerTeamUpgradeTrapLevel(player);
                 int lev = level;
-                lev = lev > 2 ? 2 : lev;
+                lev = Math.min(lev, 2);
                 String next_cost = Config.teamshop_trap_level_cost.get(lev + 1).split(",")[1];
                 if (level < 3) {
                     itemMeta.setLore(Config.teamshop_upgrade_level_lore.get(type).get(1));
@@ -194,7 +189,7 @@ public class TeamShop {
             inventory.setItem(24, glasspane);
             inventory.setItem(25, glasspane);
             inventory.setItem(26, glasspane);
-            List<Upgrade> list = upgrades_trap.getOrDefault(game.getPlayerTeam(player), new ArrayList<Upgrade>());
+            List<Upgrade> list = upgrades_trap.getOrDefault(game.getPlayerTeam(player), new ArrayList<>());
             int size = list.size();
             ItemStack traps = new ItemStack(Material.valueOf(Config.teamshop_upgrade_shop_trap_item));
             ItemUtil.setItemName(traps, Config.teamshop_upgrade_shop_trap_name);
@@ -202,7 +197,7 @@ public class TeamShop {
             inventory.setItem(slot, traps);
             ItemStack trap = new ItemStack(Material.STAINED_GLASS, 1, (short) 8);
             int lev = size;
-            lev = lev > 2 ? 2 : lev;
+            lev = Math.min(lev, 2);
             String next_cost = Config.teamshop_trap_level_cost.get(lev + 1).split(",")[1];
             if (size > 0) {
                 Upgrade upgrade = list.get(0);
@@ -262,7 +257,7 @@ public class TeamShop {
     }
 
     private Map<String, Integer> getUpgradeSlot(boolean trap) {
-        Map<String, Integer> map = new HashMap<String, Integer>();
+        Map<String, Integer> map = new HashMap<>();
         int slot = 10;
         for (UpgradeType type : Config.teamshop_upgrade_enabled.keySet()) {
             if (Config.teamshop_upgrade_enabled.get(type) && trap == type.isTrap()) {
@@ -297,9 +292,10 @@ public class TeamShop {
                     if (!meta.hasLore()) {
                         continue;
                     }
+                    PlayerInventory inventory = player.getInventory();
                     if (meta.getLore().contains("§a§r§m§o§r§0§0§1") || meta.getLore().contains("§a§r§m§o§r§0§0§2") || meta.getLore().contains("§a§r§m§o§r§0§0§3")) {
                         stack.setType(Material.AIR);
-                        player.getInventory().setItem(i, stack);
+                        inventory.setItem(i, stack);
                         player.updateInventory();
                         ItemStack leggings = new ItemStack(Material.CHAINMAIL_LEGGINGS);
                         ItemStack boots = new ItemStack(Material.CHAINMAIL_BOOTS);
@@ -319,18 +315,56 @@ public class TeamShop {
                         bootsMeta.spigot().setUnbreakable(true);
                         leggings.setItemMeta(leggingsMeta);
                         boots.setItemMeta(bootsMeta);
-                        player.getInventory().setLeggings(leggings);
-                        player.getInventory().setBoots(boots);
+                        inventory.setLeggings(leggings);
+                        inventory.setBoots(boots);
                         break;
-                    } else if (stack.getType() != Material.WOOD_SWORD && meta.getLore().contains("§s§w§o§r§d")) {
-                        player.getInventory().remove(Material.WOOD_SWORD);
+                    } else if (stack.getType().name().endsWith("_SWORD") && meta.getLore().contains("§s§w§o§r§d")) {
                         List<String> lore = meta.getLore();
                         lore.remove("§s§w§o§r§d");
                         meta.setLore(lore);
                         stack.setItemMeta(meta);
-                        ItemStack item = stack.clone();
-                        player.getInventory().setItem(i, new ItemStack(Material.AIR));
-                        player.getInventory().addItem(item);
+                        ItemStack newSword = stack.clone();
+
+                        // 在购买剑后 花雨庭会将之前的剑放进背包内
+                        // 没能想出什么方法 也没见过背包满的花雨庭怎么处理的 就这么生草了
+                        // 在Hotbar中寻找玩家当前的剑
+                        ItemStack oldSword = null;
+                        int oldSwordSlot = -1;
+                        for (int j = 0; j < 9; j++) {
+                            ItemStack itemInHotbar = inventory.getItem(j);
+                            if (itemInHotbar != null && itemInHotbar.getType().name().endsWith("_SWORD")) {
+                                oldSword = itemInHotbar.clone();
+                                oldSwordSlot = j;
+                                break;
+                            }
+                        }
+                        // 清除商店GUI中的临时物品?
+                        inventory.setItem(i, new ItemStack(Material.AIR));
+
+                        // 将新剑放到旧剑的位置上. 如果没找到旧剑 则直接添加
+                        if (oldSwordSlot != -1) {
+                            inventory.setItem(oldSwordSlot, newSword);
+                        } else {
+                            inventory.addItem(newSword);
+                        }
+
+                        // 将旧剑移动到背包
+                        if (oldSword != null) {
+                            boolean placedInInventory = false;
+                            // 遍历主背包区域寻找空位
+                            for (int j = 9; j <= 35; j++) {
+                                if (inventory.getItem(j) == null || inventory.getItem(j).getType() == Material.AIR) {
+                                    inventory.setItem(j, oldSword); // 放入空位
+                                    placedInInventory = true;
+                                    break;
+                                }
+                            }
+                            // 如果背包满了 旧剑直接掉落
+                            if (!placedInInventory) {
+                                player.getWorld().dropItemNaturally(player.getLocation(), oldSword);
+                            }
+                        }
+
                         player.updateInventory();
                         break;
                     }
@@ -501,28 +535,26 @@ public class TeamShop {
             return;
         }
         if (!player_cooldown.containsKey(team)) {
-            player_cooldown.put(team, new HashMap<Player, Long>());
+            player_cooldown.put(team, new HashMap<>());
         }
         player_cooldown.get(team).put(player, System.currentTimeMillis());
     }
 
     public void removeCoolingPlayer(Team team, Player player) {
         if (!player_cooldown.containsKey(team)) {
-            player_cooldown.put(team, new HashMap<Player, Long>());
+            player_cooldown.put(team, new HashMap<>());
         }
         Map<Player, Long> map = player_cooldown.get(team);
         map.remove(player);
     }
 
     public void removeCoolingPlayer(Player player) {
-        player_cooldown.values().forEach(map -> {
-            map.remove(player);
-        });
+        player_cooldown.values().forEach(map -> map.remove(player));
     }
 
     public boolean isCoolingPlayer(Team team, Player player) {
         if (!player_cooldown.containsKey(team)) {
-            player_cooldown.put(team, new HashMap<Player, Long>());
+            player_cooldown.put(team, new HashMap<>());
         }
         return (System.currentTimeMillis() - player_cooldown.get(team).getOrDefault(player, 0L)) < (Config.teamshop_trap_cooldown * 1000L);
     }
@@ -549,8 +581,8 @@ public class TeamShop {
         String[] ary = cost.split(",");
         if (ary[0].equals("XP")) {
             if (Bukkit.getPluginManager().isPluginEnabled("BedwarsXP")) {
-                if (XPManager.getXPManager(game.getName()).getXP(player) >= Integer.valueOf(ary[1])) {
-                    XPManager.getXPManager(game.getName()).takeXP(player, Integer.valueOf(ary[1]));
+                if (XPManager.getXPManager(game.getName()).getXP(player) >= Integer.parseInt(ary[1])) {
+                    XPManager.getXPManager(game.getName()).takeXP(player, Integer.parseInt(ary[1]));
                     return true;
                 }
             }
@@ -565,7 +597,7 @@ public class TeamShop {
         String[] ary = cost.split(",");
         if (ary[0].equals("XP")) {
             if (Bukkit.getPluginManager().isPluginEnabled("BedwarsXP")) {
-                return XPManager.getXPManager(game.getName()).getXP(player) >= Integer.valueOf(ary[1]);
+                return XPManager.getXPManager(game.getName()).getXP(player) >= Integer.parseInt(ary[1]);
             }
         } else {
             return isEnoughItem(player, ary);
@@ -585,11 +617,11 @@ public class TeamShop {
                 }
             }
         }
-        return k >= Integer.valueOf(ary[1]);
+        return k >= Integer.parseInt(ary[1]);
     }
 
     private void takeItem(Player player, String[] ary) {
-        int ta = Integer.valueOf(ary[1]);
+        int ta = Integer.parseInt(ary[1]);
         int i = player.getInventory().getContents().length;
         ItemStack[] stacks = player.getInventory().getContents();
         for (int j = 0; j < i; j++) {
@@ -610,11 +642,11 @@ public class TeamShop {
     }
 
     private List<String> replaceLore(List<String> lore, String... args) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (lore == null || lore.isEmpty()) {
             return list;
         }
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (int i = 0; i < (args.length / 2); i++) {
             int j = i * 2;
             map.put(args[j], args[j + 1]);
@@ -661,7 +693,7 @@ public class TeamShop {
             return null;
         }
         if (!upgrades.containsKey(team)) {
-            upgrades.put(team, new ArrayList<Upgrade>());
+            upgrades.put(team, new ArrayList<>());
         }
         for (Upgrade upgrade : upgrades.get(team)) {
             if (upgrade.getType().equals(type)) {
@@ -669,7 +701,7 @@ public class TeamShop {
             }
         }
         try {
-            List<Upgrade> list = upgrades.getOrDefault(team, new ArrayList<Upgrade>());
+            List<Upgrade> list = upgrades.getOrDefault(team, new ArrayList<>());
             Upgrade upgrade = type.getUpgradeClass().getConstructor(Game.class, Team.class, int.class).newInstance(game, team, 0);
             list.add(upgrade);
             upgrades.put(team, list);
@@ -686,7 +718,7 @@ public class TeamShop {
             return;
         }
         try {
-            List<Upgrade> list = upgrades_trap.getOrDefault(team, new ArrayList<Upgrade>());
+            List<Upgrade> list = upgrades_trap.getOrDefault(team, new ArrayList<>());
             Upgrade upgrade = type.getUpgradeClass().getConstructor(Game.class, Team.class, int.class).newInstance(game, team, 1);
             upgrade.setBuyer(player.getName());
             list.add(upgrade);
@@ -736,14 +768,14 @@ public class TeamShop {
     }
 
     private String getItemName(List<String> list) {
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             return list.get(0);
         }
         return "§f";
     }
 
     private List<String> getItemLore(List<String> list) {
-        List<String> lore = new ArrayList<String>();
+        List<String> lore = new ArrayList<>();
         if (list.size() > 1) {
             lore.addAll(list);
             lore.remove(0);
