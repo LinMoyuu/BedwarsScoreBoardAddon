@@ -55,8 +55,8 @@ public class Spectator implements Listener {
     private final List<Material> resitems;
 
     public Spectator() {
-        players = new ArrayList<Player>();
-        resitems = new ArrayList<Material>();
+        players = new ArrayList<>();
+        resitems = new ArrayList<>();
         onPacketReceiving();
     }
 
@@ -253,7 +253,7 @@ public class Spectator implements Listener {
     }
 
     private List<Material> getResource() {
-        List<Material> items = new ArrayList<Material>();
+        List<Material> items = new ArrayList<>();
         ConfigurationSection config = BedwarsRel.getInstance().getConfig().getConfigurationSection("resource");
         for (String res : config.getKeys(false)) {
             List<Map<String, Object>> list = (List<Map<String, Object>>) BedwarsRel.getInstance().getConfig().getList("resource." + res + ".item");

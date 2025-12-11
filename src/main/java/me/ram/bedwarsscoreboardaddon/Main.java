@@ -83,7 +83,7 @@ public class Main extends JavaPlugin {
                     printMessage("§7 ");
                     printMessage("§f  " + getLocaleConfig().getLanguage("version") + ": §a" + getDescription().getVersion());
                     printMessage("§7 ");
-                    printMessage("§f  " + getLocaleConfig().getLanguage("author") + ": §aRam");
+                    printMessage("§f  " + getLocaleConfig().getLanguage("author") + ": §aRam" + ", §eModified By YukiEnd");
                     printMessage("§7 ");
                     printMessage("§f  " + getLocaleConfig().getLanguage("website") + ": §ehttps://github.com/TheRamU/BedwarsScoreBoardAddon");
                     printMessage("§7 ");

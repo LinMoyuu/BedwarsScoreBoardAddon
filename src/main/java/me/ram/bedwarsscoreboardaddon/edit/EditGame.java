@@ -803,7 +803,7 @@ public class EditGame implements Listener {
         {
             BigDecimal bd = new BigDecimal(location.getX() + "");
             BigDecimal[] result = bd.divideAndRemainder(BigDecimal.valueOf(1));
-            double xd = Double.valueOf(result[1].toString());
+            double xd = Double.parseDouble(result[1].toString());
             List<Double> list = Arrays.asList(-1.0, -0.5, 0.0, 0.5, 1.0);
             double a = Math.abs(list.get(0) - xd);
             double nxd = list.get(0);
@@ -819,7 +819,7 @@ public class EditGame implements Listener {
         {
             BigDecimal bd = new BigDecimal(location.getZ() + "");
             BigDecimal[] result = bd.divideAndRemainder(BigDecimal.valueOf(1));
-            double zd = Double.valueOf(result[1].toString());
+            double zd = Double.parseDouble(result[1].toString());
             List<Double> list = Arrays.asList(-1.0, -0.5, 0.0, 0.5, 1.0);
             double a = Math.abs(list.get(0) - zd);
             double nzd = list.get(0);

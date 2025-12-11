@@ -872,10 +872,10 @@ public class Config {
         try {
             String[] ary = loc.split(", ");
             if (Bukkit.getWorld(ary[0]) != null) {
-                Location location = new Location(Bukkit.getWorld(ary[0]), Double.valueOf(ary[1]), Double.valueOf(ary[2]), Double.valueOf(ary[3]));
+                Location location = new Location(Bukkit.getWorld(ary[0]), Double.parseDouble(ary[1]), Double.parseDouble(ary[2]), Double.parseDouble(ary[3]));
                 if (ary.length > 4) {
-                    location.setYaw(Float.valueOf(ary[4]));
-                    location.setPitch(Float.valueOf(ary[5]));
+                    location.setYaw(Float.parseFloat(ary[4]));
+                    location.setPitch(Float.parseFloat(ary[5]));
                 }
                 return location;
             }

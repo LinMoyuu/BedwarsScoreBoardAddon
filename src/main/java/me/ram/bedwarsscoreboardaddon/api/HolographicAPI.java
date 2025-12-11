@@ -81,7 +81,7 @@ public class HolographicAPI {
     }
 
     public List<Player> getPlayers() {
-        List<Player> list = new ArrayList<Player>();
+        List<Player> list = new ArrayList<>();
         packets.keySet().forEach(uuid -> {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.isOnline()) {

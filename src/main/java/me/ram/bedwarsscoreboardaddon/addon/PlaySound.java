@@ -20,7 +20,7 @@ public class PlaySound {
                     return;
                 }
                 for (Player player : game.getPlayers()) {
-                    player.playSound(player.getLocation(), playsound, Float.valueOf(ary[1]), Float.valueOf(ary[2]));
+                    player.playSound(player.getLocation(), playsound, Float.parseFloat(ary[1]), Float.parseFloat(ary[2]));
                 }
             }
         }
@@ -37,7 +37,7 @@ public class PlaySound {
             if (playsound == null) {
                 return;
             }
-            player.playSound(player.getLocation(), playsound, Float.valueOf(ary[1]), Float.valueOf(ary[2]));
+            player.playSound(player.getLocation(), playsound, Float.parseFloat(ary[1]), Float.parseFloat(ary[2]));
         }
     }
 

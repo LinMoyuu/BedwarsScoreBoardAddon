@@ -51,10 +51,10 @@ public class Shop {
     public Shop(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        shops = new ArrayList<NPC>();
-        teamshops = new ArrayList<NPC>();
-        titles = new ArrayList<HolographicAPI>();
-        npcid = new ArrayList<Integer>();
+        shops = new ArrayList<>();
+        teamshops = new ArrayList<>();
+        titles = new ArrayList<>();
+        npcid = new ArrayList<>();
         if (!BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8")) {
             booleanserializer = WrappedDataWatcher.Registry.get(Boolean.class);
         }
@@ -81,7 +81,7 @@ public class Shop {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (game.getState() != GameState.RUNNING || game.getPlayers().size() < 1) {
+                if (game.getState() != GameState.RUNNING || game.getPlayers().isEmpty()) {
                     cancel();
                     for (NPC npc : shops) {
                         CitizensAPI.getNPCRegistry().deregister(npc);
@@ -110,9 +110,9 @@ public class Shop {
             if (shops.contains(npc)) {
                 if (isGamePlayer(player)) {
                     isCancelled = true;
-                    BoardAddonPlayerOpenItemShopEvent openItemhopEvent = new BoardAddonPlayerOpenItemShopEvent(game, player);
-                    Bukkit.getPluginManager().callEvent(openItemhopEvent);
-                    if (!openItemhopEvent.isCancelled()) {
+                    BoardAddonPlayerOpenItemShopEvent openItemShopEvent = new BoardAddonPlayerOpenItemShopEvent(game, player);
+                    Bukkit.getPluginManager().callEvent(openItemShopEvent);
+                    if (!openItemShopEvent.isCancelled()) {
                         player.closeInventory();
                         NewItemShop itemShop = game.openNewItemShop(player);
                         itemShop.setCurrentCategory(null);
@@ -265,10 +265,10 @@ public class Shop {
         try {
             String[] ary = loc.split(", ");
             if (Bukkit.getWorld(ary[0]) != null) {
-                Location location = new Location(Bukkit.getWorld(ary[0]), Double.valueOf(ary[1]), Double.valueOf(ary[2]), Double.valueOf(ary[3]));
+                Location location = new Location(Bukkit.getWorld(ary[0]), Double.parseDouble(ary[1]), Double.parseDouble(ary[2]), Double.parseDouble(ary[3]));
                 if (ary.length > 4) {
-                    location.setYaw(Float.valueOf(ary[4]));
-                    location.setPitch(Float.valueOf(ary[5]));
+                    location.setYaw(Float.parseFloat(ary[4]));
+                    location.setPitch(Float.parseFloat(ary[5]));
                 }
                 return location;
             }

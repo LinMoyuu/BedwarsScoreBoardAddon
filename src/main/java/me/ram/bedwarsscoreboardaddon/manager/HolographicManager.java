@@ -11,7 +11,7 @@ public class HolographicManager {
     private final List<HolographicAPI> holographics;
 
     public HolographicManager() {
-        holographics = new ArrayList<HolographicAPI>();
+        holographics = new ArrayList<>();
     }
 
     public void addHolographic(HolographicAPI holo) {
@@ -32,7 +32,7 @@ public class HolographicManager {
     }
 
     public List<HolographicAPI> getPlayerHolographic(Player player) {
-        List<HolographicAPI> list = new ArrayList<HolographicAPI>();
+        List<HolographicAPI> list = new ArrayList<>();
         for (HolographicAPI holo : holographics) {
             if (holo.getPlayers().contains(player)) {
                 list.add(holo);

@@ -14,7 +14,10 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +44,7 @@ public class Respawn {
     public Respawn(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
         protected_time = new HashMap<Player, Long>();
         arena.addGameTask(new BukkitRunnable() {
             @Override

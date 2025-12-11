@@ -21,7 +21,6 @@ import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import org.bukkit.*;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -241,7 +240,7 @@ public class EventListener implements Listener {
                     health /= 2.0;
                 }
                 if (BedwarsRel.getInstance().getBooleanConfig("hearts-on-death", true)) {
-                    hearts = "[" + ChatColor.RED + "\u2764" + format.format(health) + ChatColor.GOLD + "]";
+                    hearts = "[" + ChatColor.RED + "❤" + format.format(health) + ChatColor.GOLD + "]";
                 }
                 WrappedChatComponent[] chats = WrappedChatComponent.fromChatMessage(ChatWriter.pluginMessage(ChatColor.GOLD + BedwarsRel._l(p, "ingame.player.killed", ImmutableMap.of("killer", Game.getPlayerWithTeamString(killer, killerTeam, ChatColor.GOLD, hearts), "player", Game.getPlayerWithTeamString(player, deathTeam, ChatColor.GOLD)))));
                 for (WrappedChatComponent c : chats) {
@@ -559,10 +558,10 @@ public class EventListener implements Listener {
         try {
             String[] ary = loc.split(", ");
             if (Bukkit.getWorld(ary[0]) != null) {
-                Location location = new Location(Bukkit.getWorld(ary[0]), Double.valueOf(ary[1]), Double.valueOf(ary[2]), Double.valueOf(ary[3]));
+                Location location = new Location(Bukkit.getWorld(ary[0]), Double.parseDouble(ary[1]), Double.parseDouble(ary[2]), Double.parseDouble(ary[3]));
                 if (ary.length > 4) {
-                    location.setYaw(Float.valueOf(ary[4]));
-                    location.setPitch(Float.valueOf(ary[5]));
+                    location.setYaw(Float.parseFloat(ary[4]));
+                    location.setPitch(Float.parseFloat(ary[5]));
                 }
                 return location;
             }

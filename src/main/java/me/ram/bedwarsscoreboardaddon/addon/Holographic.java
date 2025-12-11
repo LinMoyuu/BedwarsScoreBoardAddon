@@ -40,9 +40,9 @@ public class Holographic {
     public Holographic(Arena arena, ResourceUpgrade resourceupgrade) {
         this.arena = arena;
         this.game = arena.getGame();
-        ablocks = new ArrayList<HolographicAPI>();
-        atitles = new ArrayList<HolographicAPI>();
-        btitles = new ArrayList<HolographicAPI>();
+        ablocks = new ArrayList<>();
+        atitles = new ArrayList<>();
+        btitles = new ArrayList<>();
         pbtitles = new HashMap<String, HolographicAPI>();
         armor_locations = new HashMap<HolographicAPI, Location>();
         armor_upward = new HashMap<HolographicAPI, Boolean>();

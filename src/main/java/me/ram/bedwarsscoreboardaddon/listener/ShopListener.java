@@ -65,7 +65,7 @@ public class ShopListener implements Listener {
         FileConfiguration npcconfig = YamlConfiguration.loadConfiguration(folder);
         if (npcconfig.getKeys(false).contains("npcs")) {
             List<String> npcs = npcconfig.getStringList("npcs");
-            List<NPC> gamenpcs = new ArrayList<NPC>();
+            List<NPC> gamenpcs = new ArrayList<>();
             for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
                 if (npcs.contains(npc.getId() + "")) {
                     gamenpcs.add(npc);

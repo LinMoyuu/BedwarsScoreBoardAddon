@@ -89,7 +89,7 @@ public class LobbyBlock {
     }
 
     private List<Integer> getAllNumber(int a, int b) {
-        List<Integer> nums = new ArrayList<Integer>();
+        List<Integer> nums = new ArrayList<>();
         int min = a;
         int max = b;
         if (a > b) {

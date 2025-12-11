@@ -15,9 +15,9 @@ public class MenuManager {
     private final Map<Player, Map<String, Object>> player_value;
 
     public MenuManager() {
-        players = new HashMap<Player, MenuType>();
-        player_inv = new HashMap<Player, Inventory>();
-        player_value = new HashMap<Player, Map<String, Object>>();
+        players = new HashMap<>();
+        player_inv = new HashMap<>();
+        player_value = new HashMap<>();
     }
 
     public void addPlayer(Player player, MenuType type, Inventory inventory) {
@@ -78,7 +78,7 @@ public class MenuManager {
     }
 
     public List<Player> getPlayers() {
-        List<Player> list = new ArrayList<Player>();
+        List<Player> list = new ArrayList<>();
         list.addAll(players.keySet());
         return list;
     }

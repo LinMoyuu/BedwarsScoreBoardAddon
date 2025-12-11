@@ -154,7 +154,7 @@ public class IronForge implements Upgrade, Listener {
     }
 
     private List<Player> getNearbyPlayers(Location location, ItemStack item) {
-        List<Player> players = new ArrayList<Player>();
+        List<Player> players = new ArrayList<>();
         for (Entity entity : location.getWorld().getNearbyEntities(location, Config.spread_resource_range, 0.5, Config.spread_resource_range)) {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
@@ -213,7 +213,7 @@ public class IronForge implements Upgrade, Listener {
             try {
                 Material type = Material.valueOf(ary[0]);
                 Integer interval = Integer.valueOf(ary[1]);
-                double spread = Double.valueOf(ary[2]);
+                double spread = Double.parseDouble(ary[2]);
                 resources.put(type, interval);
                 resource_spread.put(type, spread);
             } catch (Exception e) {
