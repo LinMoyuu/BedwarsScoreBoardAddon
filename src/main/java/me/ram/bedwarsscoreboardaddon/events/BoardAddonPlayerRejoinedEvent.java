@@ -1,41 +1,41 @@
 package me.ram.bedwarsscoreboardaddon.events;
 
+import io.github.bedwarsrel.game.Game;
+import me.ram.bedwarsscoreboardaddon.addon.Rejoin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import io.github.bedwarsrel.game.Game;
-import me.ram.bedwarsscoreboardaddon.addon.Rejoin;
 
 public class BoardAddonPlayerRejoinedEvent extends Event {
 
-	private static HandlerList handlers = new HandlerList();
-	private Game game;
-	private Player player;
-	private Rejoin rejoin;
+    private static final HandlerList handlers = new HandlerList();
+    private final Game game;
+    private final Player player;
+    private final Rejoin rejoin;
 
-	public BoardAddonPlayerRejoinedEvent(Game game, Player player, Rejoin rejoin) {
-		this.game = game;
-		this.player = player;
-		this.rejoin = rejoin;
-	}
+    public BoardAddonPlayerRejoinedEvent(Game game, Player player, Rejoin rejoin) {
+        this.game = game;
+        this.player = player;
+        this.rejoin = rejoin;
+    }
 
-	public Game getGame() {
-		return game;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public Player getPlayer() {
-		return player;
-	}
+    public Game getGame() {
+        return game;
+    }
 
-	public Rejoin getRejoin() {
-		return rejoin;
-	}
+    public Player getPlayer() {
+        return player;
+    }
 
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public Rejoin getRejoin() {
+        return rejoin;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

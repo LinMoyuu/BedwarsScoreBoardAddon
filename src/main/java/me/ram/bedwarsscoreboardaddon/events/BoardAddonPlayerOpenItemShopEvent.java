@@ -1,43 +1,43 @@
 package me.ram.bedwarsscoreboardaddon.events;
 
+import io.github.bedwarsrel.game.Game;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import io.github.bedwarsrel.game.Game;
 
 public class BoardAddonPlayerOpenItemShopEvent extends Event {
 
-	private static HandlerList handlers = new HandlerList();
-	private Game game;
-	private Player player;
-	private Boolean cancelled = false;
+    private static final HandlerList handlers = new HandlerList();
+    private final Game game;
+    private final Player player;
+    private Boolean cancelled = false;
 
-	public BoardAddonPlayerOpenItemShopEvent(Game game, Player player) {
-		this.game = game;
-		this.player = player;
-	}
+    public BoardAddonPlayerOpenItemShopEvent(Game game, Player player) {
+        this.game = game;
+        this.player = player;
+    }
 
-	public Game getGame() {
-		return game;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public Player getPlayer() {
-		return player;
-	}
+    public Game getGame() {
+        return game;
+    }
 
-	public boolean isCancelled() {
-		return this.cancelled;
-	}
+    public Player getPlayer() {
+        return player;
+    }
 
-	public void setCancelled(boolean cancel) {
-		this.cancelled = cancel;
-	}
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
 
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public void setCancelled(boolean cancel) {
+        this.cancelled = cancel;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

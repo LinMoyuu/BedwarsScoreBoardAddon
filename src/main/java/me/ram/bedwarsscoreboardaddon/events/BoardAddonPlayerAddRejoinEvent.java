@@ -1,51 +1,50 @@
 package me.ram.bedwarsscoreboardaddon.events;
 
+import io.github.bedwarsrel.game.Game;
+import me.ram.bedwarsscoreboardaddon.addon.Rejoin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import io.github.bedwarsrel.game.Game;
-import me.ram.bedwarsscoreboardaddon.addon.Rejoin;
-
 public class BoardAddonPlayerAddRejoinEvent extends Event {
 
-	private static HandlerList handlers = new HandlerList();
-	private Game game;
-	private Player player;
-	private Boolean cancelled = false;
-	private Rejoin rejoin;
+    private static final HandlerList handlers = new HandlerList();
+    private final Game game;
+    private final Player player;
+    private Boolean cancelled = false;
+    private final Rejoin rejoin;
 
-	public BoardAddonPlayerAddRejoinEvent(Game game, Player player, Rejoin rejoin) {
-		this.game = game;
-		this.player = player;
-		this.rejoin = rejoin;
-	}
+    public BoardAddonPlayerAddRejoinEvent(Game game, Player player, Rejoin rejoin) {
+        this.game = game;
+        this.player = player;
+        this.rejoin = rejoin;
+    }
 
-	public Game getGame() {
-		return game;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public Player getPlayer() {
-		return player;
-	}
+    public Game getGame() {
+        return game;
+    }
 
-	public Rejoin getRejoin() {
-		return rejoin;
-	}
+    public Player getPlayer() {
+        return player;
+    }
 
-	public boolean isCancelled() {
-		return cancelled;
-	}
+    public Rejoin getRejoin() {
+        return rejoin;
+    }
 
-	public void setCancelled(boolean cancel) {
-		cancelled = cancel;
-	}
+    public boolean isCancelled() {
+        return cancelled;
+    }
 
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public void setCancelled(boolean cancel) {
+        cancelled = cancel;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

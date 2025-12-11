@@ -1,47 +1,48 @@
 package me.ram.bedwarsscoreboardaddon.events;
 
-import java.util.List;
+import io.github.bedwarsrel.game.Game;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import io.github.bedwarsrel.game.Game;
+
+import java.util.List;
 
 public class BoardAddonResourceUpgradeEvent extends Event {
 
-	private static HandlerList handlers = new HandlerList();
-	private Game game;
-	private List<String> upgrade;
-	private Boolean cancelled = false;
+    private static final HandlerList handlers = new HandlerList();
+    private final Game game;
+    private List<String> upgrade;
+    private Boolean cancelled = false;
 
-	public BoardAddonResourceUpgradeEvent(Game game, List<String> upgrade) {
-		this.game = game;
-		this.upgrade = upgrade;
-	}
+    public BoardAddonResourceUpgradeEvent(Game game, List<String> upgrade) {
+        this.game = game;
+        this.upgrade = upgrade;
+    }
 
-	public Game getGame() {
-		return game;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public List<String> getUpgrade() {
-		return upgrade;
-	}
+    public Game getGame() {
+        return game;
+    }
 
-	public void setUpgrade(List<String> upgrade) {
-		this.upgrade = upgrade;
-	}
+    public List<String> getUpgrade() {
+        return upgrade;
+    }
 
-	public boolean isCancelled() {
-		return this.cancelled;
-	}
+    public void setUpgrade(List<String> upgrade) {
+        this.upgrade = upgrade;
+    }
 
-	public void setCancelled(boolean cancel) {
-		this.cancelled = cancel;
-	}
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
 
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public void setCancelled(boolean cancel) {
+        this.cancelled = cancel;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

@@ -1,34 +1,34 @@
 package me.ram.bedwarsscoreboardaddon.events;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.Team;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 public class BedwarsTeamDeadEvent extends Event {
 
-	private static HandlerList handlers = new HandlerList();
-	private Game game;
-	private Team team;
+    private static final HandlerList handlers = new HandlerList();
+    private final Game game;
+    private final Team team;
 
-	public BedwarsTeamDeadEvent(Game game, Team team) {
-		this.game = game;
-		this.team = team;
-	}
+    public BedwarsTeamDeadEvent(Game game, Team team) {
+        this.game = game;
+        this.team = team;
+    }
 
-	public Game getGame() {
-		return game;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public Team getTeam() {
-		return team;
-	}
+    public Game getGame() {
+        return game;
+    }
 
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public Team getTeam() {
+        return team;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

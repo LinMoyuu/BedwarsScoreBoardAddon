@@ -5,21 +5,21 @@ import io.github.bedwarsrel.game.Team;
 
 public interface Upgrade {
 
-	public UpgradeType getType();
+    UpgradeType getType();
 
-	public String getName();
+    String getName();
 
-	public Game getGame();
+    Game getGame();
 
-	public Team getTeam();
+    Team getTeam();
 
-	public int getLevel();
+    int getLevel();
 
-	public void setLevel(int level);
+    void setLevel(int level);
 
-	public String getBuyer();
+    String getBuyer();
 
-	public void setBuyer(String buyer);
+    void setBuyer(String buyer);
 
-	public void runUpgrade();
+    void runUpgrade();
 }

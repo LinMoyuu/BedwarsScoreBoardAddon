@@ -9,22 +9,22 @@ import java.net.URLConnection;
 
 public class NetworkUtil {
 
-	public static String getDocument(String urlString) {
-		StringBuffer document = new StringBuffer("");
-		try {
-			URL url = new URL(urlString);
-			URLConnection conn = url.openConnection();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				document.append(line + " ");
-			}
-			reader.close();
-		} catch (MalformedURLException e) {
-			return null;
-		} catch (IOException e) {
-			return null;
-		}
-		return document.toString();
-	}
+    public static String getDocument(String urlString) {
+        StringBuffer document = new StringBuffer();
+        try {
+            URL url = new URL(urlString);
+            URLConnection conn = url.openConnection();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                document.append(line + " ");
+            }
+            reader.close();
+        } catch (MalformedURLException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+        return document.toString();
+    }
 }

@@ -1,36 +1,36 @@
 package me.ram.bedwarsscoreboardaddon.events;
 
+import io.github.bedwarsrel.game.Game;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import io.github.bedwarsrel.game.Game;
 
 public class BoardAddonDeathModeEvent extends Event {
 
-	private static HandlerList handlers = new HandlerList();
-	private Game game;
-	private Boolean cancelled = false;
+    private static final HandlerList handlers = new HandlerList();
+    private final Game game;
+    private Boolean cancelled = false;
 
-	public BoardAddonDeathModeEvent(Game game) {
-		this.game = game;
-	}
+    public BoardAddonDeathModeEvent(Game game) {
+        this.game = game;
+    }
 
-	public Game getGame() {
-		return game;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-	public boolean isCancelled() {
-		return this.cancelled;
-	}
+    public Game getGame() {
+        return game;
+    }
 
-	public void setCancelled(boolean cancel) {
-		this.cancelled = cancel;
-	}
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
 
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    public void setCancelled(boolean cancel) {
+        this.cancelled = cancel;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 }

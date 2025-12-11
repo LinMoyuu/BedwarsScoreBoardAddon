@@ -1,16 +1,15 @@
 package me.ram.bedwarsscoreboardaddon.utils;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import me.clip.placeholderapi.PlaceholderAPI;
-
 public class PlaceholderAPIUtil {
 
-	public static String setPlaceholders(Player player, String text) {
-		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-			return PlaceholderAPI.setPlaceholders(player, text);
-		}
-		return text;
-	}
+    public static String setPlaceholders(Player player, String text) {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            return PlaceholderAPI.setPlaceholders(player, text);
+        }
+        return text;
+    }
 }
