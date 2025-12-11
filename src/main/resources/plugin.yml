@@ -11,7 +11,9 @@ description: |
 name: BedwarsScoreBoardAddon
 main: me.ram.bedwarsscoreboardaddon.Main
 version: ${version}
-author: Ram
+authors:
+  - Ram
+  - YukiEnd
 website: https://github.com/TheRamU/BedwarsScoreBoardAddon
 depends: [BedwarsRel, ProtocolLib]
 softdepends: [Citizens, PlaceholderAPI, ServerJoiner, WorldEdit]

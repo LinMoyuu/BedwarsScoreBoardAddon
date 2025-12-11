@@ -60,10 +60,7 @@ public class Main extends JavaPlugin {
 
     public void onEnable() {
         if (!getDescription().getName().equals("BedwarsScoreBoardAddon") || !getDescription().getAuthors().contains("Ram") || !getDescription().getAuthors().contains("YukiEnd")) {
-            try {
-                new Exception("Please don't edit plugin.yml!").printStackTrace();
-            } catch (Exception e) {
-            }
+            new Exception("Please don't edit plugin.yml!").printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -84,7 +81,7 @@ public class Main extends JavaPlugin {
                     printMessage("§b                  BedwarsScoreBoardAddon");
                     printMessage("§7 ");
                     printMessage("§7 ");
-                    printMessage("§f  " + getLocaleConfig().getLanguage("version") + ": §a" + instance.getDescription().getVersion());
+                    printMessage("§f  " + getLocaleConfig().getLanguage("version") + ": §a" + getDescription().getVersion());
                     printMessage("§7 ");
                     printMessage("§f  " + getLocaleConfig().getLanguage("author") + ": §aRam");
                     printMessage("§7 ");
