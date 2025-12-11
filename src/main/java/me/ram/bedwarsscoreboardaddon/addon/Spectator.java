@@ -284,7 +284,7 @@ public class Spectator implements Listener {
                             if (player.getSpectatorTarget() == null) {
                                 if (players.contains(player)) {
                                     players.remove(player);
-                                    if (!Config.spectator_quit_spectator_title.equals("") || !Config.spectator_quit_spectator_subtitle.equals("")) {
+                                    if (!Config.spectator_quit_spectator_title.isEmpty() || !Config.spectator_quit_spectator_subtitle.isEmpty()) {
                                         Utils.sendTitle(player, 1, 30, 1, Config.spectator_quit_spectator_title, Config.spectator_quit_spectator_subtitle);
                                         player.setGameMode(GameMode.SURVIVAL);
                                         player.setAllowFlight(true);
@@ -297,7 +297,7 @@ public class Spectator implements Listener {
                                     if (e.getGame().isInGame(spectatorTarget)) {
                                         if (e.getGame().isInGame(spectatorTarget) && !e.getGame().isSpectator(spectatorTarget) && e.getGame().isSpectator(player)) {
                                             players.add(player);
-                                            if (!Config.spectator_spectator_target_title.equals("") || !Config.spectator_spectator_target_subtitle.equals("")) {
+                                            if (!Config.spectator_spectator_target_title.isEmpty() || !Config.spectator_spectator_target_subtitle.isEmpty()) {
                                                 Utils.sendTitle(player, 1, 30, 1, Config.spectator_spectator_target_title.replace("{player}", spectatorTarget.getName()).replace("{color}", e.getGame().getPlayerTeam(spectatorTarget).getChatColor() + "").replace("{team}", e.getGame().getPlayerTeam(spectatorTarget).getName()), Config.spectator_spectator_target_subtitle.replace("{player}", spectatorTarget.getName()).replace("{color}", e.getGame().getPlayerTeam(spectatorTarget).getChatColor() + "").replace("{team}", e.getGame().getPlayerTeam(spectatorTarget).getName()));
                                             }
                                         } else {

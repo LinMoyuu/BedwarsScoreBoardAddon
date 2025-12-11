@@ -177,7 +177,7 @@ public class Title implements Listener {
         if (BedwarsUtil.isSpectator(game, damager) || BedwarsUtil.isSpectator(game, player)) {
             return;
         }
-        if (!Config.damagetitle_title.equals("") || !Config.damagetitle_subtitle.equals("")) {
+        if (!Config.damagetitle_title.isEmpty() || !Config.damagetitle_subtitle.isEmpty()) {
             DecimalFormat df = new DecimalFormat("0.00");
             DecimalFormat df2 = new DecimalFormat("#");
             double health = player.getHealth() - e.getFinalDamage();
@@ -217,10 +217,10 @@ public class Title implements Listener {
         double health = player.getHealth() - e.getFinalDamage();
         health = health < 0 ? 0 : health;
         DecimalFormat df = new DecimalFormat("#");
-        if (!Config.bowdamage_title.equals("") || !Config.bowdamage_subtitle.equals("")) {
+        if (!Config.bowdamage_title.isEmpty() || !Config.bowdamage_subtitle.isEmpty()) {
             Utils.sendTitle(shooter, player, 0, 20, 0, Config.bowdamage_title.replace("{player}", player.getName()).replace("{damage}", damage + "").replace("{health}", df.format(health)).replace("{maxhealth}", df.format(player.getMaxHealth())), Config.bowdamage_subtitle.replace("{player}", player.getName()).replace("{damage}", damage + "").replace("{health}", df.format(health)).replace("{maxhealth}", df.format(player.getMaxHealth())));
         }
-        if (!Config.bowdamage_message.equals("")) {
+        if (!Config.bowdamage_message.isEmpty()) {
             Utils.sendMessage(shooter, player, Config.bowdamage_message.replace("{player}", player.getName()).replace("{damage}", damage + "").replace("{health}", df.format(health)).replace("{maxhealth}", df.format(player.getMaxHealth())));
         }
     }

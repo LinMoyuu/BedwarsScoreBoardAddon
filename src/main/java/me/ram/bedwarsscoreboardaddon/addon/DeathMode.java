@@ -46,10 +46,10 @@ public class DeathMode {
                             return;
                         }
                         for (Player player : game.getPlayers()) {
-                            if (!Config.deathmode_title.equals("") || !Config.deathmode_subtitle.equals("")) {
+                            if (!Config.deathmode_title.isEmpty() || !Config.deathmode_subtitle.isEmpty()) {
                                 Utils.sendTitle(player, 10, 80, 10, Config.deathmode_title, Config.deathmode_subtitle);
                             }
-                            if (!Config.deathmode_message.equals("")) {
+                            if (!Config.deathmode_message.isEmpty()) {
                                 player.sendMessage(Config.deathmode_message);
                             }
                         }

@@ -24,7 +24,7 @@ public class TimeTask {
         this.arena = arena;
         this.game = arena.getGame();
         for (String cmd : Config.timecommand_startcommand) {
-            if (cmd.equals("")) {
+            if (cmd.isEmpty()) {
                 continue;
             }
             if (cmd.contains("{player}")) {
@@ -44,7 +44,7 @@ public class TimeTask {
                 public void run() {
                     if (game.getTimeLeft() <= gametime) {
                         for (String cmd : cmdlist) {
-                            if (cmd.equals("")) {
+                            if (cmd.isEmpty()) {
                                 continue;
                             }
                             if (cmd.contains("{player}")) {

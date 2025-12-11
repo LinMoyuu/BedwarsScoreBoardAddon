@@ -79,10 +79,10 @@ public class HealthLevel {
                                     nhealth = nhealth > maxhealth ? maxhealth : nhealth;
                                     player.setHealth(nhealth);
                                 }
-                                if (!title.equals("") || !subtitle.equals("")) {
+                                if (!title.isEmpty() || !subtitle.isEmpty()) {
                                     Utils.sendTitle(player, 10, 50, 10, ColorUtil.color(title), ColorUtil.color(subtitle));
                                 }
-                                if (!message.equals("")) {
+                                if (!message.isEmpty()) {
                                     player.sendMessage(ColorUtil.color(message));
                                 }
                             }

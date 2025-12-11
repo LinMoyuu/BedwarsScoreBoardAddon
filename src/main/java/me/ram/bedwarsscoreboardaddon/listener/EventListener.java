@@ -519,7 +519,7 @@ public class EventListener implements Listener {
             @Override
             public void onPacketSending(PacketEvent e) {
                 PacketContainer packet = e.getPacket();
-                if (e.getPacketType().equals(PacketType.Play.Server.SCOREBOARD_SCORE) && packet.getScoreboardActions().read(0).equals(ScoreboardAction.REMOVE) && packet.getStrings().read(1).equals("") && getPlayer(packet.getStrings().read(0)) != null) {
+                if (e.getPacketType().equals(PacketType.Play.Server.SCOREBOARD_SCORE) && packet.getScoreboardActions().read(0).equals(ScoreboardAction.REMOVE) && packet.getStrings().read(1).isEmpty() && getPlayer(packet.getStrings().read(0)) != null) {
                     e.setCancelled(true);
                 }
             }

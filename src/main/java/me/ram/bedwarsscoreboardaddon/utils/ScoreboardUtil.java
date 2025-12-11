@@ -248,10 +248,10 @@ public class ScoreboardUtil {
                 if (score_team == null) {
                     score_team = scoreboard.registerNewTeam(game.getName() + ":" + team.getName());
                 }
-                if (!Config.playertag_prefix.equals("")) {
+                if (!Config.playertag_prefix.isEmpty()) {
                     score_team.setPrefix(Config.playertag_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
                 }
-                if (!Config.playertag_suffix.equals("")) {
+                if (!Config.playertag_suffix.isEmpty()) {
                     score_team.setSuffix(Config.playertag_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
                 }
                 score_team.setAllowFriendlyFire(false);

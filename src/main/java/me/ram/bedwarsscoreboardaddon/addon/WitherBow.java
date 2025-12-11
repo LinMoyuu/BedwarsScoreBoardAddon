@@ -32,12 +32,12 @@ public class WitherBow implements Listener {
             @Override
             public void run() {
                 if (e.getGame().getTimeLeft() <= Config.witherbow_gametime && Config.witherbow_enabled) {
-                    if (!Config.witherbow_title.equals("") || !Config.witherbow_subtitle.equals("")) {
+                    if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
                         game.getPlayers().forEach(player -> {
                             Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle);
                         });
                     }
-                    if (!Config.witherbow_message.equals("")) {
+                    if (!Config.witherbow_message.isEmpty()) {
                         game.getPlayers().forEach(player -> {
                             player.sendMessage(Config.witherbow_message);
                         });

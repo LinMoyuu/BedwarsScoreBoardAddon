@@ -59,7 +59,7 @@ public class Trap implements Upgrade {
                 teamShop.addCoolingPlayer(team, player);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 1), true);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 1), true);
-                if (!Config.teamshop_upgrade_trap_trigger_title.equals("") || !Config.teamshop_upgrade_trap_trigger_subtitle.equals("")) {
+                if (!Config.teamshop_upgrade_trap_trigger_title.isEmpty() || !Config.teamshop_upgrade_trap_trigger_subtitle.isEmpty()) {
                     for (Player teamplayers : team.getPlayers()) {
                         Utils.sendTitle(teamplayers, 5, 80, 5, Config.teamshop_upgrade_trap_trigger_title, Config.teamshop_upgrade_trap_trigger_subtitle);
                     }

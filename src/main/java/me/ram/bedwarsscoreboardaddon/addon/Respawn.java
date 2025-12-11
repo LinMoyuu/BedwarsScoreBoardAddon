@@ -149,10 +149,10 @@ public class Respawn {
                         return;
                     }
                     if (respawntime <= Config.respawn_respawn_delay && respawntime > 0) {
-                        if (!Config.respawn_countdown_title.equals("") || !Config.respawn_countdown_subtitle.equals("")) {
+                        if (!Config.respawn_countdown_title.isEmpty() || !Config.respawn_countdown_subtitle.isEmpty()) {
                             Utils.sendTitle(player, 2, 50, 0, Config.respawn_countdown_title.replace("{respawntime}", respawntime + ""), Config.respawn_countdown_subtitle.replace("{respawntime}", respawntime + ""));
                         }
-                        if (!Config.respawn_countdown_message.equals("")) {
+                        if (!Config.respawn_countdown_message.isEmpty()) {
                             player.sendMessage(Config.respawn_countdown_message.replace("{respawntime}", respawntime + ""));
                         }
                     }
@@ -170,10 +170,10 @@ public class Respawn {
                         });
                         player.setFoodLevel(20);
                         player.updateInventory();
-                        if (!Config.respawn_respawn_title.equals("") || !Config.respawn_respawn_subtitle.equals("")) {
+                        if (!Config.respawn_respawn_title.isEmpty() || !Config.respawn_respawn_subtitle.isEmpty()) {
                             Utils.sendTitle(player, 10, 30, 10, Config.respawn_respawn_title, Config.respawn_respawn_subtitle);
                         }
-                        if (!Config.respawn_respawn_message.equals("")) {
+                        if (!Config.respawn_respawn_message.isEmpty()) {
                             player.sendMessage(Config.respawn_respawn_message);
                         }
                         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5, 0), true);

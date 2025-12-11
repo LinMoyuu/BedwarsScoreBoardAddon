@@ -46,10 +46,10 @@ public class NoBreakBed {
                     bre = true;
                     if (Config.nobreakbed_enabled) {
                         for (Player player : game.getPlayers()) {
-                            if (!Config.nobreakbed_title.equals("") || !Config.nobreakbed_subtitle.equals("")) {
+                            if (!Config.nobreakbed_title.isEmpty() || !Config.nobreakbed_subtitle.isEmpty()) {
                                 Utils.sendTitle(player, 10, 50, 10, Config.nobreakbed_title, Config.nobreakbed_subtitle);
                             }
-                            if (!Config.nobreakbed_message.equals("")) {
+                            if (!Config.nobreakbed_message.isEmpty()) {
                                 player.sendMessage(Config.nobreakbed_message);
                             }
                         }

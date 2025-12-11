@@ -61,7 +61,7 @@ public class AlarmTrap implements Upgrade {
                 } else {
                     Main.getInstance().getArenaManager().getArenas().get(game.getName()).getInvisiblePlayer().showPlayerArmor(player);
                 }
-                if (!Config.teamshop_upgrade_alarm_trap_trigger_title.equals("") || !Config.teamshop_upgrade_alarm_trap_trigger_subtitle.equals("")) {
+                if (!Config.teamshop_upgrade_alarm_trap_trigger_title.isEmpty() || !Config.teamshop_upgrade_alarm_trap_trigger_subtitle.isEmpty()) {
                     Team t = game.getPlayerTeam(player);
                     for (Player teamplayers : team.getPlayers()) {
                         Utils.sendTitle(teamplayers, 5, 80, 5, Config.teamshop_upgrade_alarm_trap_trigger_title.replace("{player}", player.getName()).replace("{team}", t.getName()).replace("{team_color}", team.getChatColor().toString()), Config.teamshop_upgrade_alarm_trap_trigger_subtitle.replace("{player}", player.getName()).replace("{team}", t.getName()).replace("{team_color}", team.getChatColor().toString()));

@@ -17,7 +17,7 @@ public class CommandTabCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         List<String> suggest = getSuggest(sender, args);
         String last = args[args.length - 1];
-        if (suggest != null && !last.equals("")) {
+        if (suggest != null && !last.isEmpty()) {
             List<String> list = new ArrayList<String>();
             suggest.forEach(s -> {
                 if (s.startsWith(last)) {
