@@ -510,19 +510,14 @@ public class Spectator implements Listener {
             e.setCancelled(true);
             int slot = e.getRawSlot();
             if (slot == 11) {
-                player.setFlySpeed(0.1f);
                 player.removePotionEffect(PotionEffectType.SPEED);
             } else if (slot == 12) {
-                player.setFlySpeed(0.15f);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), true);
             } else if (slot == 13) {
-                player.setFlySpeed(0.2f);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
             } else if (slot == 14) {
-                player.setFlySpeed(0.25f);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
             } else if (slot == 15) {
-                player.setFlySpeed(0.3f);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
             } else {
                 return;
