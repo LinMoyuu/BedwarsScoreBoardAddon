@@ -70,11 +70,23 @@ public class Title implements Listener {
 
     @EventHandler
     public void onDestroyed(BedwarsTargetBlockDestroyedEvent e) {
-        if (Config.destroyed_title_enabled) {
-            for (Player player : e.getTeam().getPlayers()) {
-                Utils.sendTitle(player, 1, 30, 1, Config.destroyed_title_title, Config.destroyed_title_subtitle);
-            }
+        if (!Config.destroyed_title_enabled) return;
+        // 为床被破坏的队伍发送
+        for (Player player : e.getTeam().getPlayers()) {
+            Utils.sendTitle(player, 1, 30, 1, Config.destroyed_title_title, Config.destroyed_title_subtitle);
         }
+        Game game = e.getGame();
+        Player player = e.getPlayer();
+        Team playerTeam = game.getPlayerTeam(player);
+        // 为且非床破坏者其他队伍发送
+        for (Player gamePlayers : e.getGame().getPlayers()) {
+            if (gamePlayers.equals(player)) continue; // 破坏者跳过
+            if (game.getPlayerTeam(gamePlayers).equals(e.getTeam())) continue; // 是被破坏的跳过
+            Utils.sendTitle(player, 1, 60, 1, e.getTeam().getDisplayName() + "&c床已被摧毁", "&7破坏者： " +
+                    playerTeam.getChatColor() + playerTeam.getDisplayName() + player.getDisplayName());
+        }
+        // 为破坏者发送
+        Utils.sendTitle(player, 1, 60, 1, e.getTeam().getDisplayName(), "&a床已被你摧毁");
     }
 
     @EventHandler
