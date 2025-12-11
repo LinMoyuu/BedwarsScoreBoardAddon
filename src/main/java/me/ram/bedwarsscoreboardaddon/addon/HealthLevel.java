@@ -29,7 +29,7 @@ public class HealthLevel {
     public HealthLevel(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        levelTime = new HashMap<String, String>();
+        levelTime = new HashMap<>();
         nowHealth = 20;
         if (Config.sethealth_start_enabled) {
             nowHealth = Config.sethealth_start_health;

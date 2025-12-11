@@ -44,7 +44,7 @@ public class ResourceUpgrade {
         this.game = arena.getGame();
         interval = new HashMap<Material, Integer>();
         spawn_time = new HashMap<Material, Integer>();
-        upg_time = new HashMap<String, String>();
+        upg_time = new HashMap<>();
         levels = new HashMap<Material, String>();
         for (ResourceSpawner spawner : game.getResourceSpawners()) {
             for (ItemStack itemStack : spawner.getResources()) {

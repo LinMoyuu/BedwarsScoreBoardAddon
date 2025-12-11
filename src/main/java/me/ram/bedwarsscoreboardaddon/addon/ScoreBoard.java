@@ -30,9 +30,9 @@ public class ScoreBoard {
         this.arena = arena;
         game = arena.getGame();
         placeholderManager = new PlaceholderManager(game);
-        team_status = new HashMap<String, String>();
-        timer_placeholder = new HashMap<String, String>();
-        over_plan_info = new HashMap<String, String>();
+        team_status = new HashMap<>();
+        timer_placeholder = new HashMap<>();
+        over_plan_info = new HashMap<>();
         for (String id : Config.timer.keySet()) {
             arena.addGameTask(new BukkitRunnable() {
                 int i = Config.timer.get(id);
@@ -41,6 +41,7 @@ public class ScoreBoard {
                 public void run() {
                     String format = i / 60 + ":" + ((i % 60 < 10) ? ("0" + i % 60) : (i % 60));
                     timer_placeholder.put("{timer_" + id + "}", format);
+                    timer_placeholder.put("{timer_sec_" + id + "}", String.valueOf(i));
                     i--;
                 }
             }.runTaskTimer(Main.getInstance(), 0L, 21L));
@@ -105,7 +106,7 @@ public class ScoreBoard {
 
     public void updateScoreboard() {
         List<String> lines = new ArrayList<String>();
-        Map<String, String> plan_infos = new HashMap<String, String>();
+        Map<String, String> plan_infos = new HashMap<>();
         for (String plan : Config.planinfo) {
             if (game.getTimeLeft() <= Main.getInstance().getConfig().getInt("planinfo." + plan + ".start_time") && game.getTimeLeft() > Main.getInstance().getConfig().getInt("planinfo." + plan + ".end_time")) {
                 for (String key : Main.getInstance().getConfig().getConfigurationSection("planinfo." + plan + ".plans").getKeys(false)) {

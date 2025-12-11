@@ -309,7 +309,7 @@ public class Config {
     private static FileConfiguration language_config;
 
     private static FileConfiguration getVerifiedConfig(String fileName) {
-        Map<String, String> configVersion = new HashMap<String, String>();
+        Map<String, String> configVersion = new HashMap<>();
         configVersion.put("config.yml", "23");
         configVersion.put("language.yml", "4");
         configVersion.put("team_shop.yml", "6");
@@ -456,7 +456,7 @@ public class Config {
         compass_lore_send_message = ColorUtil.colorList(config.getStringList("compass.lore.send_message"));
         compass_lore_select_team = ColorUtil.colorList(config.getStringList("compass.lore.select_team"));
         compass_lore_select_resources = ColorUtil.colorList(config.getStringList("compass.lore.select_resources"));
-        compass_resources_name = new HashMap<String, String>();
+        compass_resources_name = new HashMap<>();
         compass_resources = new ArrayList<String>();
         for (String type : config.getConfigurationSection("compass.resources").getKeys(false)) {
             compass_resources_name.put(type, ColorUtil.color(config.getString("compass.resources." + type)));
@@ -818,9 +818,9 @@ public class Config {
         File file = new File(folder.getAbsolutePath() + "/game.yml");
         game_shop_item = new HashMap<String, List<String>>();
         game_shop_team = new HashMap<String, List<String>>();
-        game_shop_shops = new HashMap<String, String>();
+        game_shop_shops = new HashMap<>();
         game_team_spawner = new HashMap<String, Map<String, List<Location>>>();
-        game_team_spawners = new HashMap<String, String>();
+        game_team_spawners = new HashMap<>();
         int shopId = 0;
         int spawnerId = 0;
         if (!file.exists()) {
