@@ -109,8 +109,7 @@ public class Respawn {
             return;
         }
         addRespawningPlayer(player);
-        player.setGameMode(GameMode.SPECTATOR);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0), true);
+//        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0), true);
         Location location = game.getPlayerTeam(player).getSpawnLocation();
         Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
             if (!game.getState().equals(GameState.RUNNING)) {
@@ -123,6 +122,7 @@ public class Respawn {
             player.teleport(location);
             player.setAllowFlight(true);
             player.setFlying(true);
+            player.setGameMode(GameMode.SPECTATOR);
             sendGameModeChange(player, 3);
             arena.addGameTask(new BukkitRunnable() {
                 int respawntime = Config.respawn_respawn_delay;
@@ -153,10 +153,10 @@ public class Respawn {
                     }
                     if (respawntime <= Config.respawn_respawn_delay && respawntime > 0) {
                         if (!Config.respawn_countdown_title.isEmpty() || !Config.respawn_countdown_subtitle.isEmpty()) {
-                            Utils.sendTitle(player, 2, 50, 0, Config.respawn_countdown_title.replace("{respawntime}", respawntime + ""), Config.respawn_countdown_subtitle.replace("{respawntime}", respawntime + ""));
+                            Utils.sendTitle(player, 0, 40, 0, Config.respawn_countdown_title.replace("{respawntime}", String.valueOf(respawntime)), Config.respawn_countdown_subtitle.replace("{respawntime}", String.valueOf(respawntime)));
                         }
                         if (!Config.respawn_countdown_message.isEmpty()) {
-                            player.sendMessage(Config.respawn_countdown_message.replace("{respawntime}", respawntime + ""));
+                            player.sendMessage(Config.respawn_countdown_message.replace("{respawntime}", String.valueOf(respawntime)));
                         }
                     }
                     if (respawntime <= 0) {
@@ -173,6 +173,7 @@ public class Respawn {
                         });
                         player.setFoodLevel(20);
                         player.updateInventory();
+                        Utils.clearTitle(player);
                         if (!Config.respawn_respawn_title.isEmpty() || !Config.respawn_respawn_subtitle.isEmpty()) {
                             Utils.sendTitle(player, 10, 30, 10, Config.respawn_respawn_title, Config.respawn_respawn_subtitle);
                         }
@@ -184,7 +185,7 @@ public class Respawn {
                     }
                     respawntime--;
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 21L));
+            }.runTaskTimer(Main.getInstance(), 0L, 20L));
         }, 1L);
     }
 
