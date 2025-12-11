@@ -19,11 +19,11 @@ import java.util.Date;
 public class Actionbar {
 
     @Getter
-    private Arena arena;
-    @Getter
     private final Game game;
     @Getter
     private final PlaceholderManager placeholderManager;
+    @Getter
+    private Arena arena;
 
     public Actionbar(Arena arena) {
         this.game = arena.getGame();

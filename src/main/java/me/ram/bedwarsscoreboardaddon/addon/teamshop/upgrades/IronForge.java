@@ -36,15 +36,15 @@ public class IronForge implements Upgrade, Listener {
     private final Game game;
     @Getter
     private final Team team;
+    private final Map<Material, Integer> resources;
+    private final Map<Material, Double> resource_spread;
+    private final List<Location> locations;
+    private final Map<Item, ItemData> drop_items;
     @Getter
     private int level;
     @Getter
     @Setter
     private String buyer;
-    private final Map<Material, Integer> resources;
-    private final Map<Material, Double> resource_spread;
-    private final List<Location> locations;
-    private final Map<Item, ItemData> drop_items;
 
     public IronForge(Game game, Team team, int level) {
         this.game = game;

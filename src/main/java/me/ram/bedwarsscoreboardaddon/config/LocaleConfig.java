@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class LocaleConfig {
 
+    private final Map<String, Object> language;
     @Getter
     private EnumLocale pluginLocale;
-    private final Map<String, Object> language;
 
     public LocaleConfig() {
         language = new HashMap<String, Object>();

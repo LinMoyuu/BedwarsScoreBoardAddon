@@ -20,10 +20,10 @@ public class ScoreBoard {
 
     private final Arena arena;
     private final Game game;
-    private int title_index = 0;
     private final Map<String, String> timer_placeholder;
     private final PlaceholderManager placeholderManager;
     private final Map<String, String> team_status;
+    private int title_index = 0;
     private Map<String, String> over_plan_info;
 
     public ScoreBoard(Arena arena) {

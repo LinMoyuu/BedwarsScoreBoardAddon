@@ -11,8 +11,8 @@ public class BoardAddonPlayerAddRejoinEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private final Game game;
     private final Player player;
-    private Boolean cancelled = false;
     private final Rejoin rejoin;
+    private Boolean cancelled = false;
 
     public BoardAddonPlayerAddRejoinEvent(Game game, Player player, Rejoin rejoin) {
         this.game = game;

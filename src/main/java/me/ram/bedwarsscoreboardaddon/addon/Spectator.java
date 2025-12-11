@@ -50,9 +50,9 @@ import java.util.*;
 public class Spectator implements Listener {
 
     private final List<Player> players;
+    private final List<Material> resitems;
     private ItemStack speeditem;
     private ItemStack joinitem;
-    private final List<Material> resitems;
 
     public Spectator() {
         players = new ArrayList<>();

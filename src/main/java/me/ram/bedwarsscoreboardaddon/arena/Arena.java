@@ -64,11 +64,11 @@ public class Arena {
     @Getter
     private final Rejoin rejoin;
     @Getter
-    private Shop shop;
-    @Getter
     private final TimeTask timeTask;
-    private Boolean isOver;
     private final List<BukkitTask> gameTasks;
+    @Getter
+    private Shop shop;
+    private Boolean isOver;
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);

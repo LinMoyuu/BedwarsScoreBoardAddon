@@ -25,12 +25,12 @@ import java.util.*;
 
 public class HolographicAPI {
 
+    private final BukkitTask task;
     private Map<UUID, Integer> ids;
     private Map<UUID, Object> packets;
     private List<UUID> players;
     private Location location;
     private String title;
-    private final BukkitTask task;
     private List<ItemStack> equipment;
     private WrappedDataWatcher.Serializer stringserializer;
     private WrappedDataWatcher.Serializer booleanserializer;
