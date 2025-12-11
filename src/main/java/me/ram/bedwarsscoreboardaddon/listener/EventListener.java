@@ -58,6 +58,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         String message = e.getMessage();
         String[] args = message.split(" ");
+        // 配置时 传送
         if (args[0].equalsIgnoreCase("/bwsbatp")) {
             e.setCancelled(true);
             if (args.length == 8 && player.hasPermission("bedwarsscoreboardaddon.teleport")) {
@@ -70,6 +71,7 @@ public class EventListener implements Listener {
             }
             return;
         }
+        // 使用bwrel自带创建地图命令时 打开创建地图配置菜单 (原来这么生草?)
         if (args[0].equalsIgnoreCase("/bw") || args[0].equalsIgnoreCase("/bedwarsrel:bw")) {
             if (args.length > 3) {
                 if (args[1].equalsIgnoreCase("addgame")) {
@@ -88,6 +90,7 @@ public class EventListener implements Listener {
             }
             return;
         }
+        // rejoin相关
         if (!args[0].equalsIgnoreCase("/rejoin")) {
             return;
         }

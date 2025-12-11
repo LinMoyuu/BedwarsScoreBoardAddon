@@ -98,7 +98,7 @@ public class Respawn {
         }
         int ateams = 0;
         for (Team team : game.getTeams().values()) {
-            if (!(team.isDead(game) && team.getPlayers().size() <= 0)) {
+            if (!(team.isDead(game) && team.getPlayers().isEmpty())) {
                 ateams++;
             }
         }
@@ -106,20 +106,9 @@ public class Respawn {
             return;
         }
         addRespawningPlayer(player);
-        player.setGameMode(GameMode.SURVIVAL);
+        player.setGameMode(GameMode.SPECTATOR);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0), true);
-        World world = game.getRegion().getWorld();
-        int i = 0;
-        double x = 0;
-        double z = 0;
-        for (Team team : game.getTeams().values()) {
-            if (team.getSpawnLocation().getWorld().getName().equals(world.getName())) {
-                x += team.getSpawnLocation().getX();
-                z += team.getSpawnLocation().getZ();
-                i++;
-            }
-        }
-        Location location = new Location(world, (x / Double.valueOf(i)), Config.respawn_centre_height, (z / Double.valueOf(i)));
+        Location location = game.getPlayerTeam(player).getSpawnLocation();
         Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
             if (!game.getState().equals(GameState.RUNNING)) {
                 return;

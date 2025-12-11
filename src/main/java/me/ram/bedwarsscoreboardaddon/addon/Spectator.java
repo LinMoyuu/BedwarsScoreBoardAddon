@@ -421,17 +421,18 @@ public class Spectator implements Listener {
                     }
                 }.runTaskLater(Main.getInstance(), 1L);
             }
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (player.isOnline() && game.getState() == GameState.RUNNING && game.isSpectator(player)) {
-                        player.setGameMode(GameMode.SURVIVAL);
-                        player.setAllowFlight(true);
-                        player.setFlying(true);
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0), true);
-                    }
-                }
-            }.runTaskLater(Main.getInstance(), 20L);
+            player.setGameMode(GameMode.SPECTATOR);
+//            new BukkitRunnable() {
+//                @Override
+//                public void run() {
+//                    if (player.isOnline() && game.getState() == GameState.RUNNING && game.isSpectator(player)) {
+//                        player.setGameMode(GameMode.SURVIVAL);
+//                        player.setAllowFlight(true);
+//                        player.setFlying(true);
+//                        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0), true);
+//                    }
+//                }
+//            }.runTaskLater(Main.getInstance(), 20L);
         }
     }
 
