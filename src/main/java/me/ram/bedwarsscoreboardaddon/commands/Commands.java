@@ -23,9 +23,9 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage("");
                 sender.sendMessage("§b               BedwarsScoreBoardAddon");
                 sender.sendMessage("");
-                sender.sendMessage("§f  " + Main.getInstance().getLocaleConfig().getLanguage("version") + ": §a" + Main.getVersion());
+                sender.sendMessage("§f  " + Main.getInstance().getLocaleConfig().getLanguage("version") + ": §a" + Main.getInstance().getDescription().getVersion());
                 sender.sendMessage("");
-                sender.sendMessage("§f  " + Main.getInstance().getLocaleConfig().getLanguage("author") + ": §aRam");
+                sender.sendMessage("§f  " + Main.getInstance().getLocaleConfig().getLanguage("author") + ": §aRam" + "Modified By YukiEnd");
                 sender.sendMessage("");
                 sender.sendMessage("§f=====================================================");
                 return true;
@@ -33,11 +33,9 @@ public class Commands implements CommandExecutor {
             if (args[0].equalsIgnoreCase("help")) {
                 sender.sendMessage("§f=====================================================");
                 sender.sendMessage("");
-                sender.sendMessage("§b§l BedwarsScoreBoardAddon §fv" + Main.getVersion() + "  §7by Ram");
+                sender.sendMessage("§b§l BedwarsScoreBoardAddon §fv" + Main.getInstance().getDescription().getVersion() + "  §7by Ram" + "Modified By YukiEnd");
                 sender.sendMessage("");
-                Config.getLanguageList("commands.help").forEach(line -> {
-                    sender.sendMessage(line);
-                });
+                Config.getLanguageList("commands.help").forEach(sender::sendMessage);
                 sender.sendMessage("");
                 sender.sendMessage("§f=====================================================");
                 return true;

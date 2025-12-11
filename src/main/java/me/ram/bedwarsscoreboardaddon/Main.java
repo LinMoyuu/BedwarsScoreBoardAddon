@@ -53,10 +53,6 @@ public class Main extends JavaPlugin {
     @Getter
     private boolean enabledCitizens;
 
-    public static String getVersion() {
-        return "2.13.1";
-    }
-
     @Override
     public FileConfiguration getConfig() {
         FileConfiguration config = Config.getConfig();
@@ -64,7 +60,7 @@ public class Main extends JavaPlugin {
     }
 
     public void onEnable() {
-        if (!getDescription().getName().equals("BedwarsScoreBoardAddon") || !getDescription().getVersion().equals(getVersion()) || !getDescription().getAuthors().contains("Ram")) {
+        if (!getDescription().getName().equals("BedwarsScoreBoardAddon") || !getDescription().getAuthors().contains("Ram") || !getDescription().getAuthors().contains("YukiEnd")) {
             try {
                 new Exception("Please don't edit plugin.yml!").printStackTrace();
             } catch (Exception e) {
@@ -89,7 +85,7 @@ public class Main extends JavaPlugin {
                     printMessage("§b                  BedwarsScoreBoardAddon");
                     printMessage("§7 ");
                     printMessage("§7 ");
-                    printMessage("§f  " + getLocaleConfig().getLanguage("version") + ": §a" + Main.getVersion());
+                    printMessage("§f  " + getLocaleConfig().getLanguage("version") + ": §a" + instance.getDescription().getVersion());
                     printMessage("§7 ");
                     printMessage("§f  " + getLocaleConfig().getLanguage("author") + ": §aRam");
                     printMessage("§7 ");
