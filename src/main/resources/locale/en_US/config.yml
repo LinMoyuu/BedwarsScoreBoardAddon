@@ -16,15 +16,6 @@
 #Config version (Don't edit!)
 version: 23
 
-#Check the version update with the network
-update_check:
-
-  #Enable update check?
-  enabled:  true
-
-  #Report version updates to the online admin player
-  report: true
-
 #Language locale
 locale: en_US
 

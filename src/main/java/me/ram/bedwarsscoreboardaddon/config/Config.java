@@ -27,8 +27,6 @@ import java.util.*;
 
 public class Config {
 
-    public static boolean update_check_enabled;
-    public static boolean update_check_report;
     public static boolean hide_player;
     public static boolean tab_health;
     public static boolean tag_health;
@@ -344,8 +342,6 @@ public class Config {
         Bukkit.getConsoleSender().sendMessage(prefix + Main.getInstance().getLocaleConfig().getLanguage("saved_config"));
         Main.getInstance().reloadConfig();
         FileConfiguration config = Main.getInstance().getConfig();
-        update_check_enabled = config.getBoolean("update_check.enabled");
-        update_check_report = config.getBoolean("update_check.report");
         hide_player = config.getBoolean("hide_player");
         tab_health = config.getBoolean("tab_health");
         tag_health = config.getBoolean("tag_health");
