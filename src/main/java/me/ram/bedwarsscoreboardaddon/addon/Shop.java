@@ -64,7 +64,9 @@ public class Shop {
                     Location location = toLocation(loc);
                     if (location != null) {
                         shops.add(spawnShop(location.clone(), Config.shop_item_shop_look, Config.shop_item_shop_type, Config.shop_item_shop_skin));
-                        setTitle(location.clone().add(0, -0.1, 0), Config.shop_item_shop_name);
+                        if (!Config.shop_item_shop_name.get(0).isEmpty()) {
+                            setTitle(location.clone().add(0, -0.1, 0), Config.shop_item_shop_name);
+                        }
                     }
                 }
             }
@@ -196,7 +198,11 @@ public class Shop {
         }
         npc.data().setPersistent("silent-sounds", true);
         npcid.add(npc.getEntity().getEntityId());
-        hideEntityTag(npc.getEntity());
+        if (!Config.shop_item_shop_name.get(0).isEmpty()) {
+            hideEntityTag(npc.getEntity());
+        } else {
+            npc.setName("商店");
+        }
         Config.addShopNPC(npc.getId());
         try {
             if (npc.isSpawned() && npc.getEntity() instanceof SkinnableEntity) {
@@ -231,8 +237,7 @@ public class Shop {
         if (!loc.getBlock().getChunk().isLoaded()) {
             loc.getBlock().getChunk().load(true);
         }
-        List<String> list = new ArrayList<String>();
-        list.addAll(title);
+        List<String> list = new ArrayList<>(title);
         Collections.reverse(list);
         for (String line : list) {
             HolographicAPI holo = new HolographicAPI(loc, line);
