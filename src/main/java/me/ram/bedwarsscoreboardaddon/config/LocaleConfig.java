@@ -87,68 +87,6 @@ public class LocaleConfig {
                 language.put("updates", "更新内容");
                 language.put("update_download", "更新地址");
                 break;
-            case EN_US:
-                language.put("version", "Version");
-                language.put("author", "Author");
-                language.put("website", "Website");
-                language.put("loading", "§fInitialization...");
-                language.put("loading_failed", "§cInitialization failed!");
-                language.put("bedwarsrel_incompatible", "§cError: §fTemporarily incompatible with this version of §aBedwarsRel§f!");
-                language.put("no_bedwarsrel", "§cError: §aBedwarsRel §fnot loaded!");
-                language.put("no_citizens", "§fYou must load §cCitizens§f to enable the shop!");
-                language.put("no_protocollib", "§cError: §aProtocolLib §fnot loaded!");
-                language.put("bedwarsxp", "§cError: §fNot compatible with this version of §aBedwarsXP");
-                language.put("config_failed", "§cError: §fConfiguration load exception!");
-                language.put("register_listener", "§fRegistering listener...");
-                language.put("listener_success", "§aRegistered listener!");
-                language.put("listener_failed", "§cError: §fListener registration exception!");
-                language.put("register_command", "§fRegister commands...");
-                language.put("command_success", "§aRegistered commands!");
-                language.put("command_failed", "§cError: §fCommand registration exception!");
-                language.put("load_success", "§aComplete!");
-                language.put("loading_config", "§fLoading configuration...");
-                language.put("saved_config", "§aConfiguration saved!");
-                language.put("config_success", "§aConfiguration loaded!");
-                language.put("update_checking", "§b§lBWSBA §f>> §aUpdate check...");
-                language.put("no_update", "§b§lBWSBA §f>> §aYou are running the latest version!");
-                language.put("update_check_failed", "§b§lBWSBA §f>> §cUpdate check failed! Please check the server network!");
-                language.put("update_info", "There are version update!");
-                language.put("running_version", "Running version");
-                language.put("update_version", "Update version");
-                language.put("updates", "Updates");
-                language.put("update_download", "Download");
-                break;
-            case ZH_TW:
-                language.put("version", "版本");
-                language.put("author", "作者");
-                language.put("website", "網站");
-                language.put("loading", "§f開始加載插件...");
-                language.put("loading_failed", "§c插件加載失敗！");
-                language.put("bedwarsrel_incompatible", "§c錯誤: §f暫不兼容該版本 §aBedwarsRel§f！");
-                language.put("no_bedwarsrel", "§c錯誤: §f缺少必要前置 §aBedwarsRel");
-                language.put("no_citizens", "§f你必須安裝 §cCitizens §f才能啟用商店！");
-                language.put("no_protocollib", "§c錯誤: §f缺少必要前置 §aProtocolLib");
-                language.put("bedwarsxp", "§c錯誤: §f暫不支持該版本§aBedwarsXP");
-                language.put("config_failed", "§c錯誤: §f配置文件加載失敗！");
-                language.put("register_listener", "§f正在註冊監聽器...");
-                language.put("listener_success", "§a監聽器註冊成功！");
-                language.put("listener_failed", "§c錯誤: §f監聽器註冊失敗！");
-                language.put("register_command", "§f正在註冊指令...");
-                language.put("command_success", "§a指令註冊成功！");
-                language.put("command_failed", "§c錯誤: §f指令註冊失敗！");
-                language.put("load_success", "§a插件加載成功！");
-                language.put("loading_config", "§f正在加載配置文件...");
-                language.put("saved_config", "§a默認配置文件已保存！");
-                language.put("config_success", "§a配置文件加載成功！");
-                language.put("update_checking", "§b§lBWSBA §f>> §a正在檢測更新...");
-                language.put("no_update", "§b§lBWSBA §f>> §a您使用的已是最新版本！");
-                language.put("update_check_failed", "§b§lBWSBA §f>> §c檢測更新失敗，請檢查服務器網絡連接！");
-                language.put("update_info", "檢測到版本更新！");
-                language.put("running_version", "當前版本");
-                language.put("update_version", "更新版本");
-                language.put("updates", "更新內容");
-                language.put("update_download", "更新地址");
-                break;
             default:
                 break;
         }
@@ -184,7 +122,7 @@ public class LocaleConfig {
 
     private EnumLocale getLocaleByName(String name) {
         EnumLocale locale = EnumLocale.getByName(name);
-        return locale == null ? EnumLocale.EN_US : locale;
+        return locale == null ? EnumLocale.ZH_CN : locale;
     }
 
     public void saveResource(String resourcePath) {

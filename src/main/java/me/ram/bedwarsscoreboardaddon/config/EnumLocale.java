@@ -1,9 +1,7 @@
 package me.ram.bedwarsscoreboardaddon.config;
 
 public enum EnumLocale {
-    EN_US("en_US"),
-    ZH_CN("zh_CN"),
-    ZH_TW("zh_TW");
+    ZH_CN("zh_CN");
 
     private final String name;
 
