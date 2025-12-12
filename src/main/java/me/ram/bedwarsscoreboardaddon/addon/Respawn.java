@@ -63,9 +63,9 @@ public class Respawn {
         if (!players.contains(player)) {
             players.add(player);
         }
-        game.getPlayers().forEach(p -> {
-            hidePlayer(p, player);
-        });
+//        game.getPlayers().forEach(p -> {
+//            hidePlayer(p, player);
+//        });
     }
 
     private void removeRespawningPlayer(Player player) {
