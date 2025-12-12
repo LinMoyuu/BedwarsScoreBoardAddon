@@ -205,37 +205,37 @@ public class GiveItem implements Listener {
             return;
         }
         if (game.getPlayerTeam(player) == null) {
-                return;
-            }
+            return;
+        }
         if (game.getPlayerTeam(player).isDead(game)) {
-                return;
-            }
+            return;
+        }
 
         arena.addGameTask(new BukkitRunnable() {
-                final ItemStack stack1 = player.getInventory().getHelmet();
-                final ItemStack stack2 = player.getInventory().getChestplate();
-                final ItemStack stack3 = player.getInventory().getLeggings();
-                final ItemStack stack4 = player.getInventory().getBoots();
+            final ItemStack stack1 = player.getInventory().getHelmet();
+            final ItemStack stack2 = player.getInventory().getChestplate();
+            final ItemStack stack3 = player.getInventory().getLeggings();
+            final ItemStack stack4 = player.getInventory().getBoots();
 
-                @Override
-                public void run() {
-                    Team team = game.getPlayerTeam(player);
-                    GiveItem.giveItem(player, team, true);
-                    if (Config.giveitem_keeparmor) {
-                        if (stack1 != null) {
-                            player.getInventory().setHelmet(stack1);
-                        }
-                        if (stack2 != null) {
-                            player.getInventory().setChestplate(stack2);
-                        }
-                        if (stack3 != null) {
-                            player.getInventory().setLeggings(stack3);
-                        }
-                        if (stack4 != null) {
-                            player.getInventory().setBoots(stack4);
-                        }
+            @Override
+            public void run() {
+                Team team = game.getPlayerTeam(player);
+                GiveItem.giveItem(player, team, true);
+                if (Config.giveitem_keeparmor) {
+                    if (stack1 != null) {
+                        player.getInventory().setHelmet(stack1);
+                    }
+                    if (stack2 != null) {
+                        player.getInventory().setChestplate(stack2);
+                    }
+                    if (stack3 != null) {
+                        player.getInventory().setLeggings(stack3);
+                    }
+                    if (stack4 != null) {
+                        player.getInventory().setBoots(stack4);
                     }
                 }
-            }.runTaskLater(Main.getInstance(), 1L));
+            }
+        }.runTaskLater(Main.getInstance(), 1L));
     }
 }

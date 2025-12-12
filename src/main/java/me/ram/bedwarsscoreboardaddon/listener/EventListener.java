@@ -466,6 +466,7 @@ public class EventListener implements Listener {
             arena.onHangingBreak(e);
         });
     }
+
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
