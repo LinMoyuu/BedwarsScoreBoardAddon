@@ -236,5 +236,6 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EditGame(), this);
         Bukkit.getPluginManager().registerEvents(new Compass(), this);
         Bukkit.getPluginManager().registerEvents(new Title(), this);
+        Bukkit.getPluginManager().registerEvents(new SoulItem(), this);
     }
 }

@@ -53,7 +53,7 @@ public class FastRespawn implements Listener {
         Location location = player.getLocation();
         location.getWorld().playSound(location, SoundMachine.get("HURT_FLESH", "ENTITY_PLAYER_HURT"), 1, 1);
         PlayerInventory inventory = player.getInventory();
-        List<ItemStack> items = new ArrayList<ItemStack>();
+        List<ItemStack> items = new ArrayList<>();
         for (ItemStack item : inventory.getContents()) {
             if (item != null) {
                 items.add(item);
