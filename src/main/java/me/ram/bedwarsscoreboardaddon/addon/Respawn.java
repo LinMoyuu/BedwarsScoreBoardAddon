@@ -44,15 +44,7 @@ public class Respawn {
         this.arena = arena;
         this.game = arena.getGame();
         players = new ArrayList<>();
-        protected_time = new HashMap<Player, Long>();
-        arena.addGameTask(new BukkitRunnable() {
-            @Override
-            public void run() {
-                players.forEach(player -> {
-                    hideInventory(player);
-                });
-            }
-        }.runTaskTimer(Main.getInstance(), 1L, 1L));
+        protected_time = new HashMap<>();
     }
 
     public boolean isRespawning(Player player) {
@@ -87,14 +79,6 @@ public class Respawn {
         });
     }
 
-    private void sendGameModeChange(Player player, int mode) {
-        ProtocolManager man = ProtocolLibrary.getProtocolManager();
-        PacketContainer packet = man.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
-        packet.getIntegers().write(0, 3);
-        packet.getFloat().write(0, (float) mode);
-        man.sendServerPacket(player, packet, false);
-    }
-
     public void onRespawn(Player player, boolean rejoin) {
         if (!Config.respawn_enabled || game.isSpectator(player) || (game.getPlayerTeam(player).isDead(game) && !rejoin) || players.contains(player)) {
             return;
@@ -123,7 +107,6 @@ public class Respawn {
             player.setAllowFlight(true);
             player.setFlying(true);
             player.setGameMode(GameMode.SPECTATOR);
-            sendGameModeChange(player, 3);
             arena.addGameTask(new BukkitRunnable() {
                 int respawntime = Config.respawn_respawn_delay;
 
@@ -136,7 +119,6 @@ public class Respawn {
                     if (!players.contains(player)) {
                         cancel();
                         player.setGameMode(GameMode.SURVIVAL);
-                        sendGameModeChange(player, 0);
                         player.setAllowFlight(false);
                         player.removePotionEffect(PotionEffectType.INVISIBILITY);
                         player.updateInventory();
@@ -145,7 +127,6 @@ public class Respawn {
                     if (game.getPlayerTeam(player) == null) {
                         cancel();
                         player.setGameMode(GameMode.SURVIVAL);
-                        sendGameModeChange(player, 0);
                         player.setAllowFlight(false);
                         player.removePotionEffect(PotionEffectType.INVISIBILITY);
                         player.updateInventory();
@@ -167,7 +148,6 @@ public class Respawn {
                         player.setVelocity(new Vector(0, 0.01, 0));
                         player.setAllowFlight(false);
                         player.setGameMode(GameMode.SURVIVAL);
-                        sendGameModeChange(player, 0);
                         player.getActivePotionEffects().forEach(effect -> {
                             player.removePotionEffect(effect.getType());
                         });
@@ -231,38 +211,5 @@ public class Respawn {
         } else {
             p1.showPlayer(p2);
         }
-    }
-
-    private void hideInventory(Player player) {
-        PlayerInventory inventory = player.getInventory();
-        boolean is1_8 = BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8");
-        for (int i = 0; i < (is1_8 ? 40 : 45); i++) {
-            try {
-                ItemStack item = inventory.getItem(i);
-                int slot = i;
-                if (i >= 36) {
-                    slot = 44 - i;
-                } else if (i <= 8) {
-                    slot = i + 36;
-                }
-                if (!is1_8 && i == 40) {
-                    slot = 45;
-                }
-                if (item != null && !item.getType().equals(Material.AIR)) {
-                    sendHideSlot(player, slot);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void sendHideSlot(Player player, int slot) {
-        ProtocolManager man = ProtocolLibrary.getProtocolManager();
-        PacketContainer packet = man.createPacket(PacketType.Play.Server.SET_SLOT);
-        packet.getIntegers().write(0, 0);
-        packet.getIntegers().write(1, slot);
-        packet.getItemModifier().write(0, new ItemStack(Material.AIR));
-        man.sendServerPacket(player, packet);
     }
 }
