@@ -506,6 +506,7 @@ public class EventListener implements Listener {
                     }
                     if ((lore.contains("§a§r§m§o§r§0§0§1") && ((leggings.getType() == Material.CHAINMAIL_LEGGINGS && leggings.getType() == Material.CHAINMAIL_LEGGINGS) || (leggings.getType() == Material.IRON_LEGGINGS && leggings.getType() == Material.IRON_LEGGINGS) || (leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS))) || (lore.contains("§a§r§m§o§r§0§0§2") && ((leggings.getType() == Material.IRON_LEGGINGS && leggings.getType() == Material.IRON_LEGGINGS) || (leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS))) || (lore.contains("§a§r§m§o§r§0§0§3") && leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS)) {
                         e.setCancelled(true);
+                        player.sendMessage("已拥有套装或拥有更高级套装");
                         new BukkitRunnable() {
                             @Override
                             public void run() {
