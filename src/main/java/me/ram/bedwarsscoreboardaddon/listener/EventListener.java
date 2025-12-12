@@ -21,6 +21,7 @@ import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import org.bukkit.*;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -442,6 +443,13 @@ public class EventListener implements Listener {
         Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
             arena.onDamage(e);
         });
+    }
+
+    @EventHandler
+    public void onPearlDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof EnderPearl) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
