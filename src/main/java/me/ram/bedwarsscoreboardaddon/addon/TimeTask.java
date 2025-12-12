@@ -30,6 +30,8 @@ public class TimeTask {
                 for (Player player : game.getPlayers()) {
                     Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{player}", player.getName())));
                 }
+            } else if (cmd.contains("{gamename}")) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{gamename}", game.getName())));
             } else {
                 Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd));
             }
