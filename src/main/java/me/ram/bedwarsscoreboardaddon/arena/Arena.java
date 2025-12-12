@@ -155,6 +155,7 @@ public class Arena {
         }
         PlaySound.playSound(player, Config.play_sound_sound_death);
         teamShop.removeImmunePlayer(player);
+        resetKillStreak(player.getUniqueId());
     }
 
     public void onDamage(EntityDamageEvent e) {

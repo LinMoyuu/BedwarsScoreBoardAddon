@@ -1,10 +1,7 @@
 package me.ram.bedwarsscoreboardaddon.addon;
 
 import io.github.bedwarsrel.BedwarsRel;
-import io.github.bedwarsrel.events.BedwarsGameOverEvent;
-import io.github.bedwarsrel.events.BedwarsGameStartedEvent;
-import io.github.bedwarsrel.events.BedwarsPlayerJoinedEvent;
-import io.github.bedwarsrel.events.BedwarsTargetBlockDestroyedEvent;
+import io.github.bedwarsrel.events.*;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
@@ -12,6 +9,7 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -160,17 +158,87 @@ public class Title implements Listener {
 
     @EventHandler
     public void onJoined(BedwarsPlayerJoinedEvent e) {
-        for (Player player : e.getGame().getPlayers()) {
+        Game game = e.getGame();
+        for (Player player : game.getPlayers()) {
             if (player.getName().contains(",") || player.getName().contains("[") || player.getName().contains("]")) {
                 player.kickPlayer("");
             }
             if (!(e.getGame().getState() != GameState.WAITING && e.getGame().getState() == GameState.RUNNING)) {
                 if (Config.jointitle_enabled) {
-                    Utils.sendTitle(player, e.getPlayer(), 5, 50, 5, Config.jointitle_title.replace("{player}", e.getPlayer().getName()), Config.jointitle_subtitle.replace("{player}", e.getPlayer().getName()));
+                    int needplayers = game.getMinPlayers() - game.getPlayers().size();
+                    needplayers = Math.max(needplayers, 0);
+                    String status = "&f还需要 " + needplayers + "个玩家";
+                    if (game.getLobbyCountdown() != null) {
+                        status = "游戏马上开始";
+                    }
+                    String title = Config.jointitle_title.replace("{player}", player.getDisplayName()).replace("{status}", status);
+                    String subtitle = Config.jointitle_subtitle.replace("{player}", player.getDisplayName()).replace("{status}", status);
+                    Utils.sendTitle(player, e.getPlayer(), 5, 50, 5, title, subtitle);
                 }
             }
         }
     }
+
+    @EventHandler
+    public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
+        if (e.getKiller() == null || e.getPlayer() == null) {
+            return;
+        }
+        Player killer = e.getKiller();
+        Player player = e.getPlayer();
+        Game game = e.getGame();
+        if (game.getState() != GameState.RUNNING) {
+            return;
+        }
+        if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
+            return;
+        }
+        Arena arena = Main.getInstance().getArenaManager().getArena(e.getGame().getName());
+        int killStreak = arena.getKillStreak(killer.getUniqueId());
+        // 没人知道为什么花雨庭没有11 杀
+        if (killStreak <= 10) {
+            Utils.sendTitle(killer, 0, 60, 20, "&a&l" + killStreak + " &a&l杀", "");
+            if (!killStreakMessage(killer, killStreak).isEmpty()) {
+                for (Player gamePlayers : game.getPlayers()) {
+                    gamePlayers.sendMessage(ColorUtil.color(killStreakMessage(killer, killStreak)));
+                }
+            }
+        } else {
+            Utils.sendTitle(killer, 0, 60, 20, "&a&l" + 10 + " &a&l杀", "");
+            if (!killStreakMessage(killer, killStreak).isEmpty()) {
+                for (Player gamePlayers : game.getPlayers()) {
+                    gamePlayers.sendMessage(ColorUtil.color(killStreakMessage(killer, killStreak)));
+                }
+            }
+        }
+    }
+
+    public String killStreakMessage(Player killer, int killStreak) {
+        String message = "";
+
+        switch (killStreak) {
+            case 3:
+                return "&a" + killer.getDisplayName() + " &6正在大杀特杀！";
+            case 5:
+                //    return "&a" + killer.getDisplayName() + " &6杀人如麻！";
+                return "&a" + killer.getDisplayName() + " &6无人可挡！";
+            case 7:
+                return "&a" + killer.getDisplayName() + " &6主宰服务器！";
+            case 9:
+                return "&a" + killer.getDisplayName() + " &6如同神一般！";
+            case 10:
+                return "&a" + killer.getDisplayName() + " &6已经超越神了！拜托谁去杀了他吧！";
+            case 1:
+            case 2:
+            case 4:
+            case 6:
+            case 8:
+            default:
+                break;
+        }
+        return message;
+    }
+
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamageTitle(EntityDamageByEntityEvent e) {
