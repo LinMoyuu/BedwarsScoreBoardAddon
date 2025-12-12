@@ -156,7 +156,7 @@ public class ScoreboardUtil {
                 PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
                 packet.getIntegers().write(0, 2);
                 packet.getStrings().write(0, "bwsba-game-name");
-                packet.getStrings().write(1, "§c\u2764");
+                packet.getStrings().write(1, "§4❤");
                 man.sendServerPacket(player, packet);
             } catch (Exception e) {
                 e.printStackTrace();
