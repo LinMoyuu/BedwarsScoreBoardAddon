@@ -1,5 +1,6 @@
 package me.ram.bedwarsscoreboardaddon.addon.teamshop;
 
+import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
@@ -16,12 +17,14 @@ import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ItemUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -254,6 +257,46 @@ public class TeamShop {
                 setTeamShopTrapItem(p, mman.getInventory(p));
             }
         }
+    }
+
+    // https://github.com/BedwarsRel/BedwarsRel/blob/master/common/src/main/java/io/github/bedwarsrel/shop/NewItemShop.java#L473C1-L502C1
+    public void onOpen(InventoryOpenEvent e) {
+        Player player = (Player) e.getPlayer();
+        Inventory inventory = e.getInventory();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null || !inventory.getTitle().equals(BedwarsRel._l(player, "ingame.shop.name"))) {
+            return;
+        }
+        // 有人写死指定SLIME_BALL为切换了
+        ItemStack slime = new ItemStack(Material.SLIME_BALL, 1);
+        ItemMeta slimeMeta = slime.getItemMeta();
+
+        slimeMeta.setDisplayName(BedwarsRel._l(player, "ingame.shop.oldshop"));
+        slimeMeta.setLore(new ArrayList<String>());
+        slime.setItemMeta(slimeMeta);
+        inventory.remove(slime);
+        // 有人写死指定BUCKET为切换了
+        ItemStack stack = null;
+        if (game.getPlayerSettings(player).oneStackPerShift()) {
+            stack = new ItemStack(Material.BUCKET, 1);
+            ItemMeta meta = stack.getItemMeta();
+
+            meta.setDisplayName(
+                    ChatColor.AQUA + BedwarsRel._l(player, "default.currently") + ": " + ChatColor.WHITE
+                            + BedwarsRel._l(player, "ingame.shop.onestackpershift"));
+            meta.setLore(new ArrayList<>());
+            stack.setItemMeta(meta);
+        } else {
+            stack = new ItemStack(Material.LAVA_BUCKET, 1);
+            ItemMeta meta = stack.getItemMeta();
+
+            meta.setDisplayName(
+                    ChatColor.AQUA + BedwarsRel._l(player, "default.currently") + ": " + ChatColor.WHITE
+                            + BedwarsRel._l(player, "ingame.shop.fullstackpershift"));
+            meta.setLore(new ArrayList<String>());
+            stack.setItemMeta(meta);
+        }
+        inventory.remove(stack);
     }
 
     private Map<String, Integer> getUpgradeSlot(boolean trap) {

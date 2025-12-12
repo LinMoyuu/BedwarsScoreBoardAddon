@@ -32,6 +32,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -264,6 +265,13 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
+    public void onOpenInv(InventoryOpenEvent e) {
+        for (Arena arena : Main.getInstance().getArenaManager().getArenas().values()) {
+            arena.onInvOpen(e);
+        }
+    }
+
+    @EventHandler
     public void onClick(InventoryClickEvent e) {
         for (Arena arena : Main.getInstance().getArenaManager().getArenas().values()) {
             arena.onClick(e);
@@ -458,7 +466,6 @@ public class EventListener implements Listener {
             arena.onHangingBreak(e);
         });
     }
-
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
