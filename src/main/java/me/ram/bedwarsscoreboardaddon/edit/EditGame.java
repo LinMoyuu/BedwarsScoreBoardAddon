@@ -149,7 +149,7 @@ public class EditGame implements Listener {
         inventory.setItem(41, itemStack);
         player.closeInventory();
         player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT, inventory, value);
         Main.getInstance().getEditHolographicManager().displayGameLocation(player, game.getName());
@@ -195,7 +195,7 @@ public class EditGame implements Listener {
         inventory.setItem(49, itemStack);
         player.closeInventory();
         player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_GAME_SPAWNER, inventory, value);
     }
@@ -215,7 +215,7 @@ public class EditGame implements Listener {
         inventory.setItem(49, itemStack);
         player.closeInventory();
         player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_SPAWNER, inventory, value);
     }
@@ -248,7 +248,7 @@ public class EditGame implements Listener {
         inventory.setItem(49, itemStack);
         player.closeInventory();
         player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_TEAM_BED, inventory, value);
     }
@@ -281,7 +281,7 @@ public class EditGame implements Listener {
         inventory.setItem(49, itemStack);
         player.closeInventory();
         player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_TEAM_SPAWN, inventory, value);
     }
@@ -308,7 +308,7 @@ public class EditGame implements Listener {
         inventory.setItem(49, itemStack);
         player.closeInventory();
         player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_TEAM_SPAWNER, inventory, value);
     }
@@ -357,7 +357,7 @@ public class EditGame implements Listener {
         inventory.setItem(49, itemStack);
         player.closeInventory();
         player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_TEAM, inventory, value);
     }

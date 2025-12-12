@@ -19,7 +19,7 @@ public class LocaleConfig {
     private EnumLocale pluginLocale;
 
     public LocaleConfig() {
-        language = new HashMap<String, Object>();
+        language = new HashMap<>();
     }
 
     private static void saveLocale() {

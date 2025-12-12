@@ -25,10 +25,10 @@ import java.util.Map;
 public class GiveItem implements Listener {
 
     public static void giveItem(Player player, Team team, boolean respawn) {
-        Map<String, Object> map1 = new HashMap<String, Object>();
-        Map<String, Object> map2 = new HashMap<String, Object>();
-        Map<String, Object> map3 = new HashMap<String, Object>();
-        Map<String, Object> map4 = new HashMap<String, Object>();
+        Map<String, Object> map1 = new HashMap<>();
+        Map<String, Object> map2 = new HashMap<>();
+        Map<String, Object> map3 = new HashMap<>();
+        Map<String, Object> map4 = new HashMap<>();
         for (String str : Config.giveitem_armor_helmet_item.keySet()) {
             if (str.equals("type")) {
                 if (Config.giveitem_armor_helmet_item.get(str).equals("TEAM_ARMOR")) {
@@ -190,24 +190,24 @@ public class GiveItem implements Listener {
 
     @EventHandler
     public void onDeath(PlayerDeathEvent e) {
-        if (e.getEntity() instanceof Player) {
-            Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(e.getEntity());
-            if (game == null) {
+        Player player = e.getEntity();
+        if (player == null) return;
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(e.getEntity());
+        if (game == null) {
+            return;
+        }
+        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+        if (arena == null) {
+            return;
+        }
+        if (game.getPlayerTeam(player) == null) {
                 return;
             }
-            Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-            if (arena == null) {
+        if (game.getPlayerTeam(player).isDead(game)) {
                 return;
             }
-            Player p = e.getEntity();
-            if (game.getPlayerTeam(p) == null) {
-                return;
-            }
-            if (game.getPlayerTeam(p).isDead(game)) {
-                return;
-            }
-            arena.addGameTask(new BukkitRunnable() {
-                final Player player = e.getEntity();
+
+        arena.addGameTask(new BukkitRunnable() {
                 final ItemStack stack1 = player.getInventory().getHelmet();
                 final ItemStack stack2 = player.getInventory().getChestplate();
                 final ItemStack stack3 = player.getInventory().getLeggings();
@@ -233,6 +233,5 @@ public class GiveItem implements Listener {
                     }
                 }
             }.runTaskLater(Main.getInstance(), 1L));
-        }
     }
 }

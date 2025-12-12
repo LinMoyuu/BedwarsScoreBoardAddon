@@ -167,7 +167,7 @@ public class Rejoin {
                             if (Config.compass_enabled) {
                                 Compass.giveCompass(player);
                             }
-                            if (Config.giveitem_keeparmor && armors.size() > 0) {
+                            if (Config.giveitem_keeparmor && !armors.isEmpty()) {
                                 player.getInventory().setHelmet(armors.get(0));
                                 player.getInventory().setChestplate(armors.get(1));
                                 player.getInventory().setLeggings(armors.get(2));
@@ -186,7 +186,7 @@ public class Rejoin {
                         }
                     }
                 }
-            }.runTaskLater(Main.getInstance(), 16L);
+            }.runTaskLater(Main.getInstance(), 20L);
             Bukkit.getPluginManager().callEvent(new BoardAddonPlayerRejoinedEvent(game, player, rejoin));
         }
     }
