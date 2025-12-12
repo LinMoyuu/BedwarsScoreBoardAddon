@@ -10,6 +10,7 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonResourceUpgradeEvent;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -112,6 +113,8 @@ public class ResourceUpgrade {
                 final int gametime = Main.getInstance().getConfig().getInt("resourceupgrade." + rs + ".gametime");
                 final List<String> upgrade = Main.getInstance().getConfig().getStringList("resourceupgrade." + rs + ".upgrade");
                 final String message = Main.getInstance().getConfig().getString("resourceupgrade." + rs + ".message");
+                final String title = Main.getInstance().getConfig().getString("resourceupgrade." + rs + ".title");
+                final String subtitle = Main.getInstance().getConfig().getString("resourceupgrade." + rs + ".subtitle");
                 Boolean isExecuted = false;
 
                 @Override
@@ -138,8 +141,16 @@ public class ResourceUpgrade {
                                 interval.put(Material.valueOf(ary[0]), Integer.valueOf(ary[1]));
                             }
                         }
-                        for (Player player : game.getPlayers()) {
-                            player.sendMessage(ColorUtil.color(message));
+
+                        if (!message.isEmpty()) {
+                            for (Player player : game.getPlayers()) {
+                                player.sendMessage(ColorUtil.color(message));
+                            }
+                        }
+                        if (!title.isEmpty() || !subtitle.isEmpty()) {
+                            for (Player player : game.getPlayers()) {
+                                Utils.sendTitle(player, 0, 60, 20, ColorUtil.color(title), ColorUtil.color(subtitle));
+                            }
                         }
                         PlaySound.playSound(game, Config.play_sound_sound_upgrade);
                         cancel();
