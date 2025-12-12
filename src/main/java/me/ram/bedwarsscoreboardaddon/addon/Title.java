@@ -76,7 +76,7 @@ public class Title implements Listener {
         Team playerTeam = game.getPlayerTeam(player);
         // 为床被破坏的队伍发送
         for (Player wasBrokenPlayers : e.getTeam().getPlayers()) {
-            Utils.sendTitle(wasBrokenPlayers, 1, 30, 1, Config.destroyed_title_title, Config.destroyed_title_subtitle.replace("{player}", playerTeam.getDisplayName() + player.getDisplayName()));
+            Utils.sendTitle(wasBrokenPlayers, 1, 30, 1, Config.destroyed_title_title, Config.destroyed_title_subtitle.replace("{player}", playerTeam.getChatColor() + player.getDisplayName()));
         }
         // 为且非床破坏者其他队伍发送
         for (Player gamePlayers : e.getGame().getPlayers()) {

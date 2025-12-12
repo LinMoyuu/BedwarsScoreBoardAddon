@@ -31,7 +31,7 @@ public class CommandTabCompleter implements TabCompleter {
 
     private List<String> getSuggest(CommandSender sender, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("help", "shop", "spawner", "edit", "reload", "upcheck");
+            return Arrays.asList("help", "shop", "spawner", "edit", "reload");
         }
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("shop")) {
