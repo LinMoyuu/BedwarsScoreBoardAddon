@@ -85,7 +85,7 @@ public class Main extends JavaPlugin {
                     printMessage("§7 ");
                     printMessage("§f  " + getLocaleConfig().getLanguage("author") + ": §aRam" + ", §eModified By YukiEnd");
                     printMessage("§7 ");
-                    printMessage("§f  " + getLocaleConfig().getLanguage("website") + ": §ehttps://github.com/TheRamU/BedwarsScoreBoardAddon");
+                    printMessage("§f  " + getLocaleConfig().getLanguage("website") + ": §ehttps://github.com/LinMoyuu/BedwarsScoreBoardAddon");
                     printMessage("§7 ");
                     printMessage("§f===========================================================");
                     init();

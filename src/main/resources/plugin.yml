@@ -14,7 +14,7 @@ version: ${version}
 authors:
   - Ram
   - YukiEnd
-website: https://github.com/TheRamU/BedwarsScoreBoardAddon
+website: https://github.com/LinMoyuu/BedwarsScoreBoardAddon
 depends: [BedwarsRel, ProtocolLib]
 softdepends: [Citizens, PlaceholderAPI, ServerJoiner, WorldEdit]
 
