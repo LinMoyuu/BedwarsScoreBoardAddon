@@ -1,5 +1,6 @@
 package me.ram.bedwarsscoreboardaddon;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import io.github.bedwarsrel.BedwarsRel;
 import ldcr.BedwarsXP.EventListeners;
 import lombok.Getter;
@@ -11,10 +12,7 @@ import me.ram.bedwarsscoreboardaddon.commands.Commands;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.config.LocaleConfig;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
-import me.ram.bedwarsscoreboardaddon.listener.EventListener;
-import me.ram.bedwarsscoreboardaddon.listener.GameListener;
-import me.ram.bedwarsscoreboardaddon.listener.ShopListener;
-import me.ram.bedwarsscoreboardaddon.listener.XPEventListener;
+import me.ram.bedwarsscoreboardaddon.listener.*;
 import me.ram.bedwarsscoreboardaddon.manager.ArenaManager;
 import me.ram.bedwarsscoreboardaddon.manager.EditHolographicManager;
 import me.ram.bedwarsscoreboardaddon.manager.HolographicManager;
@@ -237,5 +235,9 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new Compass(), this);
         Bukkit.getPluginManager().registerEvents(new Title(), this);
         Bukkit.getPluginManager().registerEvents(new SoulItem(), this);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            ProtocolLibrary.getProtocolManager().addPacketListener(new ServerRestartMessageListener(this));
+        }
     }
 }
