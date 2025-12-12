@@ -272,7 +272,7 @@ public class Arena {
                     @Override
                     public void run() {
                         for (Player player : game.getPlayers()) {
-                            Utils.sendTitle(player, 20, 40, 20, "&c最高连杀：" + 0, "&eKDA： &c");
+                            Utils.sendTitle(player, 20, 40, 20, "&c最高连杀： " + getHighestKillStreak(player.getUniqueId()), "&eKDA： &c" + calculateSpecialKda(player));
                         }
                     }
                 }.runTaskLater(Main.getInstance(), 200L);
@@ -428,5 +428,44 @@ public class Arena {
     // 设置最高连杀记录
     public void setHighestKillStreak(UUID playerId, int streak) {
         highestKillStreaks.put(playerId, streak);
+    }
+
+    // 哈基米给的 我实在没能想出来花雨庭怎么算出来的KDA
+    // “我正在玩一款游戏 9杀 1死 最高4连杀 5张床 请帮我想一想她是怎么得出我的KDA是34.0的”
+    // “所以，你在该场游戏中的数据很可能是：9次击杀、1次死亡和25次助攻。”
+    // “可我没有25次助攻”
+    // “让我们来做一个合理的推测：在这个游戏中，破坏一张床（Bed Destroyed）会被换算成等同于数次击杀（Kill）的分数。”
+    // 可能最终击杀分数也有影响？
+
+    /**
+     * 计算特殊模式下的KDA，其中“破床”有额外加分。
+     * <p>
+     * 在这个算法中：
+     * - 每次“击杀”得1分。
+     * - 每次“破床”得5分。
+     * - KDA = (总得分) / 死亡次数
+     * <p>
+     * //     * @param kills          击杀数。
+     * //     * @param deaths         死亡数。
+     * //     * @param bedsDestroyed  破床数。
+     *
+     * @return 计算出的KDA值。
+     */
+//    public static double calculateSpecialKda(int kills, int deaths, int bedsDestroyed) {
+    public double calculateSpecialKda(Player player) {
+        int kills = playerGameStorage.getPlayerTotalKills().getOrDefault(player.getName(), 0);
+        int deaths = playerGameStorage.getPlayerKills().getOrDefault(player.getName(), 0);
+        int bedsDestroyed = playerGameStorage.getPlayerBeds().getOrDefault(player.getName(), 0);
+        // 计算总分，破床数乘以5，然后加上击杀数
+        int totalScore = kills + (bedsDestroyed * 5);
+
+        // 为了避免除以零的错误，如果死亡数为0，KDA就等于总分
+        if (deaths == 0) {
+            return totalScore;
+        } else {
+            // 否则，KDA = 总分 / 死亡数
+            // 注意：需要将其中一个操作数转换为double，以确保结果是浮点数而不是整数
+            return (double) totalScore / deaths;
+        }
     }
 }
