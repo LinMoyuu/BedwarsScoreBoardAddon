@@ -454,7 +454,7 @@ public class Arena {
 //    public static double calculateSpecialKda(int kills, int deaths, int bedsDestroyed) {
     public double calculateSpecialKda(Player player) {
         int kills = playerGameStorage.getPlayerTotalKills().getOrDefault(player.getName(), 0);
-        int deaths = playerGameStorage.getPlayerKills().getOrDefault(player.getName(), 0);
+        int deaths = playerGameStorage.getPlayerDies().getOrDefault(player.getName(), 0);
         int bedsDestroyed = playerGameStorage.getPlayerBeds().getOrDefault(player.getName(), 0);
         // 计算总分，破床数乘以5，然后加上击杀数
         int totalScore = kills + (bedsDestroyed * 5);
@@ -465,7 +465,8 @@ public class Arena {
         } else {
             // 否则，KDA = 总分 / 死亡数
             // 注意：需要将其中一个操作数转换为double，以确保结果是浮点数而不是整数
-            return (double) totalScore / deaths;
+            double rawKda = (double) totalScore / deaths;
+            return Math.round(rawKda * 100.0) / 100.0;
         }
     }
 }
