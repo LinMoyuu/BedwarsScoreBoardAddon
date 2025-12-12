@@ -16,6 +16,7 @@ import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
@@ -69,6 +70,9 @@ public class Arena {
     @Getter
     private Shop shop;
     private Boolean isOver;
+    // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
+    @Getter
+    private Map<String, Team> playerNameTeams = new HashMap<>();
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
@@ -103,6 +107,9 @@ public class Arena {
                 }
             }
         }.runTaskTimer(Main.getInstance(), 1L, 1L));
+        for (Player player : game.getPlayers()) {
+            playerNameTeams.put(player.getName(), game.getPlayerTeam(player));
+        }
     }
 
     public void addGameTask(BukkitTask task) {
@@ -207,7 +214,7 @@ public class Arena {
                 Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
                 Map<Integer, List<String>> player_kills = new HashMap<Integer, List<String>>();
                 totalkills.forEach((name, kills) -> {
-                    List<String> players = player_kills.getOrDefault(kills, new ArrayList<String>());
+                    List<String> players = player_kills.getOrDefault(kills, new ArrayList<>());
                     players.add(name);
                     player_kills.put(kills, players);
                 });
@@ -235,8 +242,40 @@ public class Arena {
                 for (Player player : winner.getPlayers()) {
                     win_team_player_list.append((win_team_player_list.length() > 0) ? ", " + player.getName() : player.getName());
                 }
+
+                // 结算 Title
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (Player player : game.getPlayers()) {
+                            Utils.sendTitle(player, 20, 40, 20, "&e游戏结束", "&e正在统计本局比赛..");
+                        }
+                    }
+                }.runTaskLater(Main.getInstance(), 120L);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (Player player : game.getPlayers()) {
+                            Utils.sendTitle(player, 20, 40, 20, "&c最高连杀：" + 0, "&eKDA： &c");
+                        }
+                    }
+                }.runTaskLater(Main.getInstance(), 200L);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        String firstKillerName = player_rank_name.get(0);
+                        Team firstKillerTeam = playerNameTeams.get(firstKillerName);
+                        if (firstKillerTeam != null) {
+                            for (Player player : game.getPlayers()) {
+                                Utils.sendTitle(player, 20, 40, 20,firstKillerTeam.getChatColor() + firstKillerName, "&d&l全&e&l场&c&l最&b&l佳");
+                            }
+                        }
+                    }
+                }.runTaskLater(Main.getInstance(), 280L);
+
                 for (Player player : game.getPlayers()) {
                     for (String msg : Config.overstats_message) {
+                        if (msg.isEmpty()) break;
                         msg = PlaceholderAPIUtil.setPlaceholders(player, msg);
                         player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list.toString()).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
                     }
@@ -255,6 +294,7 @@ public class Arena {
         }
         graffiti.reset();
         gameChest.clearChest();
+        playerNameTeams = null;
     }
 
     public void onDisable() {
