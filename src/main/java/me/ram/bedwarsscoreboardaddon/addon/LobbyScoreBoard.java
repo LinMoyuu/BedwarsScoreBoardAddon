@@ -86,12 +86,12 @@ public class LobbyScoreBoard implements Listener {
         String state = Config.lobby_scoreboard_state_waiting;
         String countdown = "null";
         int needplayers = game.getMinPlayers() - game.getPlayers().size();
-        needplayers = needplayers < 0 ? 0 : needplayers;
+        needplayers = Math.max(needplayers, 0);
         if (game.getLobbyCountdown() != null) {
             state = Config.lobby_scoreboard_state_countdown;
             int lobbytime = game.getLobbyCountdown().getLobbytime();
             int counter = game.getLobbyCountdown().getCounter() + 1;
-            counter = counter > lobbytime ? lobbytime : counter;
+            counter = Math.min(counter, lobbytime);
             countdown = counter + "";
         }
         String team_name = "";

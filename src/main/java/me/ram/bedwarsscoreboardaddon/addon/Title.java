@@ -167,7 +167,7 @@ public class Title implements Listener {
                 if (Config.jointitle_enabled) {
                     int needplayers = game.getMinPlayers() - game.getPlayers().size();
                     needplayers = Math.max(needplayers, 0);
-                    String status = "&f还需要 " + needplayers + "个玩家";
+                    String status = "&f还需 " + needplayers + " 个玩家";
                     if (game.getLobbyCountdown() != null) {
                         status = "游戏马上开始";
                     }
