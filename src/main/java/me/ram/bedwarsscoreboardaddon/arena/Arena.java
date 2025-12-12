@@ -17,6 +17,7 @@ import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
@@ -264,11 +265,13 @@ public class Arena {
                     @Override
                     public void run() {
                         String firstKillerName = player_rank_name.get(0);
+                        ChatColor firstKillerTeamColor = ChatColor.WHITE;
                         Team firstKillerTeam = playerNameTeams.get(firstKillerName);
                         if (firstKillerTeam != null) {
-                            for (Player player : game.getPlayers()) {
-                                Utils.sendTitle(player, 20, 40, 20,firstKillerTeam.getChatColor() + firstKillerName, "&d&l全&e&l场&c&l最&b&l佳");
-                            }
+                            firstKillerTeamColor = firstKillerTeam.getChatColor();
+                        }
+                        for (Player player : game.getPlayers()) {
+                            Utils.sendTitle(player, 20, 40, 20, firstKillerTeamColor + firstKillerName, "&d&l全&e&l场&c&l最&b&l佳");
                         }
                     }
                 }.runTaskLater(Main.getInstance(), 280L);
