@@ -1,19 +1,30 @@
 package me.ram.bedwarsscoreboardaddon.addon;
 
+import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.events.BedwarsPlayerKilledEvent;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
+import me.ram.bedwarsscoreboardaddon.Main;
+import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class SoulItem implements Listener {
+
+    private final Map<UUID, Map<Integer, ItemStack>> itemsToKeep = new HashMap<>();
 
     @EventHandler
     public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
@@ -39,5 +50,71 @@ public class SoulItem implements Listener {
         soulMeta.setLore(Collections.singletonList(ColorUtil.color("&4死亡不掉落")));
         soul.setItemMeta(soulMeta);
         killer.getInventory().addItem(soul);
+    }
+
+    // 死亡后特定物品不掉落 疑似只有开“死亡不掉落”然后自己造掉落才行了
+    // 所以就这么生草 交给哈基米写了
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity().getPlayer();
+        if (player == null) return;
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) {
+            return;
+        }
+        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+        if (arena == null) {
+            return;
+        }
+        if (game.getPlayerTeam(player) == null) {
+            return;
+        }
+        if (game.getPlayerTeam(player).isDead(game)) {
+            return;
+        }
+
+        PlayerInventory inventory = player.getInventory();
+        Map<Integer, ItemStack> keptItems = new HashMap<>();
+
+        // 1. 遍历玩家的整个物品栏（包括盔甲和副手）
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack item = inventory.getItem(i);
+
+            // 检查物品是否为“灵魂绑定”
+            // 哈基米没写空指针检查 无敌
+            if (item != null && item.getType().equals(Material.NETHER_STAR)) {
+                // 记录物品和它所在的格子编号
+                keptItems.put(i, item);
+                // 从掉落列表中移除该物品，防止它掉在地上
+                event.getDrops().remove(item);
+            }
+        }
+        if (!keptItems.isEmpty()) {
+            itemsToKeep.put(player.getUniqueId(), keptItems);
+        }
+
+
+        UUID playerUUID = player.getUniqueId();
+        arena.addGameTask(new BukkitRunnable() {
+
+            @Override
+            public void run() {        // 3. 检查是否有为该玩家暂存的物品
+                if (itemsToKeep.containsKey(playerUUID)) {
+                    Map<Integer, ItemStack> keptItems = itemsToKeep.get(playerUUID);
+                    PlayerInventory inventory = player.getInventory();
+
+                    // 4. 遍历暂存的物品，并使用 setItem 方法放回原位
+                    for (Map.Entry<Integer, ItemStack> entry : keptItems.entrySet()) {
+                        int slot = entry.getKey();
+                        ItemStack item = entry.getValue();
+                        inventory.setItem(slot, item); // 这是关键！
+                    }
+
+                    itemsToKeep.remove(playerUUID);
+                }
+            }
+        }.runTaskLater(Main.getInstance(), 1L));
+
+
     }
 }
