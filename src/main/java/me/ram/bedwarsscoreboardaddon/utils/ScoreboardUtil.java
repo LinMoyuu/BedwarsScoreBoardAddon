@@ -229,7 +229,7 @@ public class ScoreboardUtil {
                 }
             }
             if (!player_health.containsKey(player)) {
-                player_health.put(player, new HashMap<Player, Integer>());
+                player_health.put(player, new HashMap<>());
             }
             Map<Player, Integer> map = player_health.get(player);
             // 发送血量值数据包
@@ -247,29 +247,41 @@ public class ScoreboardUtil {
                 if (score_team == null) {
                     score_team = scoreboard.registerNewTeam(game.getName() + ":" + team.getName());
                 }
+
+                // playerTag
+                String playerTagPrefix = "";
                 if (!Config.playertag_prefix.isEmpty()) {
-                    score_team.setPrefix(Config.playertag_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                    playerTagPrefix = (Config.playertag_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
                 }
-                if (!Config.playertag_suffix.isEmpty()) {
-                    score_team.setSuffix(Config.playertag_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                String playerTagSuffix = "";
+                if (!Config.playertag_prefix.isEmpty()) {
+                    playerTagSuffix = (Config.playertag_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
                 }
+                score_team.setPrefix(playerTagPrefix);
+                score_team.setSuffix(playerTagSuffix);
                 score_team.setAllowFriendlyFire(false);
+
+                // playerList 获取
+                String playerListPrefix = "";
+                if (!Config.playerlist_prefix.isEmpty()) {
+                    playerListPrefix = (Config.playerlist_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                }
+                String playerListSuffix = "";
+                if (!Config.playerlist_suffix.isEmpty()) {
+                    playerListSuffix = (Config.playerlist_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                }
+
+                // 循环Rel队伍玩家
                 for (Player pl : team.getPlayers()) {
+                    // 修改 playerListName
+                    pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
+                    // 如果scoreboardTeam查无此人
                     if (!score_team.hasPlayer(pl)) {
+                        // 添加其进Scoreboard Team
                         if (!players.contains(pl.getUniqueId()) || (player_team != null && player_team.getPlayers().contains(pl))) {
                             score_team.addPlayer(pl);
                         } else {
-                            String list_name = pl.getPlayerListName();
-                            if (list_name == null || list_name.equals(pl.getName())) {
-                                String prefix = score_team.getPrefix();
-                                String suffix = score_team.getSuffix();
-                                prefix = prefix == null ? "" : prefix;
-                                suffix = suffix == null ? "" : suffix;
-                                String name = prefix + pl.getName() + suffix;
-                                if (!name.equals(list_name)) {
-                                    pl.setPlayerListName(prefix + pl.getName() + suffix);
-                                }
-                            }
+                            pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
                         }
                     }
                 }

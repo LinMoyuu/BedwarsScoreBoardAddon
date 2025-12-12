@@ -284,6 +284,8 @@ public class Config {
     public static List<String> planinfo;
     public static String playertag_prefix;
     public static String playertag_suffix;
+    public static String playerlist_prefix;
+    public static String playerlist_suffix;
     public static int scoreboard_interval;
     public static List<String> scoreboard_title;
     public static String scoreboard_you;
@@ -703,9 +705,11 @@ public class Config {
         for (String w : config.getConfigurationSection("timer").getKeys(false)) {
             timer.put(w, config.getInt("timer." + w));
         }
-        planinfo = new ArrayList<String>(config.getConfigurationSection("planinfo").getKeys(false));
+        planinfo = new ArrayList<>(config.getConfigurationSection("planinfo").getKeys(false));
         playertag_prefix = ColorUtil.color(config.getString("playertag.prefix"));
         playertag_suffix = ColorUtil.color(config.getString("playertag.suffix"));
+        playerlist_prefix = ColorUtil.color(config.getString("playerlist.prefix"));
+        playerlist_suffix = ColorUtil.color(config.getString("playerlist.suffix"));
         scoreboard_interval = config.getInt("scoreboard.interval");
         scoreboard_title = ColorUtil.colorList(config.getStringList("scoreboard.title"));
         scoreboard_you = ColorUtil.color(config.getString("scoreboard.you"));
