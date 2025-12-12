@@ -66,6 +66,7 @@ public class Respawn {
 //        game.getPlayers().forEach(p -> {
 //            hidePlayer(p, player);
 //        });
+        player.setGameMode(GameMode.SPECTATOR);
     }
 
     private void removeRespawningPlayer(Player player) {
