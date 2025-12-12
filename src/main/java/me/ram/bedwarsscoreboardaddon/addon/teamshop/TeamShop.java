@@ -353,7 +353,7 @@ public class TeamShop {
                             boots = new ItemStack(Material.DIAMOND_BOOTS);
                         }
                         ItemMeta leggingsMeta = leggings.getItemMeta();
-                        ItemMeta bootsMeta = leggings.getItemMeta();
+                        ItemMeta bootsMeta = boots.getItemMeta();
                         leggingsMeta.spigot().setUnbreakable(true);
                         bootsMeta.spigot().setUnbreakable(true);
                         leggings.setItemMeta(leggingsMeta);
