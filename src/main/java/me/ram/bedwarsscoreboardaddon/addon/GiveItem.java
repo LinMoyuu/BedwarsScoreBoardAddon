@@ -135,7 +135,11 @@ public class GiveItem implements Listener {
             if (give_option.equalsIgnoreCase("true") || (give_option.equalsIgnoreCase("start") && !respawn) || (give_option.equalsIgnoreCase("respawn") && respawn)) {
                 try {
                     ItemStack itemStack = ItemStack.deserialize((Map<String, Object>) Main.getInstance().getConfig().getList("giveitem.item." + items + ".item").get(0));
-                    player.getInventory().setItem(slot, itemStack);
+                    if (respawn) {
+                        player.getInventory().addItem(itemStack);
+                    } else {
+                        player.getInventory().setItem(slot, itemStack);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

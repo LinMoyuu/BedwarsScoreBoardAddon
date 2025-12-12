@@ -4,7 +4,6 @@ import io.github.bedwarsrel.events.BedwarsPlayerKilledEvent;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import me.ram.bedwarsscoreboardaddon.config.Config;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,16 +32,17 @@ public class DeathItem implements Listener {
         if (!Config.deathitem_enabled) {
             return;
         }
-        if (game.isSpectator(killer) || killer.isDead() || killer.getGameMode().equals(GameMode.SPECTATOR)) {
+        if (game.isSpectator(killer)) {
             return;
         }
-        Map<ItemStack, Integer> playeritems = new HashMap<ItemStack, Integer>();
+        Map<ItemStack, Integer> playeritems = new HashMap<>();
         for (ItemStack itemStack : player.getInventory().getContents()) {
             if (itemStack != null && !itemStack.getType().equals(Material.AIR)) {
+                if (itemStack.getType().equals(Material.NETHER_STAR)) continue;
                 try {
                     for (String items : Config.deathitem_items) {
                         if (itemStack.getType().equals(Material.valueOf(items))) {
-                            Boolean l = true;
+                            boolean l = true;
                             for (ItemStack item : playeritems.keySet()) {
                                 if (item.getType() == itemStack.getType()) {
                                     playeritems.put(item, playeritems.get(item) + itemStack.getAmount());
@@ -67,6 +67,7 @@ public class DeathItem implements Listener {
             if (Config.deathitem_item_name_chinesize) {
                 itemName = getRealName(item);
             }
+            if (Config.deathitem_message.isEmpty()) continue;
             killer.sendMessage(getColor(item) + Config.deathitem_message.replace("{amount}", playeritems.get(item) + "").replace("{item}", itemName));
         }
     }
