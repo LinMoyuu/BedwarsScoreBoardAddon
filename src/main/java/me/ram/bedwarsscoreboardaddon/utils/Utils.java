@@ -145,7 +145,7 @@ public class Utils {
         boots.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, level);
         ItemMeta bootsMeta = boots.getItemMeta();
         bootsMeta.spigot().setUnbreakable(true);
-        playerInventory.setLeggings(boots);
+        playerInventory.setBoots(boots);
         player.updateInventory();
     }
 
