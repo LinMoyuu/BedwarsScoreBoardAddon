@@ -36,8 +36,8 @@ public class Rejoin {
     public Rejoin(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        players = new HashMap<String, RejoinData>();
-        teams = new HashMap<String, List<String>>();
+        players = new HashMap<>();
+        teams = new HashMap<>();
     }
 
     public void addPlayer(Player player) {
@@ -103,7 +103,7 @@ public class Rejoin {
             this.game = game;
             this.rejoin = rejoin;
             playersettings = game.getPlayerSettings(player);
-            armors = new ArrayList<ItemStack>();
+            armors = new ArrayList<>();
             if (Config.giveitem_keeparmor) {
                 if (player.getInventory().getHelmet() != null) {
                     armors.add(player.getInventory().getHelmet());

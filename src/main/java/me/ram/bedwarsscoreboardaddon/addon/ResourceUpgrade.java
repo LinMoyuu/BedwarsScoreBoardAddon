@@ -43,10 +43,10 @@ public class ResourceUpgrade {
     public ResourceUpgrade(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        interval = new HashMap<Material, Integer>();
-        spawn_time = new HashMap<Material, Integer>();
+        interval = new HashMap<>();
+        spawn_time = new HashMap<>();
         upg_time = new HashMap<>();
-        levels = new HashMap<Material, String>();
+        levels = new HashMap<>();
         for (ResourceSpawner spawner : game.getResourceSpawners()) {
             for (ItemStack itemStack : spawner.getResources()) {
                 levels.put(itemStack.getType(), "I");
@@ -75,13 +75,13 @@ public class ResourceUpgrade {
                             boolean drop = true;
                             if (Config.resourcelimit_enabled) {
                                 for (String[] rl : Config.resourcelimit_limit) {
-                                    if (rl[0].equals(itemStack.getType().name()) && es >= Integer.valueOf(rl[1])) {
+                                    if (rl[0].equals(itemStack.getType().name()) && es >= Integer.parseInt(rl[1])) {
                                         drop = false;
                                     }
                                 }
                             }
                             Block block = loc.getBlock();
-                            Boolean inchest = block.getType().equals(Material.CHEST) && BedwarsRel.getInstance().getBooleanConfig("spawn-resources-in-chest", true);
+                            boolean inchest = block.getType().equals(Material.CHEST) && BedwarsRel.getInstance().getBooleanConfig("spawn-resources-in-chest", true);
                             if (drop || inchest) {
                                 BedwarsResourceSpawnEvent event = new BedwarsResourceSpawnEvent(game, loc, itemStack.clone());
                                 Bukkit.getPluginManager().callEvent(event);

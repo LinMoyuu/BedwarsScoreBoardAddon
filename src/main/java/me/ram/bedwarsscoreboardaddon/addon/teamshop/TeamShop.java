@@ -86,7 +86,7 @@ public class TeamShop {
             meta.setDisplayName(
                     ChatColor.AQUA + BedwarsRel._l(player, "default.currently") + ": " + ChatColor.WHITE
                             + BedwarsRel._l(player, "ingame.shop.fullstackpershift"));
-            meta.setLore(new ArrayList<String>());
+            meta.setLore(new ArrayList<>());
             stack.setItemMeta(meta);
         }
         inventory.remove(stack);

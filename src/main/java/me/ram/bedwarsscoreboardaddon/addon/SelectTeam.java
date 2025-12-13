@@ -42,10 +42,10 @@ public class SelectTeam {
                 status = Config.select_team_status_team_full;
             }
             itemMeta.setDisplayName(Config.select_team_item_name.replace("{status}", status).replace("{team}", team.getName()).replace("{color}", color).replace("{players}", team.getPlayers().size() + "").replace("{maxplayers}", team.getMaxPlayers() + ""));
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
             for (String l : Config.select_team_item_lore) {
                 if (l.contains("{players_list}")) {
-                    if (team.getPlayers().size() > 0) {
+                    if (!team.getPlayers().isEmpty()) {
                         for (Player p : team.getPlayers()) {
                             lore.add(l.replace("{status}", status).replace("{team}", team.getName()).replace("{color}", color).replace("{players}", team.getPlayers().size() + "").replace("{maxplayers}", team.getMaxPlayers() + "").replace("{players_list}", p.getDisplayName()));
                         }

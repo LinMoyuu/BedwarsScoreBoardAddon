@@ -41,7 +41,7 @@ public class LobbyBlock {
     }
 
     private void removeBlock(Location loc) {
-        List<Block> list = new ArrayList<Block>();
+        List<Block> list = new ArrayList<>();
         Location location = loc.clone();
         Location location1 = location.clone().add(Config.lobby_block_position_1_x, Config.lobby_block_position_1_y, Config.lobby_block_position_1_z);
         Location location2 = location.clone().add(Config.lobby_block_position_2_x, Config.lobby_block_position_2_y, Config.lobby_block_position_2_z);

@@ -86,9 +86,7 @@ public class FastRespawn implements Listener {
                 }
             });
         }
-        player.getActivePotionEffects().forEach(effect -> {
-            player.removePotionEffect(effect.getType());
-        });
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         player.setFoodLevel(20);
         player.setHealth(player.getMaxHealth());
         PlayerRespawnEvent respawnEvent = new PlayerRespawnEvent(player, player.getWorld().getSpawnLocation(), false);

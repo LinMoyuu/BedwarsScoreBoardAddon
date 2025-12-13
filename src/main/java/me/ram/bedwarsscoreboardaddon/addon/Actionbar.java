@@ -91,7 +91,7 @@ public class Actionbar {
     }
 
     private String getFormattedTimeLeft(int time) {
-        int min = (int) Math.floor(time / 60);
+        int min = (int) (double) (time / 60);
         int sec = time % 60;
         String minStr = ((min < 10) ? ("0" + min) : String.valueOf(min));
         String secStr = ((sec < 10) ? ("0" + sec) : String.valueOf(sec));

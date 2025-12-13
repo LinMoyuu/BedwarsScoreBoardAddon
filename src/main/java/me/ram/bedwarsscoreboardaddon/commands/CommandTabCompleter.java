@@ -18,7 +18,7 @@ public class CommandTabCompleter implements TabCompleter {
         List<String> suggest = getSuggest(sender, args);
         String last = args[args.length - 1];
         if (suggest != null && !last.isEmpty()) {
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             suggest.forEach(s -> {
                 if (s.startsWith(last)) {
                     list.add(s);
@@ -51,7 +51,7 @@ public class CommandTabCompleter implements TabCompleter {
                 return getGames();
             }
             if (args[0].equalsIgnoreCase("shop") && args[1].equalsIgnoreCase("remove") && sender.hasPermission("bedwarsscoreboardaddon.shop.remove")) {
-                List<String> list = new ArrayList<String>();
+                List<String> list = new ArrayList<>();
                 list.addAll(Config.game_shop_shops.keySet());
                 return list;
             }
@@ -65,7 +65,7 @@ public class CommandTabCompleter implements TabCompleter {
                 return getGames();
             }
             if (args[0].equalsIgnoreCase("spawner") && args[1].equalsIgnoreCase("remove") && sender.hasPermission("bedwarsscoreboardaddon.spawner.remove")) {
-                List<String> list = new ArrayList<String>();
+                List<String> list = new ArrayList<>();
                 list.addAll(Config.game_team_spawners.keySet());
                 return list;
             }
@@ -78,11 +78,11 @@ public class CommandTabCompleter implements TabCompleter {
                 return getTeams(game);
             }
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     private List<String> getGames() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         BedwarsRel.getInstance().getGameManager().getGames().forEach(game -> {
             list.add(game.getName());
         });
@@ -90,7 +90,7 @@ public class CommandTabCompleter implements TabCompleter {
     }
 
     private List<String> getTeams(String g) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Game game = BedwarsRel.getInstance().getGameManager().getGame(g);
         if (game == null) {
             return list;

@@ -74,7 +74,7 @@ public class ShopListener implements Listener {
             for (NPC npc : gamenpcs) {
                 CitizensAPI.getNPCRegistry().deregister(npc);
             }
-            npcconfig.set("npcs", new ArrayList<String>());
+            npcconfig.set("npcs", new ArrayList<>());
             try {
                 npcconfig.save(folder);
             } catch (IOException e1) {

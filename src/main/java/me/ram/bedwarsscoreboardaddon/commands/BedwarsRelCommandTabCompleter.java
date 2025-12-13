@@ -20,7 +20,7 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
         List<String> suggest = getSuggest(sender, args);
         String last = args[args.length - 1];
         if (suggest != null && !last.isEmpty()) {
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             suggest.forEach(s -> {
                 if (s.startsWith(last)) {
                     list.add(s);
@@ -35,7 +35,7 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
         if (args.length == 1) {
             return Arrays.asList("help", "setspawner", "addgame", "start", "stop", "addteam", "save", "setregion", "join", "setspawn", "setlobby", "settarget", "setbed", "leave", "reload", "setmainlobby", "list", "regionname", "removeteam", "removegame", "clearspawner", "gametime", "stats", "setminplayers", "setgameblock", "setbuilder", "setautobalance", "kick", "addteamjoin", "addholo", "removeholo", "debugpaste", "itemspaste");
         }
-        List<String> games = new ArrayList<String>();
+        List<String> games = new ArrayList<>();
         BedwarsRel.getInstance().getGameManager().getGames().forEach(game -> {
             games.add(game.getName());
         });
@@ -138,7 +138,7 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
         }
         if (args.length == 3) {
             Game game = BedwarsRel.getInstance().getGameManager().getGame(args[1]);
-            List<String> teams = new ArrayList<String>();
+            List<String> teams = new ArrayList<>();
             if (game != null) {
                 for (Team team : game.getTeams().values()) {
                     teams.add(team.getName());
@@ -146,7 +146,7 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
             }
             if (args[0].equalsIgnoreCase("setspawner")) {
                 if (sender.hasPermission("bw.setup")) {
-                    List<String> list = new ArrayList<String>(BedwarsRel.getInstance().getConfig().getConfigurationSection("resource").getKeys(false));
+                    List<String> list = new ArrayList<>(BedwarsRel.getInstance().getConfig().getConfigurationSection("resource").getKeys(false));
                     return list;
                 }
             } else if (args[0].equalsIgnoreCase("setregion")) {
@@ -171,7 +171,7 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
                 }
             } else if (args[0].equalsIgnoreCase("setgameblock")) {
                 if (sender.hasPermission("bw.setup")) {
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     for (Material type : Material.values()) {
                         list.add(type.name());
                     }
@@ -190,7 +190,7 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
         if (args.length == 4) {
             if (args[0].equalsIgnoreCase("addteam")) {
                 if (sender.hasPermission("bw.setup")) {
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     for (TeamColor teamColor : TeamColor.values()) {
                         list.add(teamColor.name());
                     }
@@ -198,6 +198,6 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
                 }
             }
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 }

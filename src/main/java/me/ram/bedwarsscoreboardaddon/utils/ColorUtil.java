@@ -12,7 +12,7 @@ public class ColorUtil {
     }
 
     public static List<String> colorList(List<String> list) {
-        List<String> clist = new ArrayList<String>();
+        List<String> clist = new ArrayList<>();
         for (String l : list) {
             clist.add(ChatColor.translateAlternateColorCodes('&', l));
         }
@@ -24,7 +24,7 @@ public class ColorUtil {
     }
 
     public static List<String> removeListColor(List<String> list) {
-        List<String> clist = new ArrayList<String>();
+        List<String> clist = new ArrayList<>();
         for (String l : list) {
             clist.add(ChatColor.stripColor(l));
         }

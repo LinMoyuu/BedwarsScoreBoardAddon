@@ -38,8 +38,8 @@ public class Graffiti {
     public Graffiti(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        itemFrames = new ArrayList<ItemFrame>();
-        holographics = new HashMap<ItemFrame, HolographicAPI>();
+        itemFrames = new ArrayList<>();
+        holographics = new HashMap<>();
         if (Config.graffiti_enabled) {
             Location loc1 = game.getLoc1();
             Location loc2 = game.getLoc2();
@@ -63,9 +63,7 @@ public class Graffiti {
                             Location loc2 = frame.getLocation().getBlock().getRelative(frame.getAttachedFace()).getLocation();
                             Location loc = loc1.add(loc2.subtract(loc1).multiply(0.375)).add(0.5, -2.25, 0.5);
                             HolographicAPI holo = new HolographicAPI(loc, Config.graffiti_holographic_text);
-                            game.getPlayers().forEach(p -> {
-                                holo.display(p);
-                            });
+                            game.getPlayers().forEach(holo::display);
                             holographics.put(frame, holo);
                         }
                     }
@@ -81,9 +79,7 @@ public class Graffiti {
                 itemFrame.setCustomNameVisible(false);
             }
         });
-        holographics.values().forEach(holo -> {
-            holo.remove();
-        });
+        holographics.values().forEach(HolographicAPI::remove);
     }
 
     public void onPlayerJoin(Player player) {
@@ -163,7 +159,7 @@ public class Graffiti {
     }
 
     private MapView getRandomMap() {
-        if (Config.image_maps.size() > 0) {
+        if (!Config.image_maps.isEmpty()) {
             Random random = new Random();
             int n = random.nextInt(Config.image_maps.size());
             return Config.image_maps.get(n);

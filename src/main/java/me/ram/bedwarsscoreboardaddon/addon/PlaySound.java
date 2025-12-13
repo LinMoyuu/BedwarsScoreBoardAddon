@@ -42,7 +42,7 @@ public class PlaySound {
     }
 
     private static String getRandomSound(List<String> list) {
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             Random random = new Random();
             int n = random.nextInt(list.size());
             return list.get(n);

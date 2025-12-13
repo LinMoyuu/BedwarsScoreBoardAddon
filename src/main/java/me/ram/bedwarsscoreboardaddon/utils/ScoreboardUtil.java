@@ -31,7 +31,7 @@ public class ScoreboardUtil {
     }
 
     private static List<String> getQuellLines(List<String> lines) {
-        List<String> quell_lines = new ArrayList<String>();
+        List<String> quell_lines = new ArrayList<>();
         for (String line : lines) {
             String l = line;
             while (true) {
@@ -51,7 +51,7 @@ public class ScoreboardUtil {
     }
 
     private static String[] toElementArray(String title, List<String> lines) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (title == null) {
             title = "BedWars";
         }

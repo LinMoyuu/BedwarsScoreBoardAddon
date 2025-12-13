@@ -43,10 +43,10 @@ public class Holographic {
         ablocks = new ArrayList<>();
         atitles = new ArrayList<>();
         btitles = new ArrayList<>();
-        pbtitles = new HashMap<String, HolographicAPI>();
-        armor_locations = new HashMap<HolographicAPI, Location>();
-        armor_upward = new HashMap<HolographicAPI, Boolean>();
-        armor_algebra = new HashMap<HolographicAPI, Integer>();
+        pbtitles = new HashMap<>();
+        armor_locations = new HashMap<>();
+        armor_upward = new HashMap<>();
+        armor_algebra = new HashMap<>();
         this.resourceupgrade = resourceupgrade;
         if (Config.holographic_resource_enabled) {
             for (String r : Config.holographic_resource) {
@@ -81,7 +81,7 @@ public class Holographic {
 
             @Override
             public void run() {
-                if (game.getState() != GameState.RUNNING || game.getPlayers().size() < 1) {
+                if (game.getState() != GameState.RUNNING || game.getPlayers().isEmpty()) {
                     cancel();
                     for (HolographicAPI holo : ablocks) {
                         holo.remove();
@@ -151,7 +151,7 @@ public class Holographic {
                             holo.display(player);
                         }
                     }, 20L);
-                    ArrayList<String> titles = new ArrayList<String>();
+                    ArrayList<String> titles = new ArrayList<>();
                     for (String title : Main.getInstance().getConfig().getStringList("holographic.resource.resources." + res + ".title")) {
                         titles.add(ColorUtil.color(title));
                     }

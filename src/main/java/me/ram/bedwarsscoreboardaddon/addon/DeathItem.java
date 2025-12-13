@@ -76,21 +76,20 @@ public class DeathItem implements Listener {
         switch (item.getTypeId()) {
             case 264:
                 return "§b";
-            case 265:
-                return "§f";
             case 266:
                 return "§6";
             case 336:
                 return "§c";
             case 388:
                 return "§2";
+            case 265:
             default:
                 return "§f";
         }
     }
 
     public String getRealName(ItemStack item) {
-        Map<Integer, String> m = new HashMap<Integer, String>();
+        Map<Integer, String> m = new HashMap<>();
         m.put(1, "石头");
         m.put(2, "草方块");
         m.put(3, "泥土");

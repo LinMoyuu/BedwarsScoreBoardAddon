@@ -47,7 +47,7 @@ import java.util.Map;
 
 public class EventListener implements Listener {
 
-    private final Map<String, Map<Event, PacketListener>> deathevents = new HashMap<String, Map<Event, PacketListener>>();
+    private final Map<String, Map<Event, PacketListener>> deathevents = new HashMap<>();
 
     public EventListener() {
         onPacketReceiving();
@@ -132,7 +132,7 @@ public class EventListener implements Listener {
                 players++;
             }
         }
-        if (game.getState() == GameState.RUNNING && team != null && players <= 1 && !game.isSpectator(player) && team.isDead(game)) {
+        if (game.getState() == GameState.RUNNING && players <= 1 && !game.isSpectator(player) && team.isDead(game)) {
             Bukkit.getPluginManager().callEvent(new BedwarsTeamDeadEvent(game, team));
             if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
                 Main.getInstance().getArenaManager().getArenas().get(game.getName()).getRejoin().removeTeam(team.getName());
@@ -149,9 +149,7 @@ public class EventListener implements Listener {
         }
         Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
             if (player.isOnline()) {
-                Main.getInstance().getHolographicManager().getPlayerHolographic(player).forEach(holo -> {
-                    holo.display(player);
-                });
+                Main.getInstance().getHolographicManager().getPlayerHolographic(player).forEach(holo -> holo.display(player));
             }
         }, 5L);
     }
@@ -164,9 +162,7 @@ public class EventListener implements Listener {
         Player player = e.getPlayer();
         Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
             if (player.isOnline()) {
-                Main.getInstance().getHolographicManager().getPlayerHolographic(player).forEach(holo -> {
-                    holo.display(player);
-                });
+                Main.getInstance().getHolographicManager().getPlayerHolographic(player).forEach(holo -> holo.display(player));
             }
         }, 1L);
     }
@@ -185,7 +181,7 @@ public class EventListener implements Listener {
         if (game == null || game.getState() != GameState.RUNNING || game.isSpectator(player) || !game.getPlayers().contains(killer) || game.isSpectator(killer) || !game.getPlayerTeam(player).isDead(game)) {
             return;
         }
-        Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<Event, PacketListener>());
+        Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<>());
         map.put(e, registerPacketListener(killer, game.getPlayerTeam(killer), player, game.getPlayerTeam(player)));
         deathevents.put(game.getName(), map);
     }
@@ -204,7 +200,7 @@ public class EventListener implements Listener {
         if (game == null || game.getState() != GameState.RUNNING || game.isSpectator(player) || !game.getPlayers().contains(killer) || game.isSpectator(killer) || !game.getPlayerTeam(player).isDead(game)) {
             return;
         }
-        Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<Event, PacketListener>());
+        Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<>());
         if (!map.containsKey(e)) {
             return;
         }
@@ -219,7 +215,7 @@ public class EventListener implements Listener {
             health /= 2.0;
         }
         if (BedwarsRel.getInstance().getBooleanConfig("hearts-on-death", true)) {
-            hearts = "[" + ChatColor.RED + "\u2764" + format.format(health) + ChatColor.GOLD + "]";
+            hearts = "[" + ChatColor.RED + "❤" + format.format(health) + ChatColor.GOLD + "]";
         }
         String string = Config.final_killed_message.replace("{player}", Game.getPlayerWithTeamString(player, game.getPlayerTeam(player), ChatColor.GOLD)).replace("{killer}", Game.getPlayerWithTeamString(killer, game.getPlayerTeam(killer), ChatColor.GOLD, hearts));
         for (Player p : game.getPlayers()) {

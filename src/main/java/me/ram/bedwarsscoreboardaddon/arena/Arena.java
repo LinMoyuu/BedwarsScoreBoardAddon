@@ -235,7 +235,7 @@ public class Arena {
             if (Config.overstats_enabled && e.getWinner() != null) {
                 Team winner = e.getWinner();
                 Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
-                Map<Integer, List<String>> player_kills = new HashMap<Integer, List<String>>();
+                Map<Integer, List<String>> player_kills = new HashMap<>();
                 totalkills.forEach((name, kills) -> {
                     List<String> players = player_kills.getOrDefault(kills, new ArrayList<>());
                     players.add(name);

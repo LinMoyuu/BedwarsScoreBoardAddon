@@ -82,7 +82,7 @@ public class LobbyScoreBoard implements Listener {
     }
 
     private List<String> getLines(Player player, Game game) {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         String state = Config.lobby_scoreboard_state_waiting;
         String countdown = "null";
         int needplayers = game.getMinPlayers() - game.getPlayers().size();
@@ -109,6 +109,9 @@ public class LobbyScoreBoard implements Listener {
             String l = li.replace("{date}", getDate()).replace("{state}", state).replace("{game}", game.getName()).replace("{players}", game.getPlayers().size() + "").replace("{maxplayers}", game.getMaxPlayers() + "").replace("{minplayers}", game.getMinPlayers() + "").replace("{needplayers}", needplayers + "").replace("{countdown}", countdown).replace("{team}", team_name).replace("{color}", team_color).replace("{team_initials}", team_initials).replace("{team_peoples}", player_team_players);
             l = PlaceholderAPIUtil.setPlaceholders(player, l);
             lines.add(getQuellLine(lines, l));
+        }
+        if (player.getName().equalsIgnoreCase("yukiend") || player.getName().equalsIgnoreCase("linmoyu_") || player.getName().toLowerCase().startsWith("lmy_")) {
+            lines.add("BWSBA Modified By @YukiEnd");
         }
         return lines;
     }

@@ -56,9 +56,7 @@ public class Respawn {
 
     private void removeRespawningPlayer(Player player) {
         players.remove(player);
-        game.getPlayers().forEach(p -> {
-            showPlayer(p, player);
-        });
+        game.getPlayers().forEach(p -> showPlayer(p, player));
     }
 
     public void onPlayerLeave(Player player) {
@@ -67,9 +65,7 @@ public class Respawn {
     }
 
     public void onPlayerJoined(Player player) {
-        players.forEach(p -> {
-            hidePlayer(player, p);
-        });
+        players.forEach(p -> hidePlayer(player, p));
     }
 
     public void onRespawn(Player player, boolean rejoin) {
@@ -141,9 +137,7 @@ public class Respawn {
                         player.setVelocity(new Vector(0, 0.01, 0));
                         player.setAllowFlight(false);
                         player.setGameMode(GameMode.SURVIVAL);
-                        player.getActivePotionEffects().forEach(effect -> {
-                            player.removePotionEffect(effect.getType());
-                        });
+                        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
                         player.setFoodLevel(20);
                         player.updateInventory();
                         Utils.clearTitle(player);

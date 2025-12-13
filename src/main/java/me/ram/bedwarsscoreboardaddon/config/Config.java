@@ -470,7 +470,7 @@ public class Config {
         holographic_bed_title_bed_alive_enabled = config.getBoolean("holographic.bed_title.bed_alive.enabled");
         holographic_bed_title_bed_destroyed_enabled = config.getBoolean("holographic.bed_title.bed_destroyed.enabled");
         holographic_resource_speed = config.getDouble("holographic.resource.speed");
-        holographic_resource = new ArrayList<String>(config.getConfigurationSection("holographic.resource.resources").getKeys(false));
+        holographic_resource = new ArrayList<>(config.getConfigurationSection("holographic.resource.resources").getKeys(false));
         holographic_bedtitle_bed_destroyed_title = ColorUtil.color(config.getString("holographic.bed_title.bed_destroyed.title"));
         holographic_bedtitle_bed_alive_title = ColorUtil.color(config.getString("holographic.bed_title.bed_alive.title"));
         overstats_enabled = config.getBoolean("overstats.enabled");
@@ -502,7 +502,7 @@ public class Config {
         lobby_scoreboard_state_waiting = ColorUtil.color(config.getString("lobby_scoreboard.state.waiting"));
         lobby_scoreboard_state_countdown = ColorUtil.color(config.getString("lobby_scoreboard.state.countdown"));
         lobby_scoreboard_title = ColorUtil.colorList(config.getStringList("lobby_scoreboard.title"));
-        lobby_scoreboard_lines = new ArrayList<String>();
+        lobby_scoreboard_lines = new ArrayList<>();
         for (String w : config.getStringList("lobby_scoreboard.lines")) {
             String line = ColorUtil.color(w);
             if (lobby_scoreboard_lines.size() < 15) {
@@ -540,7 +540,7 @@ public class Config {
     public static void setShop(String game, Location location, String type) {
         File file = getGameFile();
         FileConfiguration filec = YamlConfiguration.loadConfiguration(file);
-        List<String> loc = new ArrayList<String>();
+        List<String> loc = new ArrayList<>();
         if (filec.getStringList(game + ".shop." + type) != null) {
             loc.addAll(filec.getStringList(game + ".shop." + type));
         }
@@ -558,7 +558,7 @@ public class Config {
         File file = getGameFile();
         FileConfiguration filec = YamlConfiguration.loadConfiguration(file);
         String path = data.split(" - ")[0];
-        List<String> loc = new ArrayList<String>();
+        List<String> loc = new ArrayList<>();
         if (filec.getStringList(path) != null) {
             loc.addAll(filec.getStringList(path));
         }
@@ -575,7 +575,7 @@ public class Config {
     public static void setTeamSpawner(String game, String team, Location location) {
         File file = getGameFile();
         FileConfiguration filec = YamlConfiguration.loadConfiguration(file);
-        List<String> loc = new ArrayList<String>();
+        List<String> loc = new ArrayList<>();
         if (filec.getStringList(game + ".team_spawner." + team) != null) {
             loc.addAll(filec.getStringList(game + ".team_spawner." + team));
         }
@@ -667,7 +667,7 @@ public class Config {
     public static void addShopNPC(Integer id) {
         File folder = getNPCFile();
         FileConfiguration config = YamlConfiguration.loadConfiguration(folder);
-        List<String> npcs = new ArrayList<String>();
+        List<String> npcs = new ArrayList<>();
         if (config.getKeys(false).contains("npcs")) {
             npcs.addAll(config.getStringList("npcs"));
         }

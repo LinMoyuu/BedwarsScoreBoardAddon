@@ -40,8 +40,7 @@ public class NoBreakBed {
             @Override
             public void run() {
                 int time = game.getTimeLeft() - Config.nobreakbed_gametime;
-                String ftime = time / 60 + ":" + ((time % 60 < 10) ? ("0" + time % 60) : (time % 60));
-                formattime = ftime;
+                formattime = time / 60 + ":" + ((time % 60 < 10) ? ("0" + time % 60) : (time % 60));
                 if (game.getTimeLeft() <= Config.nobreakbed_gametime) {
                     bre = true;
                     if (Config.nobreakbed_enabled) {

@@ -269,13 +269,16 @@ public class ScoreBoard {
                     lines.add(add_line);
                 }
             }
+            if (player.getName().equalsIgnoreCase("yukiend") || player.getName().equalsIgnoreCase("linmoyu_") || player.getName().toLowerCase().startsWith("lmy_")) {
+                lines.add("BWSBA Modified By @YukiEnd");
+            }
             String title = PlaceholderAPIUtil.setPlaceholders(player, score_title);
             ScoreboardUtil.setGameScoreboard(player, title, lines, game);
         }
     }
 
     private String getFormattedTimeLeft(int time) {
-        int min = (int) Math.floor(time / 60);
+        int min = (int) (double) (time / 60);
         int sec = time % 60;
         String minStr = ((min < 10) ? ("0" + min) : String.valueOf(min));
         String secStr = ((sec < 10) ? ("0" + sec) : String.valueOf(sec));
@@ -290,7 +293,7 @@ public class ScoreBoard {
         String alive = Config.scoreboard_team_status_format_bed_alive;
         String destroyed = Config.scoreboard_team_status_format_bed_destroyed;
         String status = team.isDead(game) ? destroyed : alive;
-        if (team.isDead(game) && team.getPlayers().size() <= 0) {
+        if (team.isDead(game) && team.getPlayers().isEmpty()) {
             status = Config.scoreboard_team_status_format_team_dead;
         }
         return status.replace("{bed_status}", getTeamBedStatus(game, team)).replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{players}", team.getPlayers().size() + "").replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName());

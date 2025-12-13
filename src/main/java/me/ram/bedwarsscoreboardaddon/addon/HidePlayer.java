@@ -103,9 +103,7 @@ public class HidePlayer implements Listener {
             return;
         }
         if (team.isDead(game)) {
-            Bukkit.getOnlinePlayers().forEach(p -> {
-                hidePlayer(p, player);
-            });
+            Bukkit.getOnlinePlayers().forEach(p -> hidePlayer(p, player));
         }
     }
 

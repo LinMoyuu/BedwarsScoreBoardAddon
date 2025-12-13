@@ -56,7 +56,7 @@ public class EditGame implements Listener {
         Inventory inventory = Bukkit.createInventory(null, 54, game.getName());
         ItemStack itemStack = new ItemStack(Material.ENDER_PEARL);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_lobby"));
-        List<String> lore = new ArrayList<String>();
+        List<String> lore = new ArrayList<>();
         lore.add("");
         if (game.getLobby() == null) {
             lore.add(Config.getLanguage("item.edit_game.lore.set"));
@@ -67,35 +67,35 @@ public class EditGame implements Listener {
         inventory.setItem(11, itemStack);
         itemStack.setType(Material.FIREWORK);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_mix_players"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         lore.add(Config.getLanguage("item.edit_game.lore.mix_players").replace("{players}", game.getMinPlayers() + ""));
         ItemUtil.setItemLore(itemStack, lore);
         inventory.setItem(12, itemStack);
         itemStack.setType(Material.SIGN);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.edit_team"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         lore.add(Config.getLanguage("item.edit_game.lore.browse"));
         ItemUtil.setItemLore(itemStack, lore);
         inventory.setItem(13, itemStack);
         itemStack.setType(Material.NETHER_STAR);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_bed"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         lore.add(Config.getLanguage("item.edit_game.lore.browse"));
         ItemUtil.setItemLore(itemStack, lore);
         inventory.setItem(14, itemStack);
         itemStack.setType(Material.FEATHER);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_spawn"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         lore.add(Config.getLanguage("item.edit_game.lore.browse"));
         ItemUtil.setItemLore(itemStack, lore);
         inventory.setItem(15, itemStack);
         itemStack.setType(Material.STORAGE_MINECART);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_item_shop"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         lore.add(Config.getLanguage("item.edit_game.lore.set"));
         ItemUtil.setItemLore(itemStack, lore);
@@ -103,14 +103,14 @@ public class EditGame implements Listener {
         itemStack.setType(Material.FIREBALL);
         itemStack.setType(Material.BLAZE_POWDER);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_spawner"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         lore.add(Config.getLanguage("item.edit_game.lore.browse"));
         ItemUtil.setItemLore(itemStack, lore);
         inventory.setItem(22, itemStack);
         itemStack.setType(Material.BLAZE_ROD);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_region_loc1"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         if (game.getLoc1() == null) {
             lore.add(Config.getLanguage("item.edit_game.lore.set"));
@@ -121,7 +121,7 @@ public class EditGame implements Listener {
         inventory.setItem(23, itemStack);
         itemStack.setType(Material.STICK);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_region_loc2"));
-        lore = new ArrayList<String>();
+        lore = new ArrayList<>();
         lore.add("");
         if (game.getLoc2() == null) {
             lore.add(Config.getLanguage("item.edit_game.lore.set"));
@@ -133,7 +133,7 @@ public class EditGame implements Listener {
         itemStack.setType(Material.WOOL);
         itemStack.setDurability((short) 3);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.save_game"));
-        ItemUtil.setItemLore(itemStack, new ArrayList<String>());
+        ItemUtil.setItemLore(itemStack, new ArrayList<>());
         inventory.setItem(39, itemStack);
         itemStack.setDurability((short) 5);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.start_game"));
@@ -157,7 +157,7 @@ public class EditGame implements Listener {
             try {
                 ItemStack itemStack = ItemStack.deserialize((Map<String, Object>) config.getList("resource." + key + ".item").get(0));
                 ItemMeta itemMeta = itemStack.getItemMeta();
-                List<String> lore = new ArrayList<String>();
+                List<String> lore = new ArrayList<>();
                 String line = key;
                 line = "§" + line.replaceAll("(.{1})", "$1§");
                 lore.add(line.substring(0, line.length() - 1));
@@ -227,7 +227,7 @@ public class EditGame implements Listener {
             ItemStack itemStack = new ItemStack(Material.WOOL);
             itemStack.setDurability(teamColor.getDyeColor().getWoolData());
             ItemUtil.setItemName(itemStack, teamColor.getChatColor() + team.getName());
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
             if (team.getTargetHeadBlock() == null && team.getTargetFeetBlock() == null) {
                 lore.add(Config.getLanguage("item.edit_game.lore.set"));
             } else {
@@ -260,7 +260,7 @@ public class EditGame implements Listener {
             ItemStack itemStack = new ItemStack(Material.WOOL);
             itemStack.setDurability(teamColor.getDyeColor().getWoolData());
             ItemUtil.setItemName(itemStack, teamColor.getChatColor() + team.getName());
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
             if (team.getSpawnLocation() == null) {
                 lore.add(Config.getLanguage("item.edit_game.lore.set"));
             } else {
@@ -317,7 +317,7 @@ public class EditGame implements Listener {
             ItemStack itemStack = new ItemStack(Material.WOOL);
             itemStack.setDurability(teamColor.getDyeColor().getWoolData());
             ItemUtil.setItemName(itemStack, teamColor.getChatColor() + team.getName());
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
             lore.add("§1");
             lore.add(Config.getLanguage("item.edit_game.lore.max_players").replace("{players}", team.getMaxPlayers() + ""));
             lore.add("");
@@ -330,7 +330,7 @@ public class EditGame implements Listener {
             ItemStack itemStack = new ItemStack(Material.WOOL);
             itemStack.setDurability(teamColor.getDyeColor().getWoolData());
             ItemUtil.setItemName(itemStack, teamColor.getChatColor() + teamColor.name());
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
             lore.add("§0");
             lore.add(Config.getLanguage("item.edit_game.lore.add"));
             ItemUtil.setItemLore(itemStack, lore);
@@ -378,7 +378,7 @@ public class EditGame implements Listener {
         ItemStack itemStack = new ItemStack(Material.BOOK);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(Config.getLanguage("item.edit_game.name.menu_item"));
-        List<String> lore = new ArrayList<String>();
+        List<String> lore = new ArrayList<>();
         String line = "bwsba-editgame-menu-" + game.getName();
         line = "§" + line.replaceAll("(.{1})", "$1§");
         lore.add(line.substring(0, line.length() - 1));
