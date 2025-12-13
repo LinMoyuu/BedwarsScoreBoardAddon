@@ -33,7 +33,7 @@ public class Actionbar {
             public void run() {
                 sendActionbar();
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 21L));
+        }.runTaskTimer(Main.getInstance(), 0L, 20L));
     }
 
     private void sendActionbar() {

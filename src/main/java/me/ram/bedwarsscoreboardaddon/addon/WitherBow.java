@@ -46,7 +46,7 @@ public class WitherBow implements Listener {
                     cancel();
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 21L));
+        }.runTaskTimer(Main.getInstance(), 0L, 20L));
     }
 
     @EventHandler

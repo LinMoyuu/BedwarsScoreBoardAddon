@@ -156,7 +156,7 @@ public class ResourceUpgrade {
                         cancel();
                     }
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 21L));
+            }.runTaskTimer(Main.getInstance(), 0L, 20L));
         }
     }
 

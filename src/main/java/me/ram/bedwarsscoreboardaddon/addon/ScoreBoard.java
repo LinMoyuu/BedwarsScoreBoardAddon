@@ -49,7 +49,7 @@ public class ScoreBoard {
                     timer_placeholder.put("{timer_sec_" + id + "}", String.valueOf(i));
                     i--;
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 21L));
+            }.runTaskTimer(Main.getInstance(), 0L, 20L));
         }
         arena.addGameTask(new BukkitRunnable() {
             int i = Config.scoreboard_interval;

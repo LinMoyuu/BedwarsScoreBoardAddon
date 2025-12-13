@@ -9,8 +9,7 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonDeathModeEvent;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -57,10 +56,11 @@ public class DeathMode {
                             destroyBlock(game, team);
                         }
                         PlaySound.playSound(game, Config.play_sound_sound_deathmode);
+                        startShrinking();
                     }
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 21L));
+        }.runTaskTimer(Main.getInstance(), 0L, 20L));
     }
 
     public String getDeathmodeTime() {
@@ -80,5 +80,32 @@ public class DeathMode {
                 team.getTargetHeadBlock().getBlock().setType(Material.AIR);
             }
         }
+    }
+
+    public void startShrinking() {
+        World world = game.getLoc1().getWorld();
+        Location loc1 = game.getLoc1();
+        Location loc2 = game.getLoc2();
+        // 计算中心点
+        double centerX = (loc1.getX() + loc2.getX()) / 2;
+        double centerZ = (loc1.getZ() + loc2.getZ()) / 2;
+        // 计算初始边界的直径 (取X和Z中较大的值，确保整个区域都在圈内)
+        double sizeX = Math.abs(loc1.getX() - loc2.getX());
+        double sizeZ = Math.abs(loc1.getZ() - loc2.getZ());
+        double initialSize = Math.max(sizeX, sizeZ);
+        WorldBorder border = world.getWorldBorder();
+
+        // 1. 设置初始边界
+        border.setCenter(centerX, centerZ);
+        border.setSize(initialSize);
+        border.setDamageAmount(0.1); // 边界外的伤害
+        border.setWarningDistance(10); // 靠近边界10格时开始警告
+
+        long shrinkDurationInSeconds = 90; // 假设5分钟内缩完
+        double targetSize = 50.0; // 最终大小 100x100
+
+        // 2. 开始平滑缩小
+        // aPI 提供了一个非常方便的方法，可以在指定时间内平滑地将边界大小过渡到目标值
+        border.setSize(targetSize, shrinkDurationInSeconds);
     }
 }
