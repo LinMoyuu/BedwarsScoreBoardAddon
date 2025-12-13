@@ -17,11 +17,11 @@ public class PlayerGameStorage {
 
     public PlayerGameStorage(Arena arena) {
         this.arena = arena;
-        totalkills = new HashMap<String, Integer>();
-        kills = new HashMap<String, Integer>();
-        finalkills = new HashMap<String, Integer>();
-        dies = new HashMap<String, Integer>();
-        beds = new HashMap<String, Integer>();
+        totalkills = new HashMap<>();
+        kills = new HashMap<>();
+        finalkills = new HashMap<>();
+        dies = new HashMap<>();
+        beds = new HashMap<>();
     }
 
     public Arena getArena() {

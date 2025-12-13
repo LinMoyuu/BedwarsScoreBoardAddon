@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class Title implements Listener {
 
-    private final Map<String, Integer> Times = new HashMap<String, Integer>();
+    private final Map<String, Integer> Times = new HashMap<>();
 
     @EventHandler
     public void onStarted(BedwarsGameStartedEvent e) {

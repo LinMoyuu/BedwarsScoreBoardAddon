@@ -701,7 +701,7 @@ public class Config {
         overstats_enabled = config.getBoolean("overstats.enabled");
         overstats_message = ColorUtil.colorList(config.getStringList("overstats.message"));
         actionbar = ColorUtil.color(config.getString("actionbar"));
-        timer = new HashMap<String, Integer>();
+        timer = new HashMap<>();
         for (String w : config.getConfigurationSection("timer").getKeys(false)) {
             timer.put(w, config.getInt("timer." + w));
         }
