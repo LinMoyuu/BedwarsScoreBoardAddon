@@ -39,6 +39,11 @@ public class ScoreBoard {
 
                 @Override
                 public void run() {
+                    if (arena.isOver()) {
+                        this.cancel();
+                        i = 0;
+                    }
+
                     String format = i / 60 + ":" + ((i % 60 < 10) ? ("0" + i % 60) : (i % 60));
                     timer_placeholder.put("{timer_" + id + "}", format);
                     timer_placeholder.put("{timer_sec_" + id + "}", String.valueOf(i));
@@ -105,12 +110,18 @@ public class ScoreBoard {
     }
 
     public void updateScoreboard() {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         Map<String, String> plan_infos = new HashMap<>();
         for (String plan : Config.planinfo) {
             if (game.getTimeLeft() <= Main.getInstance().getConfig().getInt("planinfo." + plan + ".start_time") && game.getTimeLeft() > Main.getInstance().getConfig().getInt("planinfo." + plan + ".end_time")) {
                 for (String key : Main.getInstance().getConfig().getConfigurationSection("planinfo." + plan + ".plans").getKeys(false)) {
                     plan_infos.put(key, Main.getInstance().getConfig().getString("planinfo." + plan + ".plans." + key));
+                }
+            }
+            if (arena.isOver()) {
+                for (String key : Main.getInstance().getConfig().getConfigurationSection("planinfo." + plan + ".plans").getKeys(false)) {
+                    if (key.endsWith("_2")) continue;
+                    plan_infos.put(key, "");
                 }
             }
         }
@@ -125,7 +136,7 @@ public class ScoreBoard {
             if (!team.isDead(game)) {
                 alive_teams++;
             }
-            if (team.getPlayers().size() > 0) {
+            if (!team.getPlayers().isEmpty()) {
                 remain_teams++;
             }
         }
@@ -138,11 +149,11 @@ public class ScoreBoard {
         if (wither <= 0) {
             bowtime = Config.witherbow_already_starte;
         }
-        String score_title = "";
+        String score_title;
         if (title_index >= Config.scoreboard_title.size()) {
             title_index = 0;
         }
-        score_title = Config.scoreboard_title.size() < 1 ? "BedWars" : Config.scoreboard_title.get(title_index).replace("{game}", game.getName()).replace("{time}", getFormattedTimeLeft(game.getTimeLeft()));
+        score_title = Config.scoreboard_title.isEmpty() ? "BedWars" : Config.scoreboard_title.get(title_index).replace("{game}", game.getName()).replace("{time}", getFormattedTimeLeft(game.getTimeLeft()));
         title_index++;
         String teams = game.getTeams().size() + "";
         List<String> scoreboard_lines;

@@ -84,7 +84,7 @@ public class Arena {
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
         this.game = game;
-        gameTasks = new ArrayList<BukkitTask>();
+        gameTasks = new ArrayList<>();
         playerGameStorage = new PlayerGameStorage(this);
         scoreBoard = new ScoreBoard(this);
         deathMode = new DeathMode(this);
