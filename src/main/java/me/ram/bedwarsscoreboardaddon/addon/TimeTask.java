@@ -52,6 +52,8 @@ public class TimeTask {
                                 for (Player player : game.getPlayers()) {
                                     Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{player}", player.getName())));
                                 }
+                            } else if (cmd.contains("{gamename}")) {
+                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{gamename}", game.getName())));
                             } else {
                                 Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd));
                             }
@@ -59,7 +61,7 @@ public class TimeTask {
                         cancel();
                     }
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 21L));
+            }.runTaskTimer(Main.getInstance(), 0L, 20L));
         }
     }
 }
