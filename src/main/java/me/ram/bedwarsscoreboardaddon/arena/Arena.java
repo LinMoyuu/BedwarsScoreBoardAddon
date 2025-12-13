@@ -18,6 +18,7 @@ import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
@@ -84,6 +85,11 @@ public class Arena {
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
         this.game = game;
+        World gameWorld = game.getLoc1().getWorld();
+        gameWorld.setGameRuleValue("doDaylightCycle", "false");
+        gameWorld.setGameRuleValue("doWeatherCycle", "false");
+        gameWorld.setGameRuleValue("doFireTick", "false");
+        gameWorld.setGameRuleValue("doMobSpawning", "false");
         gameTasks = new ArrayList<>();
         playerGameStorage = new PlayerGameStorage(this);
         scoreBoard = new ScoreBoard(this);
