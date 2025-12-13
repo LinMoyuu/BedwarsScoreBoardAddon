@@ -28,7 +28,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -118,7 +117,6 @@ public class Shop {
         Player player = (Player) e.getPlayer();
         if (player.getGameMode().equals(GameMode.SPECTATOR)) {
             e.setCancelled(true);
-            return;
         }
     }
 
