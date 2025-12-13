@@ -16,7 +16,6 @@ import me.ram.bedwarsscoreboardaddon.api.HolographicAPI;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerOpenItemShopEvent;
-import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerOpenTeamShopEvent;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -43,7 +42,6 @@ public class Shop {
     @Getter
     private final Arena arena;
     private final List<NPC> shops;
-    private final List<NPC> teamshops;
     private final List<HolographicAPI> titles;
     private final List<Integer> npcid;
     private WrappedDataWatcher.Serializer booleanserializer;
@@ -52,7 +50,6 @@ public class Shop {
         this.arena = arena;
         this.game = arena.getGame();
         shops = new ArrayList<>();
-        teamshops = new ArrayList<>();
         titles = new ArrayList<>();
         npcid = new ArrayList<>();
         if (!BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8")) {
@@ -70,15 +67,6 @@ public class Shop {
                     }
                 }
             }
-            if (Config.game_shop_team.containsKey(game.getName())) {
-                for (String loc : Config.game_shop_team.get(game.getName())) {
-                    Location location = toLocation(loc);
-                    if (location != null) {
-                        teamshops.add(spawnShop(location.clone(), Config.shop_team_shop_look, Config.shop_team_shop_type, Config.shop_team_shop_skin));
-                        setTitle(location.clone().add(0, -0.1, 0), Config.shop_team_shop_name);
-                    }
-                }
-            }
         }
         new BukkitRunnable() {
             @Override
@@ -86,9 +74,6 @@ public class Shop {
                 if (game.getState() != GameState.RUNNING || game.getPlayers().isEmpty()) {
                     cancel();
                     for (NPC npc : shops) {
-                        CitizensAPI.getNPCRegistry().deregister(npc);
-                    }
-                    for (NPC npc : teamshops) {
                         CitizensAPI.getNPCRegistry().deregister(npc);
                     }
                     for (HolographicAPI holo : titles) {
@@ -121,16 +106,6 @@ public class Shop {
                         itemShop.openCategoryInventory(player);
                     }
                 }
-            } else if (teamshops.contains(npc)) {
-                if (isGamePlayer(player)) {
-                    isCancelled = true;
-                    BoardAddonPlayerOpenTeamShopEvent openTeamShopEvent = new BoardAddonPlayerOpenTeamShopEvent(game, player);
-                    Bukkit.getPluginManager().callEvent(openTeamShopEvent);
-                    if (!openTeamShopEvent.isCancelled()) {
-                        player.closeInventory();
-                        Main.getInstance().getArenaManager().getArena(game.getName()).getTeamShop().openTeamShop(player);
-                    }
-                }
             }
         }
         return isCancelled;
@@ -144,13 +119,6 @@ public class Shop {
         if (player.getGameMode().equals(GameMode.SPECTATOR)) {
             e.setCancelled(true);
             return;
-        }
-        if (e.getEntity() instanceof Villager) {
-            if (CitizensAPI.getNPCRegistry().isNPC(e.getEntity()) && teamshops.contains(CitizensAPI.getNPCRegistry().getNPC(e.getEntity()))) {
-                e.setCancelled(true);
-                player.closeInventory();
-                Main.getInstance().getArenaManager().getArena(e.getGame().getName()).getTeamShop().openTeamShop(player);
-            }
         }
     }
 
@@ -285,9 +253,6 @@ public class Shop {
 
     public void remove() {
         for (NPC npc : shops) {
-            CitizensAPI.getNPCRegistry().deregister(npc);
-        }
-        for (NPC npc : teamshops) {
             CitizensAPI.getNPCRegistry().deregister(npc);
         }
         for (HolographicAPI holo : titles) {

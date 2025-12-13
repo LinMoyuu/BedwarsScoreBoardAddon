@@ -164,23 +164,6 @@ public class Commands implements CommandExecutor {
                             return true;
                         }
                     }
-                    if (args[2].equalsIgnoreCase("team")) {
-                        if (args.length == 4) {
-                            if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
-                                Config.setShop(args[3], player.getLocation(), "team");
-                                player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.set_item_shop"));
-                                Main.getInstance().getEditHolographicManager().displayGameLocation(player, args[3]);
-                            } else {
-                                player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.set_shop_error"));
-                                player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.failed_set_shop"));
-                            }
-                            return true;
-                        } else {
-                            sender.sendMessage("");
-                            sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_team_shop"));
-                            return true;
-                        }
-                    }
                     sender.sendMessage("");
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_item_shop"));
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_team_shop"));

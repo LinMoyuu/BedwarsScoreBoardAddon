@@ -584,24 +584,6 @@ shop:
     #NPC视角跟随附近玩家
     look: false
 
-  #队伍商店
-  team_shop:
-
-    #NPC类型
-    type: BLAZE
-
-    #皮肤
-    skin: Steve
-
-    #商店名称
-    name:
-      - "&b组队模式"
-      - "&b升级"
-      - "&e&l右键点击"
-
-    #NPC视角跟随附近玩家
-    look: false
-
 
 #倒计时重生设置
 respawn:

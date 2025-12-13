@@ -101,12 +101,6 @@ public class EditGame implements Listener {
         ItemUtil.setItemLore(itemStack, lore);
         inventory.setItem(20, itemStack);
         itemStack.setType(Material.FIREBALL);
-        ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_team_shop"));
-        lore = new ArrayList<String>();
-        lore.add("");
-        lore.add(Config.getLanguage("item.edit_game.lore.set"));
-        ItemUtil.setItemLore(itemStack, lore);
-        inventory.setItem(21, itemStack);
         itemStack.setType(Material.BLAZE_POWDER);
         ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_spawner"));
         lore = new ArrayList<String>();
@@ -572,11 +566,6 @@ public class EditGame implements Listener {
                     case 20:
                         player.closeInventory();
                         Bukkit.dispatchCommand(player, "bedwarsscoreboardaddon:bwsba shop set item " + game_name);
-                        Main.getInstance().getEditHolographicManager().displayGameLocation(player, game.getName());
-                        break;
-                    case 21:
-                        player.closeInventory();
-                        Bukkit.dispatchCommand(player, "bedwarsscoreboardaddon:bwsba shop set team " + game_name);
                         Main.getInstance().getEditHolographicManager().displayGameLocation(player, game.getName());
                         break;
                     case 22:

@@ -31,7 +31,7 @@ public class LocaleConfig {
                 if (!locale_folder.exists()) {
                     locale_folder.mkdirs();
                 }
-                for (String file : new String[]{"config.yml", "language.yml", "team_shop.yml"}) {
+                for (String file : new String[]{"config.yml", "language.yml"}) {
                     try {
                         writeToLocal(folder.getPath() + "/" + locale.getName() + "/" + file, Main.getInstance().getResource("locale/" + locale.getName() + "/" + file));
                     } catch (Exception e) {
