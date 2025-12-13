@@ -507,12 +507,51 @@ public class EventListener implements Listener {
                         return;
                     }
                     List<String> lore = itemStack.getItemMeta().getLore();
+                    Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+                    if (arena == null) return;
+                    // 锋利判断
+                    int playerSharpness = arena.getTeamShop().getPlayerSharpnessLevel().getOrDefault(player, 0);
+                    if ((lore.contains("§s§o§u§l§s§1") && playerSharpness >= 1) || (lore.contains("§s§o§u§l§s§2") && playerSharpness >= 2)) {
+                        e.setCancelled(true);
+                        player.sendMessage("已拥有套装或拥有更高级套装");
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (player.isOnline()) {
+                                    player.updateInventory();
+                                }
+                            }
+                        }.runTaskLater(Main.getInstance(), 1L);
+                    }
+                    // 保护购买判断
+                    int playerLeggingsProtection = arena.getTeamShop().getPlayerLeggingsProtectionLevel().getOrDefault(player, 0);
+                    int playerBootsProtection = arena.getTeamShop().getPlayerBootsProtectionLevel().getOrDefault(player, 0);
+                    if ((lore.contains("§s§o§u§l§l§1") && playerLeggingsProtection >= 1)
+                            || (lore.contains("§s§o§u§l§l§2") && playerLeggingsProtection >= 2)
+                            || (lore.contains("§s§o§u§l§b§1") && playerBootsProtection >= 1)
+                            || (lore.contains("§s§o§u§l§b§2") && playerBootsProtection >= 2)) {
+                        e.setCancelled(true);
+                        player.sendMessage("已拥有套装或拥有更高级套装");
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (player.isOnline()) {
+                                    player.updateInventory();
+                                }
+                            }
+                        }.runTaskLater(Main.getInstance(), 1L);
+                    }
                     ItemStack leggings = player.getInventory().getLeggings();
                     ItemStack boots = player.getInventory().getBoots();
                     if (leggings == null || boots == null) {
                         return;
                     }
-                    if ((lore.contains("§a§r§m§o§r§0§0§1") && ((leggings.getType() == Material.CHAINMAIL_LEGGINGS && leggings.getType() == Material.CHAINMAIL_LEGGINGS) || (leggings.getType() == Material.IRON_LEGGINGS && leggings.getType() == Material.IRON_LEGGINGS) || (leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS))) || (lore.contains("§a§r§m§o§r§0§0§2") && ((leggings.getType() == Material.IRON_LEGGINGS && leggings.getType() == Material.IRON_LEGGINGS) || (leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS))) || (lore.contains("§a§r§m§o§r§0§0§3") && leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS)) {
+                    // 购买装备判断 太长了看不懂懒得看 能跑就行
+                    if ((lore.contains("§a§r§m§o§r§0§0§1") && ((leggings.getType() == Material.CHAINMAIL_LEGGINGS && leggings.getType() == Material.CHAINMAIL_LEGGINGS)
+                            || (leggings.getType() == Material.IRON_LEGGINGS && leggings.getType() == Material.IRON_LEGGINGS)
+                            || (leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS)))
+                            || (lore.contains("§a§r§m§o§r§0§0§2") && ((leggings.getType() == Material.IRON_LEGGINGS && leggings.getType() == Material.IRON_LEGGINGS) || (leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS)))
+                            || (lore.contains("§a§r§m§o§r§0§0§3") && leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS)) {
                         e.setCancelled(true);
                         player.sendMessage("已拥有套装或拥有更高级套装");
                         new BukkitRunnable() {
