@@ -3,12 +3,10 @@ package me.ram.bedwarsscoreboardaddon.addon.teamshop;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
-import io.github.bedwarsrel.game.Team;
-import ldcr.BedwarsXP.api.XPManager;
 import lombok.Getter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
-import org.bukkit.Bukkit;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -33,16 +31,21 @@ public class TeamShop {
     private final Game game;
     @Getter
     private final Arena arena;
-    private final Map<Team, Map<Player, Long>> player_cooldown;
-    private final List<Player> immune_players;
     private final List<Listener> listeners;
+    @Getter
+    private final HashMap<Player, Integer> playerSharpnessLevel;
+    @Getter
+    private final HashMap<Player, Integer> playerLeggingsProtectionLevel;
+    @Getter
+    private final HashMap<Player, Integer> playerBootsProtectionLevel;
 
     public TeamShop(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        player_cooldown = new HashMap<>();
-        immune_players = new ArrayList<>();
         listeners = new ArrayList<>();
+        playerSharpnessLevel = new HashMap<>();
+        playerLeggingsProtectionLevel = new HashMap<>();
+        playerBootsProtectionLevel = new HashMap<>();
     }
 
     public void onEnd() {
@@ -62,7 +65,7 @@ public class TeamShop {
         ItemMeta slimeMeta = slime.getItemMeta();
 
         slimeMeta.setDisplayName(BedwarsRel._l(player, "ingame.shop.oldshop"));
-        slimeMeta.setLore(new ArrayList<String>());
+        slimeMeta.setLore(new ArrayList<>());
         slime.setItemMeta(slimeMeta);
         inventory.remove(slime);
         // 有人写死指定BUCKET为切换了
@@ -100,6 +103,9 @@ public class TeamShop {
                 if (!game.getState().equals(GameState.RUNNING)) {
                     return;
                 }
+                // 点击后 获取背包是否有特殊物品Lore 有就是购买成功 成功了就替换 Rel原版是直接给物品了
+                // 由于都是颜色符号 不显示 但是会显示个空行
+                // 怪聪明的... 效果差强人意吧(会显示个空行) 真要把这个改掉估计得自己写商店或者改Rel。
                 ItemStack[] stacks = player.getInventory().getContents();
                 for (int i = 0; i < stacks.length; i++) {
                     ItemStack stack = stacks[i];
@@ -111,6 +117,7 @@ public class TeamShop {
                         continue;
                     }
                     PlayerInventory inventory = player.getInventory();
+                    // 物品是否是特属装备 是的话自动装备
                     if (meta.getLore().contains("§a§r§m§o§r§0§0§1") || meta.getLore().contains("§a§r§m§o§r§0§0§2") || meta.getLore().contains("§a§r§m§o§r§0§0§3")) {
                         stack.setType(Material.AIR);
                         inventory.setItem(i, stack);
@@ -135,6 +142,15 @@ public class TeamShop {
                         boots.setItemMeta(bootsMeta);
                         inventory.setLeggings(leggings);
                         inventory.setBoots(boots);
+                        int playerLeggings = arena.getTeamShop().getPlayerLeggingsProtectionLevel().getOrDefault(player, 0);
+                        if (playerLeggings != 0) {
+                            Utils.giveLeggingsProtection(player, playerLeggings);
+                        }
+
+                        int playerBoots = arena.getTeamShop().getPlayerBootsProtectionLevel().getOrDefault(player, 0);
+                        if (playerBoots != 0) {
+                            Utils.giveBootsProtection(player, playerBoots);
+                        }
                         break;
                     } else if (stack.getType().name().endsWith("_SWORD") && meta.getLore().contains("§s§w§o§r§d")) {
                         List<String> lore = meta.getLore();
@@ -182,117 +198,47 @@ public class TeamShop {
                                 player.getWorld().dropItemNaturally(player.getLocation(), oldSword);
                             }
                         }
+                        int playerSharpness = arena.getTeamShop().getPlayerSharpnessLevel().getOrDefault(player, 0);
+                        if (playerSharpness != 0) {
+                            Utils.givePlayerSharpness(player, playerSharpness);
+                        }
 
                         player.updateInventory();
+                        break;
+                    } else if (stack.getType().equals(Material.BOOK) && (
+                            meta.getLore().contains("§s§o§u§l§s§1") || meta.getLore().contains("§s§o§u§l§s§2")
+                                    || meta.getLore().contains("§s§o§u§l§l§1") || meta.getLore().contains("§s§o§u§l§l§2")
+                                    || meta.getLore().contains("§s§o§u§l§b§1") || meta.getLore().contains("§s§o§u§l§b§2"))) {
+                        stack.setType(Material.AIR);
+                        inventory.setItem(i, stack);
+                        player.updateInventory();
+                        // §s§o§u§l soul
+                        // §s = sharpness §l = leggings §b = boots
+                        // §1 = level etc...
+                        if (meta.getLore().contains("§s§o§u§l§s§1")) { // 锋利
+                            playerSharpnessLevel.put(player, 1);
+                            Utils.givePlayerSharpness(player, 1);
+                        } else if (meta.getLore().contains("§s§o§u§l§s§2")) {
+                            playerSharpnessLevel.put(player, 2);
+                            Utils.givePlayerSharpness(player, 2);
+                        } else if (meta.getLore().contains("§s§o§u§l§l§1")) { // 护腿
+                            playerLeggingsProtectionLevel.put(player, 1);
+                            Utils.giveLeggingsProtection(player, 1);
+                        } else if (meta.getLore().contains("§s§o§u§l§l§2")) {
+                            playerLeggingsProtectionLevel.put(player, 2);
+                            Utils.giveLeggingsProtection(player, 2);
+                        } else if (meta.getLore().contains("§s§o§u§l§b§1")) { // 鞋子
+                            playerBootsProtectionLevel.put(player, 1);
+                            Utils.giveBootsProtection(player, 1);
+                        } else if (meta.getLore().contains("§s§o§u§l§b§2")) {
+                            playerBootsProtectionLevel.put(player, 2);
+                            Utils.giveBootsProtection(player, 2);
+                        }
                         break;
                     }
                 }
             }
         }.runTaskLater(Main.getInstance(), 1L);
-    }
-
-    public void addCoolingPlayer(Team team, Player player) {
-        if (isImmunePlayer(player)) {
-            return;
-        }
-        if (!player_cooldown.containsKey(team)) {
-            player_cooldown.put(team, new HashMap<>());
-        }
-        player_cooldown.get(team).put(player, System.currentTimeMillis());
-    }
-
-    public void removeCoolingPlayer(Team team, Player player) {
-        if (!player_cooldown.containsKey(team)) {
-            player_cooldown.put(team, new HashMap<>());
-        }
-        Map<Player, Long> map = player_cooldown.get(team);
-        map.remove(player);
-    }
-
-    public void removeCoolingPlayer(Player player) {
-        player_cooldown.values().forEach(map -> map.remove(player));
-    }
-
-    public List<Player> getImmunePlayers() {
-        return immune_players;
-    }
-
-    public boolean isImmunePlayer(Player player) {
-        return immune_players.contains(player);
-    }
-
-    public void addImmunePlayer(Player player) {
-        if (!immune_players.contains(player)) {
-            immune_players.add(player);
-        }
-    }
-
-    public void removeImmunePlayer(Player player) {
-        immune_players.remove(player);
-    }
-
-    private boolean pay(Player player, String cost) {
-        String[] ary = cost.split(",");
-        if (ary[0].equals("XP")) {
-            if (Bukkit.getPluginManager().isPluginEnabled("BedwarsXP")) {
-                if (XPManager.getXPManager(game.getName()).getXP(player) >= Integer.parseInt(ary[1])) {
-                    XPManager.getXPManager(game.getName()).takeXP(player, Integer.parseInt(ary[1]));
-                    return true;
-                }
-            }
-        } else if (isEnoughItem(player, ary)) {
-            takeItem(player, ary);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isEnough(Player player, String cost) {
-        String[] ary = cost.split(",");
-        if (ary[0].equals("XP")) {
-            if (Bukkit.getPluginManager().isPluginEnabled("BedwarsXP")) {
-                return XPManager.getXPManager(game.getName()).getXP(player) >= Integer.parseInt(ary[1]);
-            }
-        } else {
-            return isEnoughItem(player, ary);
-        }
-        return false;
-    }
-
-    private boolean isEnoughItem(Player player, String[] ary) {
-        int k = 0;
-        int i = player.getInventory().getContents().length;
-        ItemStack[] stacks = player.getInventory().getContents();
-        for (int j = 0; j < i; j++) {
-            final ItemStack stack = stacks[j];
-            if (stack != null) {
-                if (stack.getType().equals(Material.valueOf(ary[0]))) {
-                    k = k + stack.getAmount();
-                }
-            }
-        }
-        return k >= Integer.parseInt(ary[1]);
-    }
-
-    private void takeItem(Player player, String[] ary) {
-        int ta = Integer.parseInt(ary[1]);
-        int i = player.getInventory().getContents().length;
-        ItemStack[] stacks = player.getInventory().getContents();
-        for (int j = 0; j < i; j++) {
-            final ItemStack stack = stacks[j];
-            if (stack != null) {
-                if (stack.getType().equals(Material.valueOf(ary[0])) && ta > 0) {
-                    if (stack.getAmount() >= ta) {
-                        stack.setAmount(stack.getAmount() - ta);
-                        ta = 0;
-                    } else if (stack.getAmount() < ta) {
-                        ta = ta - stack.getAmount();
-                        stack.setAmount(0);
-                    }
-                    player.getInventory().setItem(j, stack);
-                }
-            }
-        }
     }
 
     private List<String> replaceLore(List<String> lore, String... args) {

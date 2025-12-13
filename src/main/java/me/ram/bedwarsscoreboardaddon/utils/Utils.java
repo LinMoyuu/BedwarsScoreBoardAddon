@@ -2,7 +2,12 @@ package me.ram.bedwarsscoreboardaddon.utils;
 
 import io.github.bedwarsrel.BedwarsRel;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Constructor;
 
@@ -121,4 +126,51 @@ public class Utils {
     public static void clearTitle(Player player) {
         sendTitle(player, 0, 0, 0, "", "");
     }
+
+    public static void giveLeggingsProtection(Player player, int level) {
+        PlayerInventory playerInventory = player.getInventory();
+        ItemStack leggings = playerInventory.getLeggings();
+        if (leggings == null) return;
+        leggings.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, level);
+        ItemMeta leggingsMeta = leggings.getItemMeta();
+        leggingsMeta.spigot().setUnbreakable(true);
+        playerInventory.setLeggings(leggings);
+        player.updateInventory();
+    }
+
+    public static void giveBootsProtection(Player player, int level) {
+        PlayerInventory playerInventory = player.getInventory();
+        ItemStack boots = playerInventory.getBoots();
+        if (boots == null) return;
+        boots.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, level);
+        ItemMeta bootsMeta = boots.getItemMeta();
+        bootsMeta.spigot().setUnbreakable(true);
+        playerInventory.setLeggings(boots);
+        player.updateInventory();
+    }
+
+    public static void givePlayerSharpness(Player player, int level) {
+        PlayerInventory playerInventory = player.getInventory();
+        for (int i = 0; i < playerInventory.getSize(); i++) {
+            ItemStack stack = playerInventory.getItem(i);
+            if (!isSword(stack)) continue;
+            if (stack.getEnchantmentLevel(Enchantment.DAMAGE_ALL) > level) continue;
+            stack.addEnchantment(Enchantment.DAMAGE_ALL, level);
+        }
+        player.updateInventory();
+    }
+
+    public static boolean isSword(ItemStack item) {
+        if (item == null) return false;
+
+        Material type = item.getType();
+        return type == Material.WOOD_SWORD ||
+                type == Material.STONE_SWORD ||
+                type == Material.IRON_SWORD ||
+                type == Material.GOLD_SWORD ||
+                type == Material.DIAMOND_SWORD;
+    }
+
 }
+
+

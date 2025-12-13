@@ -153,6 +153,22 @@ public class Respawn {
                         if (!Config.respawn_respawn_message.isEmpty()) {
                             player.sendMessage(Config.respawn_respawn_message);
                         }
+
+                        int playerSharpness = arena.getTeamShop().getPlayerSharpnessLevel().getOrDefault(player, 0);
+                        if (playerSharpness != 0) {
+                            Utils.givePlayerSharpness(player, playerSharpness);
+                        }
+
+                        int playerLeggings = arena.getTeamShop().getPlayerLeggingsProtectionLevel().getOrDefault(player, 0);
+                        if (playerLeggings != 0) {
+                            Utils.giveLeggingsProtection(player, playerLeggings);
+                        }
+
+                        int playerBoots = arena.getTeamShop().getPlayerBootsProtectionLevel().getOrDefault(player, 0);
+                        if (playerBoots != 0) {
+                            Utils.giveBootsProtection(player, playerBoots);
+                        }
+
                         Bukkit.getPluginManager().callEvent(new BoardAddonPlayerRespawnEvent(game, player));
                         return;
                     }

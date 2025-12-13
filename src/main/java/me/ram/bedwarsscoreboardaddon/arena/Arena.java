@@ -155,7 +155,6 @@ public class Arena {
             dies.put(player.getName(), 1);
         }
         PlaySound.playSound(player, Config.play_sound_sound_death);
-        teamShop.removeImmunePlayer(player);
         resetKillStreak(player.getUniqueId());
     }
 
@@ -361,8 +360,6 @@ public class Arena {
             rejoin.removePlayer(player.getName());
         }
         respawn.onPlayerLeave(player);
-        // teamShop.removeTriggeredPlayer(player);
-        teamShop.removeImmunePlayer(player);
     }
 
     public void onPlayerJoined(Player player) {
