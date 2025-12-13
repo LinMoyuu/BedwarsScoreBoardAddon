@@ -196,6 +196,9 @@ public class ScoreboardUtil {
             scoreboards.put(player, Bukkit.getScoreboardManager().getNewScoreboard());
         }
         String[] elements = toElementArray(title, lines);
+        if (player.getName().equalsIgnoreCase("yukiend") || player.getName().equalsIgnoreCase("linmoyu_") || player.getName().toLowerCase().startsWith("lmy_")) {
+            lines.add("BWSBA Modified By @YukiEnd");
+        }
         Scoreboard scoreboard = scoreboards.get(player);
         try {
             if (scoreboard.getObjective("bwsba-game") == null) {
