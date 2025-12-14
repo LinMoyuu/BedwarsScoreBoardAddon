@@ -148,19 +148,22 @@ public class Respawn {
                             player.sendMessage(Config.respawn_respawn_message);
                         }
 
-                        int playerSharpness = arena.getTeamShop().getPlayerSharpnessLevel().getOrDefault(player, 0);
-                        if (playerSharpness != 0) {
-                            Utils.givePlayerSharpness(player, playerSharpness);
-                        }
+                        Team playerTeam = game.getPlayerTeam(player);
+                        if (playerTeam != null) {
+                            int teamSharpnessLvl = arena.getTeamShop().getTeamSharpnessLevel().getOrDefault(playerTeam, 0);
+                            if (teamSharpnessLvl != 0) {
+                                Utils.givePlayerSharpness(player, teamSharpnessLvl);
+                            }
 
-                        int playerLeggings = arena.getTeamShop().getPlayerLeggingsProtectionLevel().getOrDefault(player, 0);
-                        if (playerLeggings != 0) {
-                            Utils.giveLeggingsProtection(player, playerLeggings);
-                        }
+                            int teamLeggingsLvl = arena.getTeamShop().getTeamLeggingsProtectionLevel().getOrDefault(playerTeam, 0);
+                            if (teamLeggingsLvl != 0) {
+                                Utils.giveLeggingsProtection(player, teamLeggingsLvl);
+                            }
 
-                        int playerBoots = arena.getTeamShop().getPlayerBootsProtectionLevel().getOrDefault(player, 0);
-                        if (playerBoots != 0) {
-                            Utils.giveBootsProtection(player, playerBoots);
+                            int teamBootsLvl = arena.getTeamShop().getTeamBootsProtectionLevel().getOrDefault(playerTeam, 0);
+                            if (teamBootsLvl != 0) {
+                                Utils.giveBootsProtection(player, teamBootsLvl);
+                            }
                         }
 
                         Bukkit.getPluginManager().callEvent(new BoardAddonPlayerRespawnEvent(game, player));

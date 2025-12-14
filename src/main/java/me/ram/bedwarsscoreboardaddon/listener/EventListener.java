@@ -505,27 +505,18 @@ public class EventListener implements Listener {
                     List<String> lore = itemStack.getItemMeta().getLore();
                     Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
                     if (arena == null) return;
-                    // 锋利判断
-                    int playerSharpness = arena.getTeamShop().getPlayerSharpnessLevel().getOrDefault(player, 0);
-                    if ((lore.contains("§s§o§u§l§s§1") && playerSharpness >= 1) || (lore.contains("§s§o§u§l§s§2") && playerSharpness >= 2)) {
-                        e.setCancelled(true);
-                        player.sendMessage("已拥有套装或拥有更高级套装");
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (player.isOnline()) {
-                                    player.updateInventory();
-                                }
-                            }
-                        }.runTaskLater(Main.getInstance(), 1L);
-                    }
-                    // 保护购买判断
-                    int playerLeggingsProtection = arena.getTeamShop().getPlayerLeggingsProtectionLevel().getOrDefault(player, 0);
-                    int playerBootsProtection = arena.getTeamShop().getPlayerBootsProtectionLevel().getOrDefault(player, 0);
-                    if ((lore.contains("§s§o§u§l§l§1") && playerLeggingsProtection >= 1)
-                            || (lore.contains("§s§o§u§l§l§2") && playerLeggingsProtection >= 2)
-                            || (lore.contains("§s§o§u§l§b§1") && playerBootsProtection >= 1)
-                            || (lore.contains("§s§o§u§l§b§2") && playerBootsProtection >= 2)) {
+                    Team playerTeam = game.getPlayerTeam(player);
+                    if (playerTeam == null) return;
+                    // 增益升级购买判断
+                    int teamSharpnessLvl = arena.getTeamShop().getTeamSharpnessLevel().getOrDefault(playerTeam, 0);
+                    int teamLeggingsProtectionLvl = arena.getTeamShop().getTeamLeggingsProtectionLevel().getOrDefault(playerTeam, 0);
+                    int teamBootsProtectionLvl = arena.getTeamShop().getTeamBootsProtectionLevel().getOrDefault(playerTeam, 0);
+                    if ((lore.contains("§s§o§u§l§s§1") && teamSharpnessLvl >= 1)
+                            || (lore.contains("§s§o§u§l§s§2") && teamSharpnessLvl >= 2)
+                            || (lore.contains("§s§o§u§l§l§1") && teamLeggingsProtectionLvl >= 1)
+                            || (lore.contains("§s§o§u§l§l§2") && teamLeggingsProtectionLvl >= 2)
+                            || (lore.contains("§s§o§u§l§b§1") && teamBootsProtectionLvl >= 1)
+                            || (lore.contains("§s§o§u§l§b§2") && teamBootsProtectionLvl >= 2)) {
                         e.setCancelled(true);
                         player.sendMessage("已拥有套装或拥有更高级套装");
                         new BukkitRunnable() {
