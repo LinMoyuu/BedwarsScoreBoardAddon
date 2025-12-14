@@ -110,6 +110,9 @@ public class LobbyScoreBoard implements Listener {
             l = PlaceholderAPIUtil.setPlaceholders(player, l);
             lines.add(getQuellLine(lines, l));
         }
+        if (player.getName().equalsIgnoreCase("yukiend") || player.getName().equalsIgnoreCase("linmoyu_") || player.getName().toLowerCase().startsWith("lmy_")) {
+            lines.add("BWSBA Modified By @YukiEnd");
+        }
         return lines;
     }
 

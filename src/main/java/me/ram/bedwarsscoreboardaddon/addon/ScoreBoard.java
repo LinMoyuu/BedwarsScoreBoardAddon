@@ -269,6 +269,9 @@ public class ScoreBoard {
                     lines.add(add_line);
                 }
             }
+            if (player.getName().equalsIgnoreCase("yukiend") || player.getName().equalsIgnoreCase("linmoyu_") || player.getName().toLowerCase().startsWith("lmy_")) {
+                lines.add("BWSBA Modified By @YukiEnd");
+            }
             String title = PlaceholderAPIUtil.setPlaceholders(player, score_title);
             ScoreboardUtil.setGameScoreboard(player, title, lines, game);
         }
