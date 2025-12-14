@@ -283,13 +283,29 @@ public class ScoreBoard {
     }
 
     private String getTeamBedStatus(Game game, Team team) {
-        return team.isDead(game) ? Config.scoreboard_team_bed_status_bed_destroyed : Config.scoreboard_team_bed_status_bed_alive;
+        if (team.isDead(game)) {
+            return Config.scoreboard_team_bed_status_bed_destroyed;
+        } else if (!team.isDead(game) && team.getPlayers().isEmpty()) {
+            return Config.scoreboard_team_bed_status_bed_alive_empty;
+        } else {
+            return Config.scoreboard_team_bed_status_bed_alive;
+        }
+        // 改之后没测试过
     }
 
+    // 改之后没测试过
     private String getTeamStatusFormat(Game game, Team team) {
         String alive = Config.scoreboard_team_status_format_bed_alive;
         String destroyed = Config.scoreboard_team_status_format_bed_destroyed;
-        String status = team.isDead(game) ? destroyed : alive;
+        String alive_empty = Config.scoreboard_team_status_format_bed_alive_empty;
+        String status;
+        if (team.isDead(game)) {
+            status = destroyed;
+        } else if (!team.isDead(game) && team.getPlayers().isEmpty()) {
+            status = alive_empty;
+        } else {
+            status = alive;
+        }
         if (team.isDead(game) && team.getPlayers().isEmpty()) {
             status = Config.scoreboard_team_status_format_team_dead;
         }

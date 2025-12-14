@@ -1364,6 +1364,9 @@ scoreboard:
     #床存在
     bed_alive: "&a\u2714"
 
+    #床存在,但队伍人空
+    bed_alive_empty: "&a\u2714"
+
     #床被摧毁
     bed_destroyed: "&c\u2718"
 
@@ -1379,7 +1382,10 @@ scoreboard:
   team_status_format:
 
     #床存在
-    bed_alive: "{color} {team} &a\u2714 &8(&f&l{players}&8) {you}"
+    bed_alive:
+
+    #床存在,但队伍人空
+    bed_alive_empty: "&a\u2714"
 
     #床被摧毁
     bed_destroyed: "{color} {team} &c\u2718 &8(&f&l{players}&8) {you}"

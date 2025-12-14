@@ -226,8 +226,10 @@ public class Config {
     public static List<String> scoreboard_title;
     public static String scoreboard_you;
     public static String scoreboard_team_bed_status_bed_alive;
+    public static String scoreboard_team_bed_status_bed_alive_empty;
     public static String scoreboard_team_bed_status_bed_destroyed;
     public static String scoreboard_team_status_format_bed_alive;
+    public static String scoreboard_team_status_format_bed_alive_empty;
     public static String scoreboard_team_status_format_bed_destroyed;
     public static String scoreboard_team_status_format_team_dead;
     public static Map<String, List<String>> scoreboard_lines;
@@ -489,8 +491,10 @@ public class Config {
         scoreboard_title = ColorUtil.colorList(config.getStringList("scoreboard.title"));
         scoreboard_you = ColorUtil.color(config.getString("scoreboard.you"));
         scoreboard_team_bed_status_bed_alive = ColorUtil.color(config.getString("scoreboard.team_bed_status.bed_alive"));
+        scoreboard_team_bed_status_bed_alive_empty = ColorUtil.color(config.getString("scoreboard.team_bed_status.bed_alive_empty"));
         scoreboard_team_bed_status_bed_destroyed = ColorUtil.color(config.getString("scoreboard.team_bed_status.bed_destroyed"));
         scoreboard_team_status_format_bed_alive = ColorUtil.color(config.getString("scoreboard.team_status_format.bed_alive"));
+        scoreboard_team_status_format_bed_alive_empty = ColorUtil.color(config.getString("scoreboard.team_status_format.bed_alive_empty"));
         scoreboard_team_status_format_bed_destroyed = ColorUtil.color(config.getString("scoreboard.team_status_format.bed_destroyed"));
         scoreboard_team_status_format_team_dead = ColorUtil.color(config.getString("scoreboard.team_status_format.team_dead"));
         scoreboard_lines = new HashMap<String, List<String>>();

@@ -86,12 +86,12 @@ public class GameListener implements Listener {
         }
         if (game.getState() == GameState.RUNNING && !game.isSpectator(player) && players <= 1) {
             Bukkit.getPluginManager().callEvent(new BedwarsTeamDeadEvent(game, team));
-            if (Config.rejoin_enabled) {
-                destroyBlock(game, team);
-                if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
-                    Main.getInstance().getArenaManager().getArenas().get(game.getName()).getRejoin().removeTeam(team.getName());
-                }
-            }
+//            if (Config.rejoin_enabled) {
+//                destroyBlock(game, team);
+//                if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
+//                    Main.getInstance().getArenaManager().getArenas().get(game.getName()).getRejoin().removeTeam(team.getName());
+//                }
+//            }
         }
         if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
             Main.getInstance().getArenaManager().getArenas().get(game.getName()).onPlayerLeave(e.getPlayer());
