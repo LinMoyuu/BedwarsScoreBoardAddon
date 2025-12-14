@@ -3,6 +3,7 @@ package me.ram.bedwarsscoreboardaddon.commands;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import me.ram.bedwarsscoreboardaddon.Main;
+import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Commands implements CommandExecutor {
 
@@ -53,6 +55,16 @@ public class Commands implements CommandExecutor {
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.no_permission"));
                     return true;
                 }
+            }
+            if (args[0].equalsIgnoreCase("task") && args.length >= 2) {
+                Arena arena = Main.getInstance().getArenaManager().getArena(args[1]);
+                if (arena == null) return true;
+                Game game = arena.getGame();
+                if (game == null) return true;
+                if (args[2].equals("night")) {
+                    game.setTime(18000);
+                }
+                return true;
             }
             if (args[0].equalsIgnoreCase("spawner") && args.length > 1) {
                 if (!(sender instanceof Player)) {
