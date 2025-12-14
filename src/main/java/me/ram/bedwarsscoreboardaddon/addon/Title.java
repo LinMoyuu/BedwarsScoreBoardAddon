@@ -74,14 +74,15 @@ public class Title implements Listener {
         Team playerTeam = game.getPlayerTeam(player);
         // 为床被破坏的队伍发送
         for (Player wasBrokenPlayers : e.getTeam().getPlayers()) {
-            Utils.sendTitle(wasBrokenPlayers, 1, 30, 1, Config.destroyed_title_title, Config.destroyed_title_subtitle.replace("{player}", playerTeam.getChatColor() + player.getDisplayName()));
+            Utils.sendTitle(wasBrokenPlayers, 1, 60, 1, Config.destroyed_title_title, Config.destroyed_title_subtitle.replace("{player}", playerTeam.getChatColor() + player.getDisplayName()));
         }
         // 为且非床破坏者其他队伍发送
-        for (Player gamePlayers : e.getGame().getPlayers()) {
+        for (Player gamePlayers : game.getPlayers()) {
             if (gamePlayers.equals(player)) continue; // 破坏者跳过
-            if (game.getPlayerTeam(gamePlayers).equals(e.getTeam())) continue; // 是被破坏的跳过
-            Utils.sendTitle(player, 1, 60, 1, e.getTeam().getDisplayName() + "&c床已被摧毁", "&7破坏者： " +
-                    playerTeam.getChatColor() + playerTeam.getDisplayName() + player.getDisplayName());
+            Team gamePlayersTeam = game.getPlayerTeam(gamePlayers);
+            if (gamePlayersTeam != null && gamePlayersTeam.equals(e.getTeam())) continue;
+            Utils.sendTitle(gamePlayers, 1, 60, 1, e.getTeam().getDisplayName() + "&c床已被摧毁", "&7破坏者： " +
+                    playerTeam.getChatColor() + player.getDisplayName());
         }
         // 为破坏者发送
         Utils.sendTitle(player, 1, 60, 1, e.getTeam().getDisplayName(), "&a床已被你摧毁");
