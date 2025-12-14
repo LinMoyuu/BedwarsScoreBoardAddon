@@ -205,9 +205,9 @@ public class Title implements Listener {
             }
         } else {
             Utils.sendTitle(killer, 0, 60, 20, "&a&l" + 10 + " &a&l杀", "");
-            if (!killStreakMessage(killer, killStreak).isEmpty()) {
+            if (!killStreakMessage(killer, 10).isEmpty()) {
                 for (Player gamePlayers : game.getPlayers()) {
-                    gamePlayers.sendMessage(ColorUtil.color(killStreakMessage(killer, killStreak)));
+                    gamePlayers.sendMessage(ColorUtil.color(killStreakMessage(killer, 10)));
                 }
             }
         }
