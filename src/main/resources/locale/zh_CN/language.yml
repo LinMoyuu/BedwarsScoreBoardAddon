@@ -38,7 +38,6 @@ commands:
       shop_list: "&e/bwsba shop list <游戏> &7-&f 已设置商店列表"
       remove_shop: "&e/bwsba shop remove <ID> &7-&f 移除一个商店"
       set_item_shop: "&e/bwsba shop set item <游戏> &7-&f 设置一个道具商店"
-      set_team_shop: "&e/bwsba shop set team <游戏> &7-&f 设置一个队伍商店"
       spawner_list: "&e/bwsba spawner list <游戏> &7-&f 队伍资源点列表"
       remove_spawner: "&e/bwsba spawner remove <ID> &7-&f 移除队伍资源点"
       add_spawner: "&e/bwsba spawner add <游戏> <队伍> &7-&f 添加队伍资源点"
@@ -60,7 +59,6 @@ item:
       set_bed: "&f设置队伍床"
       set_spawn: "&f设置队伍出生点"
       set_item_shop: "&f设置物品商店"
-      set_team_shop: "&f设置队伍商店"
       set_spawner: "&f设置资源生成点"
       set_team_spawner: "&f队伍资源生成点"
       set_game_spawner: "&f游戏资源生成点"
@@ -93,4 +91,3 @@ holographic:
     team_spawner: "{team}&f队伍资源点"
   shop:
     item: "&fID: &a{id} &e物品商店"
-    team: "&fID: &a{id} &e队伍商店"

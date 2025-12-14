@@ -156,7 +156,6 @@ public class Commands implements CommandExecutor {
                     if (args.length == 2) {
                         sender.sendMessage("");
                         sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_item_shop"));
-                        sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_team_shop"));
                         return true;
                     }
                     if (args[2].equalsIgnoreCase("item")) {
@@ -178,7 +177,6 @@ public class Commands implements CommandExecutor {
                     }
                     sender.sendMessage("");
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_item_shop"));
-                    sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_team_shop"));
                     return true;
 
                 }
@@ -230,7 +228,6 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.shop_list"));
                 sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.remove_shop"));
                 sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_item_shop"));
-                sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.set_team_shop"));
                 return true;
             }
             if (args[0].equalsIgnoreCase("edit")) {
