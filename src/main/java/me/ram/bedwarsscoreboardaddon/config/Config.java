@@ -136,11 +136,7 @@ public class Config {
     public static String shop_item_shop_type;
     public static String shop_item_shop_skin;
     public static boolean shop_item_shop_look;
-    public static String shop_team_shop_type;
-    public static String shop_team_shop_skin;
-    public static boolean shop_team_shop_look;
     public static List<String> shop_item_shop_name;
-    public static List<String> shop_team_shop_name;
     public static boolean respawn_enabled;
     public static boolean respawn_centre_enabled;
     public static double respawn_centre_height;
@@ -240,7 +236,6 @@ public class Config {
     public static List<String> lobby_scoreboard_title;
     public static List<String> lobby_scoreboard_lines;
     public static Map<String, List<String>> game_shop_item;
-    public static Map<String, List<String>> game_shop_team;
     public static Map<String, String> game_shop_shops;
     public static Map<String, Map<String, List<Location>>> game_team_spawner;
     public static Map<String, String> game_team_spawners;
@@ -407,11 +402,7 @@ public class Config {
         shop_item_shop_type = config.getString("shop.item_shop.type");
         shop_item_shop_skin = config.getString("shop.item_shop.skin");
         shop_item_shop_look = config.getBoolean("shop.item_shop.look");
-        shop_team_shop_type = config.getString("shop.team_shop.type");
-        shop_team_shop_skin = config.getString("shop.team_shop.skin");
-        shop_team_shop_look = config.getBoolean("shop.team_shop.look");
         shop_item_shop_name = ColorUtil.colorList(config.getStringList("shop.item_shop.name"));
-        shop_team_shop_name = ColorUtil.colorList(config.getStringList("shop.team_shop.name"));
         respawn_enabled = config.getBoolean("respawn.enabled");
         respawn_centre_enabled = config.getBoolean("respawn.centre.enabled");
         respawn_centre_height = config.getDouble("respawn.centre.height");
@@ -599,10 +590,9 @@ public class Config {
             folder.mkdirs();
         }
         File file = new File(folder.getAbsolutePath() + "/game.yml");
-        game_shop_item = new HashMap<String, List<String>>();
-        game_shop_team = new HashMap<String, List<String>>();
+        game_shop_item = new HashMap<>();
         game_shop_shops = new HashMap<>();
-        game_team_spawner = new HashMap<String, Map<String, List<Location>>>();
+        game_team_spawner = new HashMap<>();
         game_team_spawners = new HashMap<>();
         int shopId = 0;
         int spawnerId = 0;
@@ -618,13 +608,6 @@ public class Config {
                     game_shop_item.put(game, configss.getStringList("item"));
                     for (String shop : configss.getStringList("item")) {
                         game_shop_shops.put(shopId + "", game + ".shop.item - " + shop);
-                        shopId++;
-                    }
-                }
-                if (configss.contains("team")) {
-                    game_shop_team.put(game, configss.getStringList("team"));
-                    for (String shop : configss.getStringList("team")) {
-                        game_shop_shops.put(shopId + "", game + ".shop.team - " + shop);
                         shopId++;
                     }
                 }

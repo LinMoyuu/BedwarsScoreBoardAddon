@@ -108,11 +108,7 @@ public class Main extends JavaPlugin {
     }
 
     private void init() {
-        Boolean debug = false;
-        try {
-            debug = getConfig().getBoolean("init_debug");
-        } catch (Exception e) {
-        }
+        boolean debug = getConfig().getBoolean("init_debug");
         String prefix = "[" + getDescription().getName() + "] ";
         printMessage(prefix + getLocaleConfig().getLanguage("loading"));
         boolean isDependent = true;

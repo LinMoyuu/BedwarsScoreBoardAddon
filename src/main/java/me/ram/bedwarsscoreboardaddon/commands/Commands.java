@@ -192,7 +192,7 @@ public class Commands implements CommandExecutor {
                         sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.shop_list"));
                         return true;
                     }
-                    if (!Config.game_shop_item.containsKey(args[2]) && !Config.game_shop_team.containsKey(args[2])) {
+                    if (!Config.game_shop_item.containsKey(args[2])) {
                         player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.shop_list_error"));
                         return true;
                     }
@@ -268,20 +268,6 @@ public class Commands implements CommandExecutor {
                 try {
                     Config.game_shop_shops.forEach((id, pl) -> {
                         if (pl.equals(game + ".shop.item - " + loc)) {
-                            player.sendMessage("§f ID: §a" + id + " §f[§e" + loc.replace(",", "§f,§e") + "§f]");
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\" \",\"extra\":[{\"text\":\"" + Config.getLanguage("button.list_teleport") + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bwsbatp " + game + " " + loc + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + Config.getLanguage("show_text.list_teleport") + "\"}},{\"text\":\"  \"},{\"text\":\"" + Config.getLanguage("button.list_remove") + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bedwarsscoreboardaddon:bwsba shop remove " + id + " true\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + Config.getLanguage("show_text.list_remove") + "\"}}]}");
-                            player.sendMessage("");
-                        }
-                    });
-                } catch (Exception e) {
-                }
-            }
-        }
-        if (Config.game_shop_team.containsKey(game)) {
-            for (String loc : Config.game_shop_team.get(game)) {
-                try {
-                    Config.game_shop_shops.forEach((id, pl) -> {
-                        if (pl.equals(game + ".shop.team - " + loc)) {
                             player.sendMessage("§f ID: §a" + id + " §f[§e" + loc.replace(",", "§f,§e") + "§f]");
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\" \",\"extra\":[{\"text\":\"" + Config.getLanguage("button.list_teleport") + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bwsbatp " + game + " " + loc + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + Config.getLanguage("show_text.list_teleport") + "\"}},{\"text\":\"  \"},{\"text\":\"" + Config.getLanguage("button.list_remove") + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bedwarsscoreboardaddon:bwsba shop remove " + id + " true\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + Config.getLanguage("show_text.list_remove") + "\"}}]}");
                             player.sendMessage("");
