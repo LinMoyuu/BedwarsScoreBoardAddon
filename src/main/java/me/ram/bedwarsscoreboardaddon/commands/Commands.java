@@ -57,6 +57,7 @@ public class Commands implements CommandExecutor {
                 }
             }
             if (args[0].equalsIgnoreCase("task") && args.length >= 2) {
+                if (sender instanceof Player) return true;
                 Arena arena = Main.getInstance().getArenaManager().getArena(args[1]);
                 if (arena == null) return true;
                 Game game = arena.getGame();
