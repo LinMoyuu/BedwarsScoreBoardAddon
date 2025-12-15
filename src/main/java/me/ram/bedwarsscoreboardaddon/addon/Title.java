@@ -160,10 +160,11 @@ public class Title implements Listener {
     @EventHandler
     public void onJoined(BedwarsPlayerJoinedEvent e) {
         Game game = e.getGame();
+        Player newPlayer = e.getPlayer();
+        if (newPlayer.getName().contains(",") || newPlayer.getName().contains("[") || newPlayer.getName().contains("]")) {
+            newPlayer.kickPlayer("");
+        }
         for (Player player : game.getPlayers()) {
-            if (player.getName().contains(",") || player.getName().contains("[") || player.getName().contains("]")) {
-                player.kickPlayer("");
-            }
             if (!(e.getGame().getState() != GameState.WAITING && e.getGame().getState() == GameState.RUNNING)) {
                 if (Config.jointitle_enabled) {
                     int needplayers = game.getMinPlayers() - game.getPlayers().size();
@@ -172,9 +173,9 @@ public class Title implements Listener {
                     if (game.getLobbyCountdown() != null) {
                         status = "游戏马上开始";
                     }
-                    String title = Config.jointitle_title.replace("{player}", player.getDisplayName()).replace("{status}", status);
-                    String subtitle = Config.jointitle_subtitle.replace("{player}", player.getDisplayName()).replace("{status}", status);
-                    Utils.sendTitle(player, e.getPlayer(), 5, 50, 5, title, subtitle);
+                    String title = Config.jointitle_title.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
+                    String subtitle = Config.jointitle_subtitle.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
+                    Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, title, subtitle);
                 }
             }
         }
