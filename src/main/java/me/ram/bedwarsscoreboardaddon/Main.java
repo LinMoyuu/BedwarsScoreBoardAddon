@@ -20,6 +20,7 @@ import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import org.bstats.metrics.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
@@ -206,6 +207,13 @@ public class Main extends JavaPlugin {
         }
         BedwarsRel.getInstance().getConfig().set("teamname-on-tab", false);
         BedwarsRel.getInstance().saveConfig();
+
+        for (World world : Bukkit.getWorlds()) {
+            world.setGameRuleValue("doDaylightCycle", "false");
+            world.setGameRuleValue("doWeatherCycle", "false");
+            world.setGameRuleValue("doFireTick", "false");
+            world.setGameRuleValue("doMobSpawning", "false");
+        }
     }
 
     private void printMessage(String str) {
