@@ -6,6 +6,8 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -64,6 +66,21 @@ public class Commands implements CommandExecutor {
                 if (game == null) return true;
                 if (args[2].equals("night")) {
                     game.setTime(18000);
+                }
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("title") && args.length >= 3) {
+                if (sender instanceof Player) return true;
+                Arena arena = Main.getInstance().getArenaManager().getArena(args[1]);
+                if (arena == null) return true;
+                Game game = arena.getGame();
+                if (game == null) return true;
+                String title = args[2].replace("\"\"","");
+                String subtitle = args[3].replace("\"\"","");
+                for (Player player : game.getPlayers()) {
+                    if (!title.isEmpty() || !subtitle.isEmpty()) {
+                        Utils.sendTitle(player, 0, 60, 10, ColorUtil.color(title), ColorUtil.color(subtitle));
+                    }
                 }
                 return true;
             }
