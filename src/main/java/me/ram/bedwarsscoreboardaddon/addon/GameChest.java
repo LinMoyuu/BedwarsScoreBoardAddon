@@ -29,7 +29,7 @@ public class GameChest {
     public GameChest(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        teamChests = new HashMap<Team, Block>();
+        teamChests = new HashMap<>();
         game.getPlayers().forEach(player -> {
             player.getEnderChest().clear();
         });
@@ -61,6 +61,19 @@ public class GameChest {
 
     public void onInteract(PlayerInteractEvent e) {
         if (!Config.game_chest_enabled) {
+            Block block = e.getClickedBlock();
+            if (block != null && block.getType() == Material.ENDER_CHEST) {
+                Team playerTeam = game.getPlayerTeam(e.getPlayer());
+                if (block.getType() == Material.ENDER_CHEST) {
+                    if (playerTeam.getInventory() == null) {
+                        playerTeam.createTeamInventory();
+                    }
+                    if (!playerTeam.getChests().contains(block)) {
+                        playerTeam.addChest(block);
+                    }
+                }
+                e.setCancelled(false);
+            }
             return;
         }
         if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
