@@ -4,7 +4,6 @@ import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.events.BedwarsPlayerKilledEvent;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
-import io.github.bedwarsrel.game.Team;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
@@ -50,9 +49,8 @@ public class SoulItem implements Listener {
         soulMeta.setDisplayName("灵魂");
         soulMeta.setLore(Collections.singletonList(ColorUtil.color("&4死亡不掉落")));
         soul.setItemMeta(soulMeta);
-        Team playerTeam = game.getPlayerTeam(player);
         // 预定判断是否给灵魂 8队时
-        boolean shouldGiveSoul = playerTeam.getMaxPlayers() == 1;
+        boolean shouldGiveSoul = game.getTeams().size() >= 8;
         // 如果不应该给(不是8队时), 则判断连杀数是否>=3
         if (!shouldGiveSoul) {
             Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());

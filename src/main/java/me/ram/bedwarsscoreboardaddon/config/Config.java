@@ -488,7 +488,7 @@ public class Config {
         scoreboard_team_status_format_bed_alive_empty = ColorUtil.color(config.getString("scoreboard.team_status_format.bed_alive_empty"));
         scoreboard_team_status_format_bed_destroyed = ColorUtil.color(config.getString("scoreboard.team_status_format.bed_destroyed"));
         scoreboard_team_status_format_team_dead = ColorUtil.color(config.getString("scoreboard.team_status_format.team_dead"));
-        scoreboard_lines = new HashMap<String, List<String>>();
+        scoreboard_lines = new HashMap<>();
         for (String key : config.getConfigurationSection("scoreboard.lines").getKeys(false)) {
             scoreboard_lines.put(key, ColorUtil.colorList(config.getStringList("scoreboard.lines." + key)));
         }
