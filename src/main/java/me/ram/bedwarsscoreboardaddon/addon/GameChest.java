@@ -65,15 +65,17 @@ public class GameChest {
             Block block = e.getClickedBlock();
             if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
             if (block == null || block.getType() != Material.ENDER_CHEST) return;
+            Team chestTeam = game.getTeamOfEnderChest(block);
             Team playerTeam = game.getPlayerTeam(player);
-            if (playerTeam.getInventory() == null) {
-                playerTeam.createTeamInventory();
+            if (chestTeam == null) {
+                if (playerTeam.getInventory() == null) {
+                    playerTeam.createTeamInventory();
+                }
+                if (!playerTeam.getChests().contains(block)) {
+                    playerTeam.addChest(block);
+                }
+                player.openInventory(playerTeam.getInventory());
             }
-            if (!playerTeam.getChests().contains(block)) {
-                playerTeam.addChest(block);
-            }
-            Team chestTeam = game.getTeamOfEnderChest(e.getClickedBlock());
-            player.openInventory(chestTeam.getInventory());
             return;
         }
         if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {

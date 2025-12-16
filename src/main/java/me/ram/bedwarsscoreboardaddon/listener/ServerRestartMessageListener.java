@@ -22,7 +22,7 @@ public class ServerRestartMessageListener extends PacketAdapter {
         PacketContainer originalPacket = e.getPacket();
         WrappedChatComponent originalChat = originalPacket.getChatComponents().read(0);
         String originalMessage = originalChat.getJson();
-        if (originalMessage.contains(BedwarsRel.getInstance().getConfig().getString("chat-prefix")) && originalMessage.contains("服务器将在") && originalMessage.contains("秒后重置地图!")) {
+        if (originalMessage.contains("起床战争") && originalMessage.contains("服务器将在") && originalMessage.contains("秒后重置地图!")) {
             e.setCancelled(true);
         }
     }
