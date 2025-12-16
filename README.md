@@ -15,7 +15,7 @@ This is a plugin running on BedwarsRel. It can expand your BedWars function. ~~M
 
 因此，本分支存在的意义是为了复刻《花雨庭》服务器的起床战争游戏体验。
 
-当本插件完成修改时，笔者会释出示例端作为参考。
+当本插件完成修改时，笔者会释出示例端作为参考([视频](https://www.bilibili.com/video/BV11QqaBtEgt/))。
 
 可能有一些破坏性更改(即原有某些功能失效)，太懒了orz。
 
