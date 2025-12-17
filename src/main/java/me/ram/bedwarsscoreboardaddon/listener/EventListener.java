@@ -186,6 +186,17 @@ public class EventListener implements Listener {
         deathevents.put(game.getName(), map);
     }
 
+    // https://github.com/BedwarsRel/BedwarsRel/blob/master/common/src/main/java/io/github/bedwarsrel/listener/PlayerListener.java#L492-L511
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onToggleFlight(PlayerToggleFlightEvent e) {
+        Player player = e.getPlayer();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null || game.getState() != GameState.RUNNING || game.isSpectator(player) || !game.getPlayers().contains(player)) {
+            return;
+        }
+        if (player.getGameMode() == GameMode.CREATIVE) e.setCancelled(false);
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDeathHighest(PlayerDeathEvent e) {
         if (!Config.final_killed_enabled) {
