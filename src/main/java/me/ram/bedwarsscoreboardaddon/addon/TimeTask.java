@@ -43,15 +43,18 @@ public class TimeTask {
             }
         }
 
+        // 这段包有问题的
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
                 if (arena.isOver()) {
                     gameLeft = 0;
+                    arena.setGameLeft(0);
                     this.cancel();
                     return;
                 }
                 gameLeft--;
+                arena.setGameLeft(gameLeft);
             }
         }.runTaskTimer(Main.getInstance(), 0L, 20L));
         ScoreBoard scoreBoard = arena.getScoreBoard();

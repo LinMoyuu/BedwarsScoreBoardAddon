@@ -9,9 +9,9 @@ import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
 import lombok.Getter;
+import lombok.Setter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.addon.*;
-import me.ram.bedwarsscoreboardaddon.addon.RandomEvents;
 import me.ram.bedwarsscoreboardaddon.addon.teamshop.TeamShop;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
@@ -84,6 +84,7 @@ public class Arena {
     private Map<UUID, Integer> highestKillStreaks;
     // 用于对齐 TimeTask等 实际上会比游戏时间慢一些
     @Getter
+    @Setter
     private int gameLeft;
     // 随机事件 生草一个 以后再说 xDD 有机会会重写的
     @Getter
