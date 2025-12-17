@@ -9,6 +9,7 @@ import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
 import lombok.Getter;
+import lombok.Setter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.addon.*;
 import me.ram.bedwarsscoreboardaddon.addon.teamshop.TeamShop;
@@ -75,16 +76,20 @@ public class Arena {
     private Boolean isOver;
     // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
     @Getter
-    private Map<String, Team> playerNameTeams = new HashMap<>();
+    private Map<String, Team> playerNameTeams;
     // 连杀记录
     @Getter
     private Map<UUID, Integer> killStreaks;
     @Getter
     private Map<UUID, Integer> highestKillStreaks;
+    // 用于对齐 TimeTask等 实际上会比游戏时间慢一些
+    @Getter
+    private int gameLeft;
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
         this.game = game;
+        this.gameLeft = BedwarsRel.getInstance().getMaxLength() + 1;
         World gameWorld = game.getLoc1().getWorld();
         gameWorld.setGameRuleValue("doDaylightCycle", "false");
         gameWorld.setGameRuleValue("doWeatherCycle", "false");
@@ -120,6 +125,8 @@ public class Arena {
                 }
             }
         }.runTaskTimer(Main.getInstance(), 1L, 1L));
+
+        playerNameTeams = new HashMap<>();
         for (Player player : game.getPlayers()) {
             playerNameTeams.put(player.getName(), game.getPlayerTeam(player));
         }

@@ -123,10 +123,10 @@ public class ResourceUpgrade {
                         cancel();
                         return;
                     }
-                    int remtime = game.getTimeLeft() - gametime;
+                    int remtime = arena.getGameLeft() - gametime;
                     String formatremtime = remtime / 60 + ":" + ((remtime % 60 < 10) ? ("0" + remtime % 60) : (remtime % 60));
                     upg_time.put(rs, formatremtime);
-                    if (game.getTimeLeft() <= gametime) {
+                    if (arena.getGameLeft() <= gametime) {
                         isExecuted = true;
                         BoardAddonResourceUpgradeEvent resourceUpgradeEvent = new BoardAddonResourceUpgradeEvent(game, upgrade);
                         Bukkit.getPluginManager().callEvent(resourceUpgradeEvent);
@@ -201,7 +201,6 @@ public class ResourceUpgrade {
             case "VIII":
                 return "IX";
             case "IX":
-                return "X";
             case "X":
                 return "X";
             default:

@@ -23,9 +23,10 @@ public class Actionbar {
     @Getter
     private final PlaceholderManager placeholderManager;
     @Getter
-    private Arena arena;
+    private final Arena arena;
 
     public Actionbar(Arena arena) {
+        this.arena = arena;
         this.game = arena.getGame();
         placeholderManager = new PlaceholderManager(game);
         Main.getInstance().getArenaManager().getArena(game.getName()).addGameTask(new BukkitRunnable() {
@@ -38,14 +39,14 @@ public class Actionbar {
 
     private void sendActionbar() {
         for (Player player : game.getPlayers()) {
-            int wither = game.getTimeLeft() - Config.witherbow_gametime;
+            int wither = arena.getGameLeft() - Config.witherbow_gametime;
             String format = wither / 60 + ":" + ((wither % 60 < 10) ? ("0" + wither % 60) : (wither % 60));
             String bowtime = null;
             if (wither > 0) {
                 bowtime = format;
             }
             if (wither <= 0) {
-                bowtime = Config.witherbow_already_starte;
+                bowtime = Config.witherbow_already_start;
             }
             if (game.getPlayerTeam(player) != null) {
                 if (player.getLocation().getWorld().equals(game.getPlayerTeam(player).getSpawnLocation().getWorld())) {
@@ -83,7 +84,7 @@ public class Actionbar {
                         }
                     }
                     ab = PlaceholderAPIUtil.setPlaceholders(player, ab);
-                    ab = ab.replace("{team_peoples}", game.getPlayerTeam(player).getPlayers().size() + "").replace("{bowtime}", bowtime).replace("{color}", game.getPlayerTeam(player).getChatColor() + "").replace("{team}", game.getPlayerTeam(player).getName()).replace("{range}", (int) player.getLocation().distance(game.getPlayerTeam(player).getSpawnLocation()) + "").replace("{time}", (game.getTimeLeft() / 60) + "").replace("{formattime}", getFormattedTimeLeft(game.getTimeLeft())).replace("{game}", game.getName()).replace("{date}", new SimpleDateFormat(Config.date_format).format(new Date())).replace("{online}", Bukkit.getOnlinePlayers().size() + "").replace("{alive_players}", alive_players + "");
+                    ab = ab.replace("{team_peoples}", game.getPlayerTeam(player).getPlayers().size() + "").replace("{bowtime}", bowtime).replace("{color}", game.getPlayerTeam(player).getChatColor() + "").replace("{team}", game.getPlayerTeam(player).getName()).replace("{range}", (int) player.getLocation().distance(game.getPlayerTeam(player).getSpawnLocation()) + "").replace("{time}", (arena.getGameLeft() / 60) + "").replace("{formattime}", getFormattedTimeLeft(arena.getGameLeft())).replace("{game}", game.getName()).replace("{date}", new SimpleDateFormat(Config.date_format).format(new Date())).replace("{online}", Bukkit.getOnlinePlayers().size() + "").replace("{alive_players}", alive_players + "");
                     Utils.sendPlayerActionbar(player, ab);
                 }
             }

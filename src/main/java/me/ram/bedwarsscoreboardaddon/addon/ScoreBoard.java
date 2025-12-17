@@ -3,6 +3,7 @@ package me.ram.bedwarsscoreboardaddon.addon;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.Team;
+import lombok.Getter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
@@ -20,10 +21,13 @@ public class ScoreBoard {
 
     private final Arena arena;
     private final Game game;
+    @Getter
     private final Map<String, String> timer_placeholder;
     private final PlaceholderManager placeholderManager;
     private final Map<String, String> team_status;
     private int title_index = 0;
+    @Getter
+    private Map<String, String> plan_infos;
     private Map<String, String> over_plan_info;
 
     public ScoreBoard(Arena arena) {
@@ -32,25 +36,8 @@ public class ScoreBoard {
         placeholderManager = new PlaceholderManager(game);
         team_status = new HashMap<>();
         timer_placeholder = new HashMap<>();
+        plan_infos = new HashMap<>();
         over_plan_info = new HashMap<>();
-        for (String id : Config.timer.keySet()) {
-            arena.addGameTask(new BukkitRunnable() {
-                int i = Config.timer.get(id);
-
-                @Override
-                public void run() {
-                    if (arena.isOver()) {
-                        this.cancel();
-                        i = 0;
-                    }
-
-                    String format = i / 60 + ":" + ((i % 60 < 10) ? ("0" + i % 60) : (i % 60));
-                    timer_placeholder.put("{timer_" + id + "}", format);
-                    timer_placeholder.put("{timer_sec_" + id + "}", String.valueOf(i));
-                    i--;
-                }
-            }.runTaskTimer(Main.getInstance(), 0L, 20L));
-        }
         arena.addGameTask(new BukkitRunnable() {
             int i = Config.scoreboard_interval;
 
@@ -111,20 +98,6 @@ public class ScoreBoard {
 
     public void updateScoreboard() {
         List<String> lines = new ArrayList<>();
-        Map<String, String> plan_infos = new HashMap<>();
-        for (String plan : Config.planinfo) {
-            if (game.getTimeLeft() <= Main.getInstance().getConfig().getInt("planinfo." + plan + ".start_time") && game.getTimeLeft() > Main.getInstance().getConfig().getInt("planinfo." + plan + ".end_time")) {
-                for (String key : Main.getInstance().getConfig().getConfigurationSection("planinfo." + plan + ".plans").getKeys(false)) {
-                    plan_infos.put(key, Main.getInstance().getConfig().getString("planinfo." + plan + ".plans." + key));
-                }
-            }
-            if (arena.isOver()) {
-                for (String key : Main.getInstance().getConfig().getConfigurationSection("planinfo." + plan + ".plans").getKeys(false)) {
-                    if (key.endsWith("_2")) continue;
-                    plan_infos.put(key, "");
-                }
-            }
-        }
         if (game.getTimeLeft() == 1) {
             over_plan_info = plan_infos;
         } else if (game.getTimeLeft() < 1) {
@@ -140,14 +113,14 @@ public class ScoreBoard {
                 remain_teams++;
             }
         }
-        int wither = game.getTimeLeft() - Config.witherbow_gametime;
+        int wither = arena.getGameLeft() - Config.witherbow_gametime;
         String format = wither / 60 + ":" + ((wither % 60 < 10) ? ("0" + wither % 60) : (wither % 60));
         String bowtime = null;
         if (wither > 0) {
             bowtime = format;
         }
         if (wither <= 0) {
-            bowtime = Config.witherbow_already_starte;
+            bowtime = Config.witherbow_already_start;
         }
         String score_title;
         if (title_index >= Config.scoreboard_title.size()) {

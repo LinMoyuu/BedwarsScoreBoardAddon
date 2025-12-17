@@ -31,7 +31,7 @@ public class WitherBow implements Listener {
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
-                if (e.getGame().getTimeLeft() <= Config.witherbow_gametime && Config.witherbow_enabled) {
+                if (arena.getGameLeft() <= Config.witherbow_gametime && Config.witherbow_enabled) {
                     if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
                         game.getPlayers().forEach(player -> Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle));
                     }
@@ -55,7 +55,9 @@ public class WitherBow implements Listener {
         }
         Player player = (Player) e.getEntity();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null || game.getState() != GameState.RUNNING || BedwarsUtil.isSpectator(game, player) || game.getTimeLeft() > Config.witherbow_gametime) {
+        if (game == null) return;
+        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+        if (arena == null || game.getState() != GameState.RUNNING || BedwarsUtil.isSpectator(game, player) || arena.getGameLeft() > Config.witherbow_gametime) {
             return;
         }
         WitherSkull skull = player.launchProjectile(WitherSkull.class);

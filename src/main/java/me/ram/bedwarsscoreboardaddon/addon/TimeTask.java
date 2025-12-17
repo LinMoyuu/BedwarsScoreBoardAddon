@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.Map;
 
 public class TimeTask {
 
@@ -18,10 +19,15 @@ public class TimeTask {
     private final Game game;
     @Getter
     private final Arena arena;
+    @Getter
+    private int gameLeft;
 
     public TimeTask(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
+        this.gameLeft = arena.getGameLeft();
+
+        // TimeCommand 开局指令
         for (String cmd : Config.timecommand_startcommand) {
             if (cmd.isEmpty()) {
                 continue;
@@ -36,6 +42,62 @@ public class TimeTask {
                 Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd));
             }
         }
+
+        arena.addGameTask(new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (arena.isOver()) {
+                    gameLeft = 0;
+                    this.cancel();
+                    return;
+                }
+                gameLeft--;
+            }
+        }.runTaskTimer(Main.getInstance(), 0L, 20L));
+        ScoreBoard scoreBoard = arena.getScoreBoard();
+        Map<String, String> plan_infos = scoreBoard.getPlan_infos();
+        arena.addGameTask(new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (arena.isOver()) {
+                    for (String key : plan_infos.keySet()) {
+                        if (key.endsWith("_2")) continue;
+                        plan_infos.put(key, "");
+                    }
+                    this.cancel();
+                    return;
+                }
+
+                for (String plan : Config.planinfo) {
+                    if (gameLeft <= Main.getInstance().getConfig().getInt("planinfo." + plan + ".start_time") && gameLeft > Main.getInstance().getConfig().getInt("planinfo." + plan + ".end_time")) {
+                        for (String key : Main.getInstance().getConfig().getConfigurationSection("planinfo." + plan + ".plans").getKeys(false)) {
+                            plan_infos.put(key, Main.getInstance().getConfig().getString("planinfo." + plan + ".plans." + key));
+                        }
+                    }
+
+                }
+            }
+        }.runTaskTimer(Main.getInstance(), 0L, 20L));
+
+        for (String id : Config.timer.keySet()) {
+            arena.addGameTask(new BukkitRunnable() {
+                int i = Config.timer.get(id);
+
+                @Override
+                public void run() {
+                    if (arena.isOver()) {
+                        this.cancel();
+                        i = 0;
+                        return;
+                    }
+
+                    String format = i / 60 + ":" + ((i % 60 < 10) ? ("0" + i % 60) : (i % 60));
+                    arena.getScoreBoard().getTimer_placeholder().put("{timer_" + id + "}", format);
+                    arena.getScoreBoard().getTimer_placeholder().put("{timer_sec_" + id + "}", String.valueOf(i));
+                    i--;
+                }
+            }.runTaskTimer(Main.getInstance(), 0L, 20L));
+        }
         for (String cmds : Main.getInstance().getConfig().getConfigurationSection("timecommand").getKeys(false)) {
             arena.addGameTask(new BukkitRunnable() {
                 final int gametime = Main.getInstance().getConfig().getInt("timecommand." + cmds + ".gametime");
@@ -43,7 +105,7 @@ public class TimeTask {
 
                 @Override
                 public void run() {
-                    if (game.getTimeLeft() <= gametime) {
+                    if (gameLeft <= gametime) {
                         for (String cmd : cmdlist) {
                             if (cmd.isEmpty()) {
                                 continue;

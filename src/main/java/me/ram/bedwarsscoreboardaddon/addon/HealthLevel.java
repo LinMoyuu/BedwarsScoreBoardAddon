@@ -59,10 +59,10 @@ public class HealthLevel {
                             cancel();
                             return;
                         }
-                        int remtime = game.getTimeLeft() - gametime;
+                        int remtime = arena.getGameLeft() - gametime;
                         String formatremtime = remtime / 60 + ":" + ((remtime % 60 < 10) ? ("0" + remtime % 60) : (remtime % 60));
                         levelTime.put(sh, formatremtime);
-                        if (game.getTimeLeft() <= gametime) {
+                        if (arena.getGameLeft() <= gametime) {
                             isExecuted = true;
                             BoardAddonSetHealthEvent setHealthEvent = new BoardAddonSetHealthEvent(game);
                             Bukkit.getPluginManager().callEvent(setHealthEvent);

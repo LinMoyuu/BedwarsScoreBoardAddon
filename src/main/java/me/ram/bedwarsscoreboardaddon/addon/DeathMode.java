@@ -29,14 +29,14 @@ public class DeathMode {
 
             @Override
             public void run() {
-                int deathmodetime = game.getTimeLeft() - Config.deathmode_gametime;
+                int deathmodetime = arena.getGameLeft() - Config.deathmode_gametime;
                 deathmode_time = deathmodetime / 60 + ":" + ((deathmodetime % 60 < 10) ? ("0" + deathmodetime % 60) : (deathmodetime % 60));
                 if (Config.deathmode_enabled) {
                     if (isExecuted) {
                         cancel();
                         return;
                     }
-                    if (game.getTimeLeft() <= Config.deathmode_gametime) {
+                    if (arena.getGameLeft() <= Config.deathmode_gametime) {
                         isExecuted = true;
                         BoardAddonDeathModeEvent deathModeEvent = new BoardAddonDeathModeEvent(game);
                         Bukkit.getPluginManager().callEvent(deathModeEvent);
@@ -95,17 +95,16 @@ public class DeathMode {
         double initialSize = Math.max(sizeX, sizeZ);
         WorldBorder border = world.getWorldBorder();
 
-        // 1. 设置初始边界
+        // 设置初始边界
         border.setCenter(centerX, centerZ);
         border.setSize(initialSize);
         border.setDamageAmount(0.1); // 边界外的伤害
         border.setWarningDistance(10); // 靠近边界10格时开始警告
 
-        long shrinkDurationInSeconds = 90; // 假设5分钟内缩完
-        double targetSize = 50.0; // 最终大小 100x100
+        long shrinkDurationInSeconds = 90; // 缩短秒数
+        double targetSize = 25.0; // 最终大小
 
-        // 2. 开始平滑缩小
-        // aPI 提供了一个非常方便的方法，可以在指定时间内平滑地将边界大小过渡到目标值
+        // 设置缩小
         border.setSize(targetSize, shrinkDurationInSeconds);
     }
 }
