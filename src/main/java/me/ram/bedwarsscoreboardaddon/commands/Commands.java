@@ -3,6 +3,7 @@ package me.ram.bedwarsscoreboardaddon.commands;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import me.ram.bedwarsscoreboardaddon.Main;
+import me.ram.bedwarsscoreboardaddon.addon.RandomEvents;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
@@ -14,7 +15,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.Optional;
 
 public class Commands implements CommandExecutor {
 
@@ -58,14 +62,26 @@ public class Commands implements CommandExecutor {
                     return true;
                 }
             }
-            if (args[0].equalsIgnoreCase("task") && args.length >= 2) {
+            if (args[0].equalsIgnoreCase("task") && args.length >= 3) {
                 if (sender instanceof Player) return true;
                 Arena arena = Main.getInstance().getArenaManager().getArena(args[1]);
                 if (arena == null) return true;
                 Game game = arena.getGame();
                 if (game == null) return true;
+                if (args[2].equals("day")) {
+                    game.setTime(1000);
+                    for (Player player : game.getPlayers()) {
+                        Utils.sendTitle(player, 0, 60, 10, "", "§a§l时间恢复");
+                    }
+                }
                 if (args[2].equals("night")) {
                     game.setTime(18000);
+                    for (Player player : game.getPlayers()) {
+                        Utils.sendTitle(player, 0, 60, 10, "", "§4§l午夜降临");
+                    }
+                }
+                if (args[2].equals("randomplay")) {
+                    randomPlay(game, arena);
                 }
                 return true;
             }
@@ -272,6 +288,24 @@ public class Commands implements CommandExecutor {
             sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.unknown"));
         }
         return true;
+    }
+
+    private void randomPlay(Game game, Arena arena) {
+        Optional<RandomEvents> eventOpt = arena.switchNextEvent();
+        if (!eventOpt.isPresent()) return;
+
+        RandomEvents event = eventOpt.get();
+
+        String subtitle = event.getSubtitle();
+        PotionEffectType potionEffectType = event.getEffectType();
+
+        for (Player player : game.getPlayers()) {
+            if (game.isSpectator(player)) continue;
+            Utils.sendTitle(player, 0, 60, 0, "", subtitle);
+            if (potionEffectType != null) {
+                player.addPotionEffect(new PotionEffect(potionEffectType, 90 * 20, 0));
+            }
+        }
     }
 
     private void sendShopList(Player player, String game) {

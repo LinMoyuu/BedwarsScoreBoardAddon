@@ -184,6 +184,12 @@ public class ScoreBoard {
                     for (String key : plan_infos.keySet()) {
                         add_line = add_line.replace("{plan_" + key + "}", plan_infos.get(key));
                     }
+                    String randomPlay = "";
+                    List<RandomEvents> events = arena.getCurrentGameEvents();
+                    if (events != null && !events.isEmpty()) {
+                        randomPlay = events.get(0).getEventName();
+                    }
+                    add_line = add_line.replace("{randomplay}", randomPlay);
                     add_line = add_line.replace("{death_mode}", arena.getDeathMode().getDeathmodeTime()).replace("{remain_teams}", remain_teams + "").replace("{alive_teams}", alive_teams + "").replace("{alive_players}", alive_players + "").replace("{teams}", game.getTeams().size() + "").replace("{color}", player_team_color).replace("{team_peoples}", player_team_players).replace("{player_name}", player.getName()).replace("{team}", player_team_name).replace("{beds}", player_bes).replace("{dies}", player_dis).replace("{totalkills}", player_total_kills).replace("{finalkills}", player_final_kills).replace("{kills}", player_kills).replace("{time}", getGameTime(game.getTimeLeft())).replace("{formattime}", getFormattedTimeLeft(game.getTimeLeft())).replace("{game}", game.getName()).replace("{date}", date).replace("{online}", game.getPlayers().size() + "").replace("{bowtime}", bowtime).replace("{team_bed_status}", player_team_bed_status).replace("{no_break_bed}", arena.getNoBreakBed().getTime());
                     for (String key : arena.getHealthLevel().getLevelTime().keySet()) {
                         add_line = add_line.replace("{sethealthtime_" + key + "}", arena.getHealthLevel().getLevelTime().get(key));

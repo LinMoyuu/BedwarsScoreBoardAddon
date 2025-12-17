@@ -9,9 +9,9 @@ import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
 import lombok.Getter;
-import lombok.Setter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.addon.*;
+import me.ram.bedwarsscoreboardaddon.addon.RandomEvents;
 import me.ram.bedwarsscoreboardaddon.addon.teamshop.TeamShop;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
@@ -85,6 +85,9 @@ public class Arena {
     // 用于对齐 TimeTask等 实际上会比游戏时间慢一些
     @Getter
     private int gameLeft;
+    // 随机事件 生草一个 以后再说 xDD 有机会会重写的
+    @Getter
+    private List<RandomEvents> currentGameEvents;
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
@@ -132,6 +135,9 @@ public class Arena {
         }
         killStreaks = new HashMap<>();
         highestKillStreaks = new HashMap<>();
+
+        currentGameEvents = new ArrayList<>(Arrays.asList(RandomEvents.values()));
+        Collections.shuffle(currentGameEvents);
     }
 
     public void addGameTask(BukkitTask task) {
@@ -484,5 +490,12 @@ public class Arena {
             double rawKda = (double) totalScore / deaths;
             return Math.round(rawKda * 100.0) / 100.0;
         }
+    }
+
+    public Optional<RandomEvents> switchNextEvent() {
+        if (currentGameEvents == null || currentGameEvents.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(currentGameEvents.remove(0));
     }
 }
