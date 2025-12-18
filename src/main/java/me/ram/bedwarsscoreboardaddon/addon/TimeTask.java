@@ -48,8 +48,6 @@ public class TimeTask {
             @Override
             public void run() {
                 if (arena.isOver()) {
-                    gameLeft = 0;
-                    arena.setGameLeft(0);
                     this.cancel();
                     return;
                 }
@@ -57,15 +55,19 @@ public class TimeTask {
                 arena.setGameLeft(gameLeft);
             }
         }.runTaskTimer(Main.getInstance(), 0L, 20L));
+
         ScoreBoard scoreBoard = arena.getScoreBoard();
+        // 刷新 自定义任务
         Map<String, String> plan_infos = scoreBoard.getPlan_infos();
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
                 if (arena.isOver()) {
-                    for (String key : plan_infos.keySet()) {
-                        if (key.endsWith("_2")) continue;
-                        plan_infos.put(key, "");
+                    if (game.getTimeLeft() <= 1 || arena.isOver()) {
+                        for (String key : plan_infos.keySet()) {
+                            if (key.endsWith("_2")) continue;
+                            plan_infos.put(key, "");
+                        }
                     }
                     this.cancel();
                     return;
@@ -77,11 +79,11 @@ public class TimeTask {
                             plan_infos.put(key, Main.getInstance().getConfig().getString("planinfo." + plan + ".plans." + key));
                         }
                     }
-
                 }
             }
         }.runTaskTimer(Main.getInstance(), 0L, 20L));
 
+        // 刷新 自定义倒计时
         for (String id : Config.timer.keySet()) {
             arena.addGameTask(new BukkitRunnable() {
                 int i = Config.timer.get(id);
@@ -89,18 +91,18 @@ public class TimeTask {
                 @Override
                 public void run() {
                     if (arena.isOver()) {
-                        this.cancel();
                         i = 0;
-                        return;
+                        this.cancel();
                     }
 
                     String format = i / 60 + ":" + ((i % 60 < 10) ? ("0" + i % 60) : (i % 60));
-                    arena.getScoreBoard().getTimer_placeholder().put("{timer_" + id + "}", format);
-                    arena.getScoreBoard().getTimer_placeholder().put("{timer_sec_" + id + "}", String.valueOf(i));
+                    scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", format);
+                    scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", String.valueOf(i));
                     i--;
                 }
             }.runTaskTimer(Main.getInstance(), 0L, 20L));
         }
+        // 刷新 TimeCommand
         for (String cmds : Main.getInstance().getConfig().getConfigurationSection("timecommand").getKeys(false)) {
             arena.addGameTask(new BukkitRunnable() {
                 final int gametime = Main.getInstance().getConfig().getInt("timecommand." + cmds + ".gametime");

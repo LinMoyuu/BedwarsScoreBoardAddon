@@ -28,7 +28,6 @@ public class ScoreBoard {
     private int title_index = 0;
     @Getter
     private Map<String, String> plan_infos;
-    private Map<String, String> over_plan_info;
 
     public ScoreBoard(Arena arena) {
         this.arena = arena;
@@ -36,11 +35,11 @@ public class ScoreBoard {
         placeholderManager = new PlaceholderManager(game);
         team_status = new HashMap<>();
         timer_placeholder = new HashMap<>();
+        // 这块刷新在TimeTask
         plan_infos = new HashMap<>();
-        over_plan_info = new HashMap<>();
+        // 刷新计分板任务
         arena.addGameTask(new BukkitRunnable() {
             int i = Config.scoreboard_interval;
-
             @Override
             public void run() {
                 i--;
@@ -59,7 +58,7 @@ public class ScoreBoard {
                 game.getRunningTasks().clear();
                 startTimerCountdown(game);
             }
-        }.runTaskLater(Main.getInstance(), 19L));
+        }.runTaskLater(Main.getInstance(), 20L));
     }
 
     public PlaceholderManager getPlaceholderManager() {
@@ -98,11 +97,6 @@ public class ScoreBoard {
 
     public void updateScoreboard() {
         List<String> lines = new ArrayList<>();
-        if (game.getTimeLeft() == 1) {
-            over_plan_info = plan_infos;
-        } else if (game.getTimeLeft() < 1) {
-            plan_infos = over_plan_info;
-        }
         int alive_teams = 0;
         int remain_teams = 0;
         for (Team team : game.getTeams().values()) {
