@@ -50,6 +50,8 @@ hunger_change: false
 #喝药水清除玻璃瓶
 clear_bottle: true
 
+#在喝下时判断是否与药水有同效果 如果是不让喝
+potion_cooling: true
 
 #快速重生
 fast_respawn: true

@@ -357,9 +357,24 @@ public class EventListener implements Listener {
         if (arena == null) {
             return;
         }
+
         if (e.getItem().getType().equals(Material.POTION)) {
             ItemStack itemStack = e.getItem().clone();
             PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
+            if (potionMeta == null) return;
+
+            // 物品冷却中
+            if (Config.potion_cooling) {
+                for (PotionEffect potionEffect : potionMeta.getCustomEffects()) {
+                    if (player.hasPotionEffect(potionEffect.getType())) {
+                        e.setCancelled(true);
+                        player.sendMessage("物品冷却中");
+                        return;
+                    }
+                }
+            }
+
+            // 清空药水瓶
             if (Config.clear_bottle) {
                 potionMeta.getCustomEffects().forEach(effect -> {
                     if (player.hasPotionEffect(effect.getType())) {
@@ -386,6 +401,7 @@ public class EventListener implements Listener {
                     player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
                 }
             }
+            // 隐藏隐身玩家药水粒子效果
             if (Config.invisibility_player_enabled) {
                 for (PotionEffect potion : potionMeta.getCustomEffects()) {
                     if (potion.getType().equals(PotionEffectType.INVISIBILITY)) {
@@ -400,6 +416,7 @@ public class EventListener implements Listener {
                 }
             }
         }
+        // 隐藏隐身玩家其他药水粒子效果
         if (Config.invisibility_player_enabled && Config.invisibility_player_hide_particles && arena.getInvisiblePlayer().isInvisiblePlayer(player) && (e.getItem().getType() == Material.POTION || e.getItem().getType() == Material.GOLDEN_APPLE || e.getItem().getType() == Material.ROTTEN_FLESH || e.getItem().getType() == Material.RAW_FISH || e.getItem().getType() == Material.RAW_CHICKEN || e.getItem().getType() == Material.SPIDER_EYE || e.getItem().getType() == Material.POISONOUS_POTATO)) {
             Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
                 if (player.isOnline()) {
