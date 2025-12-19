@@ -300,7 +300,7 @@ public class Commands implements CommandExecutor {
         PotionEffectType potionEffectType = event.getEffectType();
 
         for (Player player : game.getPlayers()) {
-            if (game.isSpectator(player)) continue;
+//            if (game.isSpectator(player)) continue;
             Utils.sendTitle(player, 0, 60, 0, "", subtitle);
             if (potionEffectType != null) {
                 player.addPotionEffect(new PotionEffect(potionEffectType, 90 * 20, 0));
