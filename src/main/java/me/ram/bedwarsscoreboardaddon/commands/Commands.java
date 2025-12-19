@@ -91,8 +91,8 @@ public class Commands implements CommandExecutor {
                 if (arena == null) return true;
                 Game game = arena.getGame();
                 if (game == null) return true;
-                String title = args[2].replace("\"\"","");
-                String subtitle = args[3].replace("\"\"","");
+                String title = args[2].replace("\"\"", "");
+                String subtitle = args[3].replace("\"\"", "");
                 for (Player player : game.getPlayers()) {
                     if (!title.isEmpty() || !subtitle.isEmpty()) {
                         Utils.sendTitle(player, 0, 60, 10, ColorUtil.color(title), ColorUtil.color(subtitle));

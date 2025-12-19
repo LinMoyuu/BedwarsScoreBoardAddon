@@ -40,6 +40,7 @@ public class ScoreBoard {
         // 刷新计分板任务
         arena.addGameTask(new BukkitRunnable() {
             int i = Config.scoreboard_interval;
+
             @Override
             public void run() {
                 i--;

@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import io.github.bedwarsrel.BedwarsRel;
 import me.ram.bedwarsscoreboardaddon.Main;
 
 public class ServerRestartMessageListener extends PacketAdapter {
