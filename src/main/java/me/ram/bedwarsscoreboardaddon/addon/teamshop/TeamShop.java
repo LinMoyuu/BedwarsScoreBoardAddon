@@ -210,10 +210,10 @@ public class TeamShop {
                         }
                         player.updateInventory();
                         break;
-                    } else if (stack.getType().equals(Material.BOOK) && (
+                    } else if (
                             meta.getLore().contains("§s§o§u§l§s§1") || meta.getLore().contains("§s§o§u§l§s§2")
                                     || meta.getLore().contains("§s§o§u§l§l§1") || meta.getLore().contains("§s§o§u§l§l§2")
-                                    || meta.getLore().contains("§s§o§u§l§b§1") || meta.getLore().contains("§s§o§u§l§b§2"))) {
+                                    || meta.getLore().contains("§s§o§u§l§b§1") || meta.getLore().contains("§s§o§u§l§b§2")) {
                         if (playerTeam == null) continue;
                         stack.setType(Material.AIR);
                         inventory.setItem(i, stack);
