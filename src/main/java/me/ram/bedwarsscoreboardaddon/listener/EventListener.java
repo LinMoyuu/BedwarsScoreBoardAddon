@@ -518,6 +518,17 @@ public class EventListener implements Listener {
                     if (arena == null) return;
                     Team playerTeam = game.getPlayerTeam(player);
                     if (playerTeam == null) return;
+                    // 阻止Shift点击增益购买物品
+                    int clickType = packet.getIntegers().read(3);
+                    if (clickType == 1 && (lore.contains("§s§o§u§l§s§1")
+                            || (lore.contains("§s§o§u§l§s§2"))
+                            || (lore.contains("§s§o§u§l§l§1"))
+                            || (lore.contains("§s§o§u§l§l§2"))
+                            || (lore.contains("§s§o§u§l§b§1"))
+                            || (lore.contains("§s§o§u§l§b§2")))) {
+                        e.setCancelled(true);
+                        Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 1L);
+                    }
                     // 增益升级购买判断
                     int teamSharpnessLvl = arena.getTeamShop().getTeamSharpnessLevel().getOrDefault(playerTeam, 0);
                     int teamLeggingsProtectionLvl = arena.getTeamShop().getTeamLeggingsProtectionLevel().getOrDefault(playerTeam, 0);
@@ -530,21 +541,14 @@ public class EventListener implements Listener {
                             || (lore.contains("§s§o§u§l§b§2") && teamBootsProtectionLvl >= 2)) {
                         e.setCancelled(true);
                         player.sendMessage("已拥有套装或拥有更高级套装");
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (player.isOnline()) {
-                                    player.updateInventory();
-                                }
-                            }
-                        }.runTaskLater(Main.getInstance(), 1L);
+                        Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 1L);
                     }
                     ItemStack leggings = player.getInventory().getLeggings();
                     ItemStack boots = player.getInventory().getBoots();
                     if (leggings == null || boots == null) {
                         return;
                     }
-                    // 购买装备判断 太长了看不懂懒得看 能跑就行
+                    // 购买装备降级判断 太长了看不懂懒得看 能跑就行
                     if ((lore.contains("§a§r§m§o§r§0§0§1") && ((leggings.getType() == Material.CHAINMAIL_LEGGINGS && leggings.getType() == Material.CHAINMAIL_LEGGINGS)
                             || (leggings.getType() == Material.IRON_LEGGINGS && leggings.getType() == Material.IRON_LEGGINGS)
                             || (leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS)))
@@ -552,14 +556,7 @@ public class EventListener implements Listener {
                             || (lore.contains("§a§r§m§o§r§0§0§3") && leggings.getType() == Material.DIAMOND_LEGGINGS && leggings.getType() == Material.DIAMOND_LEGGINGS)) {
                         e.setCancelled(true);
                         player.sendMessage("已拥有套装或拥有更高级套装");
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (player.isOnline()) {
-                                    player.updateInventory();
-                                }
-                            }
-                        }.runTaskLater(Main.getInstance(), 1L);
+                        Bukkit.getScheduler().runTaskLater(Main.getInstance(), player::updateInventory, 1L);
                     }
                 }
             }

@@ -128,14 +128,10 @@ public class GameListener implements Listener {
             Main.getInstance().getArenaManager().getArenas().get(game.getName()).onEnd();
         }
         Main.getInstance().getArenaManager().removeArena(game.getName());
-        Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
-            game.getPlayers().forEach(p -> {
-                try {
-                    game.playerLeave(p, false);
-                } catch (Exception ex) {
-                }
-            });
-        });
+        for (Player player : game.getPlayers()) {
+            if (player == null) continue;
+            game.playerLeave(player, false);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -177,20 +173,5 @@ public class GameListener implements Listener {
         }
         e.setCancelled(true);
         SelectTeam.openSelectTeam(e.getGame(), (Player) e.getPlayer());
-    }
-
-    private void destroyBlock(Game game, Team team) {
-        Material type = team.getTargetHeadBlock().getBlock().getType();
-        if (type.equals(game.getTargetMaterial())) {
-            if (type.equals(Material.BED_BLOCK)) {
-                if (BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8")) {
-                    team.getTargetFeetBlock().getBlock().setType(Material.AIR);
-                } else {
-                    team.getTargetHeadBlock().getBlock().setType(Material.AIR);
-                }
-            } else {
-                team.getTargetHeadBlock().getBlock().setType(Material.AIR);
-            }
-        }
     }
 }
