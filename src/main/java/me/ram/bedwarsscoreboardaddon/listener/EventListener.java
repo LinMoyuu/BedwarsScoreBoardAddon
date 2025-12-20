@@ -21,6 +21,7 @@ import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -28,6 +29,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -42,6 +44,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -481,6 +484,23 @@ public class EventListener implements Listener {
     public void onPearlDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof EnderPearl) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBreakBed(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        HashSet<Material> set = new HashSet<>();
+        if (event.getBlock().getType() == Material.BED_BLOCK) {
+            for (Block b : player.getLineOfSight(set, 4)) {
+                if (b.getType() != Material.AIR) {
+                    if (b.getType() != Material.BED_BLOCK) {
+                        event.setCancelled(true);
+                        player.sendMessage("§b起床战争 >> §7§l请勿从缝隙中敲床 !");
+                    }
+                    break;
+                }
+            }
         }
     }
 
