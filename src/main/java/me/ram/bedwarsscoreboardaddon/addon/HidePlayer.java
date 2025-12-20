@@ -14,8 +14,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.List;
 
@@ -92,8 +92,8 @@ public class HidePlayer implements Listener {
     }
 
     @EventHandler
-    public void onDeath(PlayerDeathEvent e) {
-        Player player = e.getEntity();
+    public void onRespawn(PlayerRespawnEvent e) {
+        Player player = e.getPlayer();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) {
             return;
