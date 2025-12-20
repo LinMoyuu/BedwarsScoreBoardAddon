@@ -164,8 +164,8 @@ public class Title implements Listener {
         if (newPlayer.getName().contains(",") || newPlayer.getName().contains("[") || newPlayer.getName().contains("]")) {
             newPlayer.kickPlayer("");
         }
-        for (Player player : game.getPlayers()) {
-            if (!(e.getGame().getState() != GameState.WAITING && e.getGame().getState() == GameState.RUNNING)) {
+        if (game.getState() == GameState.WAITING) {
+            for (Player player : game.getPlayers()) {
                 if (Config.jointitle_enabled) {
                     int needplayers = game.getMinPlayers() - game.getPlayers().size();
                     needplayers = Math.max(needplayers, 0);
@@ -176,6 +176,24 @@ public class Title implements Listener {
                     String title = Config.jointitle_title.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
                     String subtitle = Config.jointitle_subtitle.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
                     Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, title, subtitle);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLeave(BedwarsPlayerLeaveEvent e) {
+        Game game = e.getGame();
+        if (game.getState() == GameState.WAITING) {
+            for (Player player : game.getPlayers()) {
+                if (Config.jointitle_enabled) {
+                    int needplayers = game.getMinPlayers() - game.getPlayers().size();
+                    needplayers = Math.max(needplayers, 0);
+                    String status = "&f还需 " + needplayers + " 个玩家";
+                    if (game.getLobbyCountdown() != null) {
+                        game.setGameLobbyCountdown(null);
+                        Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
+                    }
                 }
             }
         }

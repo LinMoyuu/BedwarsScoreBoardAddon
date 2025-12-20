@@ -18,6 +18,7 @@ import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -35,7 +36,6 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.*;
 
 public class Arena {
-
     @Getter
     private final Game game;
     @Getter
@@ -137,8 +137,10 @@ public class Arena {
         killStreaks = new HashMap<>();
         highestKillStreaks = new HashMap<>();
 
-        currentGameEvents = new ArrayList<>(Arrays.asList(RandomEvents.values()));
-        Collections.shuffle(currentGameEvents);
+        if (Config.randomplay_enabled) {
+            currentGameEvents = new ArrayList<>(Arrays.asList(RandomEvents.values()));
+            Collections.shuffle(currentGameEvents);
+        }
     }
 
     public void addGameTask(BukkitTask task) {
@@ -244,80 +246,76 @@ public class Arena {
     }
 
     public void onOver(BedwarsGameOverEvent e) {
-        if (e.getGame().getName().equals(this.game.getName())) {
-            isOver = true;
-            if (Config.overstats_enabled && e.getWinner() != null) {
-                Team winner = e.getWinner();
-                Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
-                Map<Integer, List<String>> player_kills = new HashMap<>();
-                totalkills.forEach((name, kills) -> {
-                    List<String> players = player_kills.getOrDefault(kills, new ArrayList<>());
-                    players.add(name);
-                    player_kills.put(kills, players);
-                });
-                List<Integer> kills_top = new ArrayList<>(player_kills.keySet());
-                Collections.sort(kills_top);
-                Collections.reverse(kills_top);
-                List<String> player_rank_name = new ArrayList<>();
-                List<Integer> player_rank_kills = new ArrayList<>();
-                for (Integer kills : kills_top) {
-                    for (String name : player_kills.get(kills)) {
-                        if (player_rank_name.size() < 3) {
-                            player_rank_name.add(name);
-                            player_rank_kills.add(kills);
-                        } else {
-                            break;
-                        }
+        if (!e.getGame().getName().equals(this.game.getName())) return;
+        isOver = true;
+        if (Config.overstats_enabled && e.getWinner() != null) {
+            Team winner = e.getWinner();
+            Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
+            Map<Integer, List<String>> player_kills = new HashMap<>();
+            totalkills.forEach((name, kills) -> {
+                List<String> players = player_kills.getOrDefault(kills, new ArrayList<>());
+                players.add(name);
+                player_kills.put(kills, players);
+            });
+            List<Integer> kills_top = new ArrayList<>(player_kills.keySet());
+            Collections.sort(kills_top);
+            Collections.reverse(kills_top);
+            List<String> player_rank_name = new ArrayList<>();
+            List<Integer> player_rank_kills = new ArrayList<>();
+            for (Integer kills : kills_top) {
+                for (String name : player_kills.get(kills)) {
+                    if (player_rank_name.size() < 3) {
+                        player_rank_name.add(name);
+                        player_rank_kills.add(kills);
+                    } else {
+                        break;
                     }
                 }
-                int size = player_rank_name.size();
-                for (int i = 0; i < 3 - size; i++) {
-                    player_rank_name.add("无");
-                    player_rank_kills.add(0);
-                }
-                StringBuilder win_team_player_list = new StringBuilder();
-                for (Player player : winner.getPlayers()) {
-                    win_team_player_list.append((win_team_player_list.length() > 0) ? ", " + player.getName() : player.getName());
+            }
+            int size = player_rank_name.size();
+            for (int i = 0; i < 3 - size; i++) {
+                player_rank_name.add("无");
+                player_rank_kills.add(0);
+            }
+            StringBuilder win_team_player_list = new StringBuilder();
+            for (Player player : winner.getPlayers()) {
+                win_team_player_list.append((win_team_player_list.length() > 0) ? ", " + player.getName() : player.getName());
+            }
+
+            // 结算 Title
+            long baseDelay = 120L;
+            long delayBetween = 80L;
+            // 第一阶段
+            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
+                    Utils.sendTitle(player, 20, 40, 20, "&e游戏结束", "&e正在统计本局比赛..")), baseDelay);
+
+            // 第二阶段
+            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
+                    Utils.sendTitle(player, 20, 40, 20,
+                            "&c最高连杀： " + getHighestKillStreak(player.getUniqueId()),
+                            "&eKDA： &c" + calculateSpecialKda(player))), baseDelay + delayBetween);
+
+            // 第三阶段
+            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+                String firstKillerName = player_rank_name.get(0);
+                ChatColor firstKillerTeamColor = ChatColor.WHITE;
+                Team firstKillerTeam = playerNameTeams.get(firstKillerName);
+                if (firstKillerTeam != null) {
+                    firstKillerTeamColor = firstKillerTeam.getChatColor();
                 }
 
-                // 结算 Title
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        for (Player player : game.getPlayers()) {
-                            Utils.sendTitle(player, 20, 40, 20, "&e游戏结束", "&e正在统计本局比赛..");
-                        }
-                    }
-                }.runTaskLater(Main.getInstance(), 120L);
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        for (Player player : game.getPlayers()) {
-                            Utils.sendTitle(player, 20, 40, 20, "&c最高连杀： " + getHighestKillStreak(player.getUniqueId()), "&eKDA： &c" + calculateSpecialKda(player));
-                        }
-                    }
-                }.runTaskLater(Main.getInstance(), 200L);
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        String firstKillerName = player_rank_name.get(0);
-                        ChatColor firstKillerTeamColor = ChatColor.WHITE;
-                        Team firstKillerTeam = playerNameTeams.get(firstKillerName);
-                        if (firstKillerTeam != null) {
-                            firstKillerTeamColor = firstKillerTeam.getChatColor();
-                        }
-                        for (Player player : game.getPlayers()) {
-                            Utils.sendTitle(player, 20, 40, 20, firstKillerTeamColor + firstKillerName, "&d&l全&e&l场&c&l最&b&l佳");
-                        }
-                    }
-                }.runTaskLater(Main.getInstance(), 280L);
+                final ChatColor finalColor = firstKillerTeamColor;
+                game.getPlayers().forEach(player ->
+                        Utils.sendTitle(player, 20, 40, 20,
+                                finalColor + firstKillerName,
+                                "&d&l全&e&l场&c&l最&b&l佳"));
+            }, baseDelay + 2 * delayBetween);
 
-                for (Player player : game.getPlayers()) {
-                    for (String msg : Config.overstats_message) {
-                        if (msg.isEmpty()) break;
-                        msg = PlaceholderAPIUtil.setPlaceholders(player, msg);
-                        player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list.toString()).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
-                    }
+            for (Player player : game.getPlayers()) {
+                for (String msg : Config.overstats_message) {
+                    if (msg.isEmpty()) break;
+                    msg = PlaceholderAPIUtil.setPlaceholders(player, msg);
+                    player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list.toString()).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
                 }
             }
         }
