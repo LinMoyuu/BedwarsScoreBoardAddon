@@ -51,7 +51,7 @@ hunger_change: false
 clear_bottle: true
 
 
-#在喝下时判断是否与药水有同效果 如果是不让喝
+##在喝下时判断是否与“玩家已有的药水效果”有同一药水效果 如果是，取消喝下
 potion_cooling: true
 
 
@@ -76,7 +76,7 @@ chat_format:
 
     #旁观者
     spectator: true
-    
+
 
   #全体聊天前缀
   all_prefix:
@@ -124,10 +124,10 @@ timecommand:
   #
   # 指令名称
   # 1:
-  # 
+  #
   #   当游戏剩余多少时间时执行命令
   #   gametime: 3600
-  #  
+  #
   #   执行的命令
   #   command:
   #   - ""
@@ -670,10 +670,10 @@ giveitem:
   #    #  respawn     重生时给予
   #    #  false       不给予
   #    give: true
-  #   
+  #
   #    #物品所在背包的位置
   #    slot: 0
-  #    
+  #
   #    #物品
   #    item:
   #    - type: WOOD_SWORD
@@ -1103,6 +1103,10 @@ overstats:
 actionbar: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
 
 
+## 随机事件
+randomplay:
+  enabled: true
+
 #自定义倒计时
 #格式:
 #  编号: 时间
@@ -1111,7 +1115,7 @@ timer:
 
 
 #设定计划信息
-#变量 {plan_<编号>} 的内容 
+#变量 {plan_<编号>} 的内容
 #
 #格式:
 # 编号
@@ -1119,7 +1123,7 @@ timer:
 #
 #   #当游戏剩余多少时间时开始
 #   start_time: 3600
-#  
+#
 #   #当游戏剩余多少时间时结束
 #   end_time: 0
 #
@@ -1236,6 +1240,21 @@ playertag:
   #后缀
   suffix: ""
 
+
+#玩家列表称号
+#变量:
+# {team}               玩家队伍名称
+# {team_initials}      玩家队伍名称首字母
+# {color}              玩家队伍颜色
+# {color_name}         玩家队伍颜色名称
+# {color_initials}     玩家队伍颜色名称首字母
+playerlist:
+
+  #前缀
+  prefix: "{color}{team} &f| {color}"
+
+  #后缀
+  suffix: ""
 
 #日期格式
 date_format: "MM/dd/yy"
