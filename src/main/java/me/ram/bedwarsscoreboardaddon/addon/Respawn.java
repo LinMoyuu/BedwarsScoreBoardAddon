@@ -9,6 +9,7 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -192,6 +193,7 @@ public class Respawn {
         }
         if ((System.currentTimeMillis() - protected_time.get(player)) < protime) {
             e.setCancelled(true);
+            player.sendMessage(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + ColorUtil.color("&a该玩家正处于无敌时间!"));
             return;
         }
         protected_time.remove(player);
