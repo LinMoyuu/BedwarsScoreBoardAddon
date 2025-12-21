@@ -11,6 +11,8 @@ import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -187,12 +189,14 @@ public class Title implements Listener {
         if (game.getState() == GameState.WAITING) {
             for (Player player : game.getPlayers()) {
                 if (Config.jointitle_enabled) {
-                    int needplayers = game.getMinPlayers() - game.getPlayers().size();
-                    needplayers = Math.max(needplayers, 0);
-                    String status = "&f还需 " + needplayers + " 个玩家";
                     if (game.getLobbyCountdown() != null) {
                         game.setGameLobbyCountdown(null);
-                        Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
+                        Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+                            int needplayers = game.getMinPlayers() - game.getPlayers().size();
+                            needplayers = Math.max(needplayers, 0);
+                            String status = "&f还需 " + needplayers + " 个玩家";
+                            Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
+                        }, 1L);
                     }
                 }
             }
