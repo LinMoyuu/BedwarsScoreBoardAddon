@@ -218,10 +218,10 @@ public class Respawn {
         int protime = 500;
         if (Config.respawn_protected_enabled) {
             protime = Config.respawn_protected_time > 0 ? Config.respawn_protected_time * 1000 : 500;
-            damager.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a该玩家正处于无敌时间!"));
         }
         if ((System.currentTimeMillis() - protected_time.get(player)) < protime) {
             e.setCancelled(true);
+            damager.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a该玩家正处于无敌时间!"));
             return;
         }
         protected_time.remove(player);

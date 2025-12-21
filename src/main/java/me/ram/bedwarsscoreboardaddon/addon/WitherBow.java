@@ -9,6 +9,7 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerShootWitherBowEvent;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Effect;
 import org.bukkit.entity.Entity;
@@ -28,6 +29,10 @@ public class WitherBow implements Listener {
     public void onStarted(BedwarsGameStartedEvent e) {
         Game game = e.getGame();
         Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+        int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
+        for (Player player : game.getPlayers()) {
+            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " §f§l凋零弓  §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+        }
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
