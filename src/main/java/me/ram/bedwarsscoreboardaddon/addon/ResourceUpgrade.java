@@ -109,6 +109,7 @@ public class ResourceUpgrade {
             }
         }
         for (String rs : Main.getInstance().getConfig().getConfigurationSection("resourceupgrade").getKeys(false)) {
+            if (rs == null || rs.isEmpty()) break;
             arena.addGameTask(new BukkitRunnable() {
                 final int gametime = Main.getInstance().getConfig().getInt("resourceupgrade." + rs + ".gametime");
                 final List<String> upgrade = Main.getInstance().getConfig().getStringList("resourceupgrade." + rs + ".upgrade");

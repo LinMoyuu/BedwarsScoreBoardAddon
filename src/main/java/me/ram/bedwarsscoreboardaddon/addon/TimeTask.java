@@ -85,6 +85,7 @@ public class TimeTask {
 
         // 刷新 自定义倒计时
         for (String id : Config.timer.keySet()) {
+            if (id == null || id.isEmpty()) break;
             arena.addGameTask(new BukkitRunnable() {
                 int i = Config.timer.get(id);
 
@@ -104,6 +105,7 @@ public class TimeTask {
         }
         // 刷新 TimeCommand
         for (String cmds : Main.getInstance().getConfig().getConfigurationSection("timecommand").getKeys(false)) {
+            if (cmds == null || cmds.isEmpty()) break;
             arena.addGameTask(new BukkitRunnable() {
                 final int gametime = Main.getInstance().getConfig().getInt("timecommand." + cmds + ".gametime");
                 final List<String> cmdlist = Main.getInstance().getConfig().getStringList("timecommand." + cmds + ".command");
