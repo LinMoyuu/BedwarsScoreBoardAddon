@@ -22,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
@@ -179,6 +180,10 @@ public class Arena {
     }
 
     public void onDamage(EntityDamageEvent e) {
+        respawn.onDamage(e);
+    }
+
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
         respawn.onDamage(e);
     }
 

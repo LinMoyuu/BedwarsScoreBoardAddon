@@ -44,7 +44,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 public class EventListener implements Listener {
@@ -465,6 +464,13 @@ public class EventListener implements Listener {
         });
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDamage(EntityDamageByEntityEvent e) {
+        Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
+            arena.onEntityDamageByEntity(e);
+        });
+    }
+
     @EventHandler
     public void onPearlDamage(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
@@ -476,23 +482,6 @@ public class EventListener implements Listener {
 
         if (event.getDamager() instanceof EnderPearl) {
             event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onBreakBed(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        HashSet<Material> set = new HashSet<>();
-        if (event.getBlock().getType() == Material.BED_BLOCK) {
-            for (Block b : player.getLineOfSight(set, 4)) {
-                if (b.getType() != Material.AIR) {
-                    if (b.getType() != Material.BED_BLOCK) {
-                        event.setCancelled(true);
-                        player.sendMessage("§b起床战争 >> §7§l请勿从缝隙中敲床 !");
-                    }
-                    break;
-                }
-            }
         }
     }
 
