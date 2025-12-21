@@ -20,6 +20,7 @@ import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EnderPearl;
@@ -32,9 +33,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -274,20 +273,6 @@ public class EventListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onOpenInv(InventoryOpenEvent e) {
-        for (Arena arena : Main.getInstance().getArenaManager().getArenas().values()) {
-            arena.onInvOpen(e);
-        }
-    }
-
-    @EventHandler
-    public void onClick(InventoryClickEvent e) {
-        for (Arena arena : Main.getInstance().getArenaManager().getArenas().values()) {
-            arena.onClick(e);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamageByEntity(EntityDamageByEntityEvent e) {
         if (!Config.invisibility_player_enabled) {
@@ -482,6 +467,13 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPearlDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        Player player = (Player) event.getEntity();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        if (game.getState() != GameState.RUNNING) return;
+        if (Utils.isXpMode(game)) return;
+
         if (event.getDamager() instanceof EnderPearl) {
             event.setCancelled(true);
         }
