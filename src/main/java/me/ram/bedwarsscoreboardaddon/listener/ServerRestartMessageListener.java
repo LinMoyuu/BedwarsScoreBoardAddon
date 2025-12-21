@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import me.ram.bedwarsscoreboardaddon.Main;
+import org.bukkit.Bukkit;
 
 public class ServerRestartMessageListener extends PacketAdapter {
 
@@ -16,6 +17,7 @@ public class ServerRestartMessageListener extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent e) {
+        if (Bukkit.getPluginManager().getPlugin("BedwarsXP") != null) return;
         if (e.getPacketType() != PacketType.Play.Server.CHAT) return;
 
         PacketContainer originalPacket = e.getPacket();

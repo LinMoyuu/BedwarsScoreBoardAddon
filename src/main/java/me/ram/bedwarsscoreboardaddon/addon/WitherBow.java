@@ -101,6 +101,6 @@ public class WitherBow implements Listener {
             e.setCancelled(true);
             return;
         }
-        player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1w));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1));
     }
 }

@@ -7,6 +7,7 @@ import io.github.bedwarsrel.game.GameState;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -56,7 +57,7 @@ public class SoulItem implements Listener {
             Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
             shouldGiveSoul = arena != null && arena.getKillStreak(killer.getUniqueId()) >= 3;
         }
-        if (shouldGiveSoul) {
+        if (shouldGiveSoul && !Utils.isXpMode(game)) {
             killer.getInventory().addItem(soul);
         }
     }
