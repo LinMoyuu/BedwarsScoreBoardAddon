@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -135,7 +136,7 @@ public class Respawn {
                         removeRespawningPlayer(player);
                         protected_time.put(player, System.currentTimeMillis());
                         player.teleport(game.getPlayerTeam(player).getSpawnLocation());
-                        player.setVelocity(new Vector(0, 0.01, 0));
+                        player.setVelocity(new Vector(0, 0, 0));
                         player.setAllowFlight(false);
                         player.setGameMode(GameMode.SURVIVAL);
                         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
@@ -147,6 +148,10 @@ public class Respawn {
                         }
                         if (!Config.respawn_respawn_message.isEmpty()) {
                             player.sendMessage(Config.respawn_respawn_message);
+                        }
+                        int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time : 0;
+                        if (respawn_protectedTime > 0) {
+                            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a您获得了" + respawn_protectedTime + "秒的无敌时间!"));
                         }
 
                         Team playerTeam = game.getPlayerTeam(player);
@@ -193,7 +198,30 @@ public class Respawn {
         }
         if ((System.currentTimeMillis() - protected_time.get(player)) < protime) {
             e.setCancelled(true);
-            player.sendMessage(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + ColorUtil.color("&a该玩家正处于无敌时间!"));
+            return;
+        }
+        protected_time.remove(player);
+    }
+
+    public void onDamage(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Player) || !(e.getDamager() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) e.getEntity();
+        Player damager = (Player) e.getDamager();
+        if (!game.isInGame(player) || !game.isInGame(damager)) {
+            return;
+        }
+        if (!protected_time.containsKey(player)) {
+            return;
+        }
+        int protime = 500;
+        if (Config.respawn_protected_enabled) {
+            protime = Config.respawn_protected_time > 0 ? Config.respawn_protected_time * 1000 : 500;
+            damager.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a该玩家正处于无敌时间!"));
+        }
+        if ((System.currentTimeMillis() - protected_time.get(player)) < protime) {
+            e.setCancelled(true);
             return;
         }
         protected_time.remove(player);
