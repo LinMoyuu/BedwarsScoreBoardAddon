@@ -12,7 +12,6 @@ import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -219,16 +218,22 @@ public class Title implements Listener {
         }
         Arena arena = Main.getInstance().getArenaManager().getArena(e.getGame().getName());
         int killStreak = arena.getKillStreak(killer.getUniqueId());
+        boolean needSendTitle = !Utils.isXpMode(game) || Utils.isXpMode(game) && Utils.getPlayerXP(game, player) == 0;
+
         // 没人知道为什么花雨庭没有11 杀
         if (killStreak <= 10) {
-            Utils.sendTitle(killer, 0, 60, 20, "&a&l" + killStreak + " &a&l杀", "");
+            if (needSendTitle) {
+                Utils.sendTitle(killer, 0, 60, 20, "&a&l" + killStreak + " &a&l杀", "");
+            }
             if (!killStreakMessage(killer, killStreak).isEmpty()) {
                 for (Player gamePlayers : game.getPlayers()) {
                     gamePlayers.sendMessage(ColorUtil.color(killStreakMessage(killer, killStreak)));
                 }
             }
         } else {
-            Utils.sendTitle(killer, 0, 60, 20, "&a&l" + 10 + " &a&l杀", "");
+            if (needSendTitle) {
+                Utils.sendTitle(killer, 0, 60, 20, "&a&l" + 10 + " &a&l杀", "");
+            }
             if (!killStreakMessage(killer, 10).isEmpty()) {
                 for (Player gamePlayers : game.getPlayers()) {
                     gamePlayers.sendMessage(ColorUtil.color(killStreakMessage(killer, 10)));
