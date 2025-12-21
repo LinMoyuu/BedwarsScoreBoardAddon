@@ -25,8 +25,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -347,14 +345,6 @@ public class Arena {
 
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
         holographic.onArmorStandManipulate(e);
-    }
-
-    public void onClick(InventoryClickEvent e) {
-        teamShop.onClick(e);
-    }
-
-    public void onInvOpen(InventoryOpenEvent event) {
-        teamShop.onOpen(event);
     }
 
     public void onItemMerge(ItemMergeEvent e) {
