@@ -2,6 +2,7 @@ package me.ram.bedwarsscoreboardaddon.utils;
 
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
+import ldcr.BedwarsXP.api.XPManager;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,6 +18,11 @@ public class Utils {
 
     public static boolean isXpMode(Game game) {
         return Config.isBedwarsXPEnabled && ldcr.BedwarsXP.Config.isGameEnabledXP(game.getName());
+    }
+
+    public static int getPlayerXP(Game game, Player player) {
+        if (!isXpMode(game)) return 0;
+        return XPManager.getXPManager(game.getName()).getXP(player);
     }
 
     public static void sendMessage(Player player, Player placeholderPlayer, String text) {
