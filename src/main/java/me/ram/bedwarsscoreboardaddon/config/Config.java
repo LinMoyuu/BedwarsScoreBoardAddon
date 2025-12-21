@@ -244,6 +244,7 @@ public class Config {
     public static List<MapView> image_maps;
     private static FileConfiguration file_config;
     private static FileConfiguration language_config;
+    public static boolean isBedwarsXPEnabled = false;
 
     private static FileConfiguration getVerifiedConfig(String fileName) {
         Map<String, String> configVersion = new HashMap<>();
@@ -518,6 +519,8 @@ public class Config {
             BedwarsRel.getInstance().getConfig().set("die-on-void", false);
             BedwarsRel.getInstance().saveConfig();
         }
+
+        isBedwarsXPEnabled = Main.getInstance().getServer().getPluginManager().isPluginEnabled("BedwarsXP");
         Bukkit.getConsoleSender().sendMessage(prefix + Main.getInstance().getLocaleConfig().getLanguage("config_success"));
     }
 
