@@ -151,7 +151,7 @@ public class Respawn {
                         }
                         int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time : 0;
                         if (respawn_protectedTime > 0) {
-                            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a您获得了" + respawn_protectedTime + "秒的无敌时间!"));
+                            player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a您获得了" + respawn_protectedTime + "秒的无敌时间!"));
                         }
 
                         Team playerTeam = game.getPlayerTeam(player);
@@ -221,7 +221,7 @@ public class Respawn {
         }
         if ((System.currentTimeMillis() - protected_time.get(player)) < protime) {
             e.setCancelled(true);
-            damager.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a该玩家正处于无敌时间!"));
+            damager.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a该玩家正处于无敌时间!"));
             return;
         }
         protected_time.remove(player);

@@ -245,6 +245,7 @@ public class Config {
     private static FileConfiguration file_config;
     private static FileConfiguration language_config;
     public static boolean isBedwarsXPEnabled = false;
+    public static String bwrelPrefix;
 
     private static FileConfiguration getVerifiedConfig(String fileName) {
         Map<String, String> configVersion = new HashMap<>();
@@ -521,6 +522,7 @@ public class Config {
         }
 
         isBedwarsXPEnabled = Main.getInstance().getServer().getPluginManager().isPluginEnabled("BedwarsXP");
+        bwrelPrefix = ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " ");
         Bukkit.getConsoleSender().sendMessage(prefix + Main.getInstance().getLocaleConfig().getLanguage("config_success"));
     }
 

@@ -16,12 +16,14 @@ import me.ram.bedwarsscoreboardaddon.addon.teamshop.TeamShop;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
@@ -88,6 +90,8 @@ public class Arena {
     // 随机事件 生草一个 以后再说 xDD 有机会会重写的
     @Getter
     private List<RandomEvents> currentGameEvents;
+    // 破坏队友脚下方块次数
+    private HashMap<Player, Integer> friendlyBreakCount;
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
@@ -140,6 +144,8 @@ public class Arena {
             currentGameEvents = new ArrayList<>(Arrays.asList(RandomEvents.values()));
             Collections.shuffle(currentGameEvents);
         }
+
+        friendlyBreakCount = new HashMap<>();
     }
 
     public void addGameTask(BukkitTask task) {
@@ -197,6 +203,20 @@ public class Arena {
 
     public void onHangingBreak(HangingBreakEvent e) {
         graffiti.onHangingBreak(e);
+    }
+
+    public void onFriendlyBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        friendlyBreakCount.put(player, friendlyBreakCount.getOrDefault(player, 0) + 1);
+        int friendlyBreaks = friendlyBreakCount.getOrDefault(player, 0);
+        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&c&l恶意挖掘队友脚下方块将会被踢出(" + friendlyBreaks + "/5)"));
+        if (friendlyBreaks >= 5) {
+            friendlyBreakCount.remove(player);
+            player.kickPlayer(ColorUtil.color("&c&l你由于涉嫌恶意挖掘队友脚下方块而被踢出游戏！"));
+            for (Player gamePlayer : game.getPlayers()) {
+                gamePlayer.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&c&l由于恶意挖掘队友脚下方块而被踢出游戏，请大家引以为戒!"));
+            }
+        }
     }
 
     public void onRespawn(Player player) {
@@ -337,6 +357,7 @@ public class Arena {
         playerNameTeams = null;
         killStreaks = null;
         highestKillStreaks = null;
+        friendlyBreakCount = null;
     }
 
     public void onDisable() {

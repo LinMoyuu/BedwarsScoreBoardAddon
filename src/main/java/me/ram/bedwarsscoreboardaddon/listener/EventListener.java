@@ -22,6 +22,7 @@ import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -41,12 +42,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EventListener implements Listener {
 
     private final Map<String, Map<Event, PacketListener>> deathevents = new HashMap<>();
-    private final HashSet<Material> materialHashSet = new HashSet<>();
 
     public EventListener() {
         onPacketReceiving();
@@ -489,13 +490,6 @@ public class EventListener implements Listener {
         });
     }
 
-    private Set<Material> getMaterialSet() {
-        if (materialHashSet.isEmpty()) {
-            Collections.addAll(materialHashSet, Material.values());
-        }
-        return materialHashSet;
-    }
-
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
@@ -504,61 +498,65 @@ public class EventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBreakBed(BlockBreakEvent event) {
+    public void onFriendlyBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (event.getBlock().getType() == Material.BED_BLOCK) {
-            for (Block b : player.getLineOfSight(getMaterialSet(), 5)) {
-                if (b.getType() == Material.AIR) continue;
-                if (b.getType() == Material.BED_BLOCK) break;
-                event.setCancelled(true);
-                player.sendMessage("§b起床战争 >>§7§l 请勿从缝隙里敲床 !");
-                break;
+        if (BedwarsRel.getInstance().getBooleanConfig("friendlybreak", true)) return;
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        Team playerTeam = game.getPlayerTeam(player);
+        for (Player teamPlayer : playerTeam.getPlayers()) {
+            if (player.equals(teamPlayer)) {
+                continue;
             }
+
+            if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).equals(event.getBlock())) {
+                return;
+            }
+            Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
+                arena.onFriendlyBreak(event);
+            });
         }
     }
 
     private void onPacketReceiving() {
         PacketListener packetListener = new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.BLOCK_DIG, PacketType.Play.Client.WINDOW_CLICK) {
             public void onPacketReceiving(PacketEvent e) {
+                if (e.getPacketType() != PacketType.Play.Client.BLOCK_DIG) {
+                    return;
+                }
                 Player player = e.getPlayer();
                 PacketContainer packet = e.getPacket();
-                if (e.getPacketType() == PacketType.Play.Client.BLOCK_DIG) {
-                    if (!packet.getPlayerDigTypes().read(0).equals(EnumWrappers.PlayerDigType.STOP_DESTROY_BLOCK)) {
-                        return;
-                    }
-                    Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-                    if (game == null || game.getState() != GameState.RUNNING || !BedwarsUtil.isSpectator(game, player)) {
-                        return;
-                    }
+                EnumWrappers.PlayerDigType digType = packet.getPlayerDigTypes().read(0);
+                if (digType != EnumWrappers.PlayerDigType.STOP_DESTROY_BLOCK) {
+                    return;
+                }
+                BlockPosition pos = packet.getBlockPositionModifier().read(0);
+                Location blockLocation = pos.toLocation(player.getWorld());
+
+                Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+                if (game != null && game.getState() == GameState.RUNNING && BedwarsUtil.isSpectator(game, player)) {
                     e.setCancelled(true);
-                    Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
-                        BlockPosition position = packet.getBlockPositionModifier().read(0);
-                        Location location = new Location(e.getPlayer().getWorld(), position.getX(), position.getY(), position.getZ());
-                        location.getBlock().getState().update();
+                    Bukkit.getScheduler().runTask(this.plugin, () -> {
+                        blockLocation.getBlock().getState().update();
                     });
+                    return;
+                }
+
+                Block brokenBlock = blockLocation.getBlock();
+
+                if (brokenBlock.getType() != Material.BED_BLOCK) {
+                    return;
+                }
+                Block targetBlock = player.getTargetBlock(null, 5);
+
+                if (targetBlock != null && !targetBlock.equals(brokenBlock)) {
+                    e.setCancelled(true);
+                    player.sendMessage("§b起床战争 >>§7§l 请勿从缝隙里敲床 !");
+                    brokenBlock.getState().update(true);
                 }
             }
         };
         ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
-    }
-
-    private Player getPlayer(String name) {
-        if (name == null) {
-            return null;
-        }
-        Player player = Bukkit.getPlayer(name);
-        if (player == null) {
-            return null;
-        }
-        if (player.getName().equals(name)) {
-            return player;
-        }
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getName().equals(name)) {
-                return player;
-            }
-        }
-        return null;
     }
 
     private PotionEffect getPotionEffect(Player player, PotionEffectType type) {

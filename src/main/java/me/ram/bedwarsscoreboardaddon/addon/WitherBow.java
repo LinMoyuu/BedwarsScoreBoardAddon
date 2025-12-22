@@ -32,7 +32,7 @@ public class WitherBow implements Listener {
         if (Config.witherbow_enabled) {
             int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
             for (Player player : game.getPlayers()) {
-                player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " §f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
             }
         }
         arena.addGameTask(new BukkitRunnable() {
@@ -42,7 +42,7 @@ public class WitherBow implements Listener {
                 int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
                 if (enableAfterMinutes == 15 || enableAfterMinutes == 5) {
                     for (Player player : game.getPlayers()) {
-                        player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " §f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
                     }
                 }
                 if (arena.getGameLeft() <= Config.witherbow_gametime) {

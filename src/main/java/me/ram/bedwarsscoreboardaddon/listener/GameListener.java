@@ -34,8 +34,8 @@ public class GameListener implements Listener {
         Game game = e.getGame();
         if (!Utils.isXpMode(game)) return;
         for (Player player : game.getPlayers()) {
-            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a正在加载配置，请耐心等待!"));
-            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a加载完成，玩的愉快！"));
+            player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a正在加载配置，请耐心等待!"));
+            player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a加载完成，玩的愉快！"));
         }
     }
 
