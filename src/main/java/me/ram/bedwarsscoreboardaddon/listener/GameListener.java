@@ -14,7 +14,9 @@ import me.ram.bedwarsscoreboardaddon.addon.SelectTeam;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ScoreboardUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +28,17 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.Map;
 
 public class GameListener implements Listener {
+
+    @EventHandler
+    public void onStart(BedwarsGameStartEvent e) {
+        Game game = e.getGame();
+        if (!Utils.isXpMode(game)) return;
+        for (Player player : game.getPlayers()) {
+            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a正在加载配置，请耐心等待!"));
+            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " &a加载完成，玩的愉快！"));
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onStarted(BedwarsGameStartedEvent e) {
         Game game = e.getGame();
