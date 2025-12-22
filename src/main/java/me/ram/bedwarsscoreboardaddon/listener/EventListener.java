@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.EnumWrappers.ScoreboardAction;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.collect.ImmutableMap;
 import io.github.bedwarsrel.BedwarsRel;
@@ -42,9 +41,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class EventListener implements Listener {
 
@@ -52,7 +49,6 @@ public class EventListener implements Listener {
 
     public EventListener() {
         onPacketReceiving();
-        onPacketSending();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -492,11 +488,46 @@ public class EventListener implements Listener {
         });
     }
 
+    private static Set<Material> TRANSPARENT_MATERIALS = null;
+
+    private static Set<Material> getTransparentMaterials() {
+        if (TRANSPARENT_MATERIALS == null) {
+            Set<Material> materials = new HashSet<>();
+
+            // 只添加真正透明的材料
+            materials.add(Material.AIR);
+            materials.add(Material.WATER);
+            materials.add(Material.STATIONARY_WATER);
+            materials.add(Material.LAVA);
+            materials.add(Material.STATIONARY_LAVA);
+            materials.add(Material.VINE);
+            materials.add(Material.TORCH);
+            // 可以根据需要添加更多透明材料
+
+            TRANSPARENT_MATERIALS = Collections.unmodifiableSet(materials);
+        }
+        return TRANSPARENT_MATERIALS;
+    }
+
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
         MenuManager man = Main.getInstance().getMenuManager();
         man.removePlayer(player);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBreakBed(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        if (event.getBlock().getType() == Material.BED_BLOCK) {
+            for (Block b : player.getLineOfSight(getTransparentMaterials(), 5)) {
+                if (b.getType() == Material.AIR) continue;
+                if (b.getType() == Material.BED_BLOCK) break;
+                event.setCancelled(true);
+                player.sendMessage("§b起床战争 >>§7§l 请勿从缝隙里敲床 !");
+                break;
+            }
+        }
     }
 
     private void onPacketReceiving() {
@@ -518,19 +549,6 @@ public class EventListener implements Listener {
                         Location location = new Location(e.getPlayer().getWorld(), position.getX(), position.getY(), position.getZ());
                         location.getBlock().getState().update();
                     });
-                }
-            }
-        };
-        ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
-    }
-
-    private void onPacketSending() {
-        PacketListener packetListener = new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Server.SCOREBOARD_SCORE) {
-            @Override
-            public void onPacketSending(PacketEvent e) {
-                PacketContainer packet = e.getPacket();
-                if (e.getPacketType().equals(PacketType.Play.Server.SCOREBOARD_SCORE) && packet.getScoreboardActions().read(0).equals(ScoreboardAction.REMOVE) && packet.getStrings().read(1).isEmpty() && getPlayer(packet.getStrings().read(0)) != null) {
-                    e.setCancelled(true);
                 }
             }
         };
