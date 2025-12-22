@@ -13,10 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ public class SoulItem implements Listener {
         Player killer = e.getKiller();
         Player player = e.getPlayer();
         Game game = e.getGame();
-        if (game.getState() != GameState.RUNNING) {
+        if (game.getState() != GameState.RUNNING || Utils.isXpMode(game)) {
             return;
         }
         if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
@@ -57,7 +57,7 @@ public class SoulItem implements Listener {
             Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
             shouldGiveSoul = arena != null && arena.getKillStreak(killer.getUniqueId()) >= 3;
         }
-        if (shouldGiveSoul && !Utils.isXpMode(game)) {
+        if (shouldGiveSoul) {
             killer.getInventory().addItem(soul);
         }
     }
@@ -76,10 +76,7 @@ public class SoulItem implements Listener {
         if (arena == null) {
             return;
         }
-        if (game.getPlayerTeam(player) == null) {
-            return;
-        }
-        if (game.getPlayerTeam(player).isDead(game)) {
+        if (Utils.isXpMode(game) || game.getPlayerTeam(player) == null || game.isSpectator(player)) {
             return;
         }
 
@@ -102,29 +99,29 @@ public class SoulItem implements Listener {
         if (!keptItems.isEmpty()) {
             itemsToKeep.put(player.getUniqueId(), keptItems);
         }
+    }
 
-
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
-        arena.addGameTask(new BukkitRunnable() {
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        if (Utils.isXpMode(game) || game.getPlayerTeam(player) == null || game.isSpectator(player)) {
+            return;
+        }
+        if (itemsToKeep.containsKey(playerUUID)) {
+            Map<Integer, ItemStack> keptItems = itemsToKeep.get(playerUUID);
+            PlayerInventory inventory = player.getInventory();
 
-            @Override
-            public void run() {        // 3. 检查是否有为该玩家暂存的物品
-                if (itemsToKeep.containsKey(playerUUID)) {
-                    Map<Integer, ItemStack> keptItems = itemsToKeep.get(playerUUID);
-                    PlayerInventory inventory = player.getInventory();
-
-                    // 4. 遍历暂存的物品，并使用 setItem 方法放回原位
-                    for (Map.Entry<Integer, ItemStack> entry : keptItems.entrySet()) {
-                        int slot = entry.getKey();
-                        ItemStack item = entry.getValue();
-                        inventory.setItem(slot, item); // 这是关键！
-                    }
-
-                    itemsToKeep.remove(playerUUID);
-                }
+            // 4. 遍历暂存的物品，并使用 setItem 方法放回原位
+            for (Map.Entry<Integer, ItemStack> entry : keptItems.entrySet()) {
+                int slot = entry.getKey();
+                ItemStack item = entry.getValue();
+                inventory.setItem(slot, item); // 这是关键！
             }
-        }.runTaskLater(Main.getInstance(), 1L));
 
-
+            itemsToKeep.remove(playerUUID);
+        }
     }
 }

@@ -46,7 +46,7 @@ public class ItemUtil {
         item.setItemMeta(meta);
     }
 
-    public static void setItemUnbreak(ItemStack item, boolean unbreak) {
+    public static void setItemUnbreakable(ItemStack item, boolean unbreak) {
         ItemMeta meta = item.getItemMeta();
         try {
             meta.setUnbreakable(unbreak);

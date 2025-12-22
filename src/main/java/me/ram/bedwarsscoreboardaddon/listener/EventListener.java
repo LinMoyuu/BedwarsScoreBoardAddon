@@ -504,6 +504,8 @@ public class EventListener implements Listener {
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) return;
         Team playerTeam = game.getPlayerTeam(player);
+        Arena arena = Main.getInstance().getArenaManager().getArenas().get(game.getName());
+        if (arena == null) return;
         for (Player teamPlayer : playerTeam.getPlayers()) {
             if (player.equals(teamPlayer)) {
                 continue;
@@ -512,9 +514,7 @@ public class EventListener implements Listener {
             if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).equals(event.getBlock())) {
                 return;
             }
-            Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
-                arena.onFriendlyBreak(event);
-            });
+            arena.onFriendlyBreak(event);
         }
     }
 

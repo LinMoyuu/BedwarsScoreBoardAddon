@@ -487,6 +487,10 @@ shop:
 
   #是否启用
   enabled: true
+  ##是否使用BWSBA的商店打开方式
+  ##当NPC不为村民时可能需要用这个 如为村民时最好关闭
+  #https://github.com/SakuraKoi/BedwarsXP/issues/31
+  enabled_addonopen: false
 
   #物品商店
   item_shop:

@@ -17,9 +17,9 @@ public class PlaceholderManager {
 
     public PlaceholderManager(Game game) {
         this.game = game;
-        gamePlaceholder = new HashMap<String, Placeholder>();
-        teamPlaceholder = new HashMap<String, Map<String, Placeholder>>();
-        playerPlaceholder = new HashMap<String, Map<String, Placeholder>>();
+        gamePlaceholder = new HashMap<>();
+        teamPlaceholder = new HashMap<>();
+        playerPlaceholder = new HashMap<>();
     }
 
     public void registerGamePlaceholder(String identifier, Placeholder placeholder) {

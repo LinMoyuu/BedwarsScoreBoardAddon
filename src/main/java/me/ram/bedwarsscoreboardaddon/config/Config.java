@@ -134,6 +134,7 @@ public class Config {
     public static boolean graffiti_holographic_enabled;
     public static String graffiti_holographic_text;
     public static boolean shop_enabled;
+    public static boolean shop_enabled_addonopen;
     public static String shop_item_shop_type;
     public static String shop_item_shop_skin;
     public static boolean shop_item_shop_look;
@@ -404,6 +405,7 @@ public class Config {
         graffiti_holographic_enabled = config.getBoolean("graffiti.holographic.enabled");
         graffiti_holographic_text = ColorUtil.color(config.getString("graffiti.holographic.text"));
         shop_enabled = config.getBoolean("shop.enabled");
+        shop_enabled_addonopen = config.getBoolean("shop.enabled_addonopen");
         shop_item_shop_type = config.getString("shop.item_shop.type");
         shop_item_shop_skin = config.getString("shop.item_shop.skin");
         shop_item_shop_look = config.getBoolean("shop.item_shop.look");

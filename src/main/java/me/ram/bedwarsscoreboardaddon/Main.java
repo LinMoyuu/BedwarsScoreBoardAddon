@@ -28,8 +28,6 @@ import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.concurrent.Callable;
-
 /**
  * @author Ram
  * @version 2.13.1
@@ -191,18 +189,8 @@ public class Main extends JavaPlugin {
         printMessage(prefix + getLocaleConfig().getLanguage("load_success"));
         try {
             Metrics metrics = new Metrics(this);
-            metrics.addCustomChart(new Metrics.SimplePie("pluginPrefix", new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    return BedwarsRel.getInstance().getConfig().getString("chat-prefix", ChatColor.GRAY + "[" + ChatColor.AQUA + "BedWars" + ChatColor.GRAY + "]");
-                }
-            }));
-            metrics.addCustomChart(new Metrics.SimplePie("language", new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    return localeConfig.getPluginLocale().getName();
-                }
-            }));
+            metrics.addCustomChart(new Metrics.SimplePie("pluginPrefix", () -> BedwarsRel.getInstance().getConfig().getString("chat-prefix", ChatColor.GRAY + "[" + ChatColor.AQUA + "BedWars" + ChatColor.GRAY + "]")));
+            metrics.addCustomChart(new Metrics.SimplePie("language", () -> localeConfig.getPluginLocale().getName()));
         } catch (Exception e) {
         }
         BedwarsRel.getInstance().getConfig().set("teamname-on-tab", false);

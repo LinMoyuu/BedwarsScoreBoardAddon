@@ -98,7 +98,7 @@ public class Shop {
                     isCancelled = true;
                     BoardAddonPlayerOpenItemShopEvent openItemShopEvent = new BoardAddonPlayerOpenItemShopEvent(game, player);
                     Bukkit.getPluginManager().callEvent(openItemShopEvent);
-                    if (!openItemShopEvent.isCancelled()) {
+                    if (!openItemShopEvent.isCancelled() && Config.shop_enabled_addonopen) {
                         player.closeInventory();
                         NewItemShop itemShop = game.openNewItemShop(player);
                         itemShop.setCurrentCategory(null);
