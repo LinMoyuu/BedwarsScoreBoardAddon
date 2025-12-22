@@ -95,16 +95,44 @@ public class ScoreboardUtil {
                     scoreboard.resetScores(entry);
                 }
             }
-            for (Team t : game.getTeams().values()) {
-                org.bukkit.scoreboard.Team team = scoreboard.getTeam(game.getName() + ":" + t.getName());
-                if (team == null) {
-                    team = scoreboard.registerNewTeam(game.getName() + ":" + t.getName());
+
+            for (Team team : game.getTeams().values()) {
+                org.bukkit.scoreboard.Team score_team = scoreboard.getTeam(game.getName() + ":" + team.getName());
+                if (score_team == null) {
+                    score_team = scoreboard.registerNewTeam(game.getName() + ":" + team.getName());
                 }
-                team.setAllowFriendlyFire(false);
-                team.setPrefix(t.getChatColor().toString());
-                for (Player pl : t.getPlayers()) {
-                    if (!team.hasPlayer(pl)) {
-                        team.addPlayer(pl);
+
+                // playerTag
+                String playerTagPrefix = "";
+                if (!Config.playertag_prefix.isEmpty()) {
+                    playerTagPrefix = (Config.playertag_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                }
+                String playerTagSuffix = "";
+                if (!Config.playertag_prefix.isEmpty()) {
+                    playerTagSuffix = (Config.playertag_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                }
+                score_team.setPrefix(playerTagPrefix);
+                score_team.setSuffix(playerTagSuffix);
+                score_team.setAllowFriendlyFire(false);
+
+                // playerList 获取
+                String playerListPrefix = "";
+                if (!Config.playerlist_prefix.isEmpty()) {
+                    playerListPrefix = (Config.playerlist_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                }
+                String playerListSuffix = "";
+                if (!Config.playerlist_suffix.isEmpty()) {
+                    playerListSuffix = (Config.playerlist_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                }
+
+                // 循环Rel队伍玩家
+                for (Player pl : team.getPlayers()) {
+                    // 修改 playerListName
+                    pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
+                    // 如果scoreboardTeam查无此人
+                    if (!score_team.hasPlayer(pl)) {
+                        // 添加其进Scoreboard Team
+                        pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
                     }
                 }
             }
