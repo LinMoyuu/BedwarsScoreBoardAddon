@@ -29,14 +29,23 @@ public class WitherBow implements Listener {
     public void onStarted(BedwarsGameStartedEvent e) {
         Game game = e.getGame();
         Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-        int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
-        for (Player player : game.getPlayers()) {
-            player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " §f§l凋零弓  §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+        if (Config.witherbow_enabled) {
+            int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
+            for (Player player : game.getPlayers()) {
+                player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " §f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+            }
         }
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
-                if (arena.getGameLeft() <= Config.witherbow_gametime && Config.witherbow_enabled) {
+                if (!Config.witherbow_enabled) return;
+                int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
+                if (enableAfterMinutes == 15 || enableAfterMinutes == 5) {
+                    for (Player player : game.getPlayers()) {
+                        player.sendMessage(ColorUtil.color(BedwarsRel.getInstance().getConfig().getString("chat-prefix") + " §f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+                    }
+                }
+                if (arena.getGameLeft() <= Config.witherbow_gametime) {
                     if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
                         game.getPlayers().forEach(player -> Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle));
                     }
