@@ -46,6 +46,7 @@ import java.util.*;
 public class EventListener implements Listener {
 
     private final Map<String, Map<Event, PacketListener>> deathevents = new HashMap<>();
+    private final HashSet<Material> materialHashSet = new HashSet<>();
 
     public EventListener() {
         onPacketReceiving();
@@ -488,25 +489,11 @@ public class EventListener implements Listener {
         });
     }
 
-    private static Set<Material> TRANSPARENT_MATERIALS = null;
-
-    private static Set<Material> getTransparentMaterials() {
-        if (TRANSPARENT_MATERIALS == null) {
-            Set<Material> materials = new HashSet<>();
-
-            // 只添加真正透明的材料
-            materials.add(Material.AIR);
-            materials.add(Material.WATER);
-            materials.add(Material.STATIONARY_WATER);
-            materials.add(Material.LAVA);
-            materials.add(Material.STATIONARY_LAVA);
-            materials.add(Material.VINE);
-            materials.add(Material.TORCH);
-            // 可以根据需要添加更多透明材料
-
-            TRANSPARENT_MATERIALS = Collections.unmodifiableSet(materials);
+    private Set<Material> getMaterialSet() {
+        if (materialHashSet.isEmpty()) {
+            Collections.addAll(materialHashSet, Material.values());
         }
-        return TRANSPARENT_MATERIALS;
+        return materialHashSet;
     }
 
     @EventHandler
@@ -520,7 +507,7 @@ public class EventListener implements Listener {
     public void onBreakBed(BlockBreakEvent event) {
         Player player = event.getPlayer();
         if (event.getBlock().getType() == Material.BED_BLOCK) {
-            for (Block b : player.getLineOfSight(getTransparentMaterials(), 5)) {
+            for (Block b : player.getLineOfSight(getMaterialSet(), 5)) {
                 if (b.getType() == Material.AIR) continue;
                 if (b.getType() == Material.BED_BLOCK) break;
                 event.setCancelled(true);
