@@ -882,7 +882,7 @@ witherbow:
   gametime: 2400
 
   #当凋零弓开启后变量 {bowtime} 的值
-  already_starte: "已开启"
+  already_start: "已开启"
 
   #凋零弓开启时的大标题
   title: "&b&l凋零弓"

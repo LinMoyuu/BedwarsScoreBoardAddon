@@ -39,10 +39,19 @@ public class WitherBow implements Listener {
             @Override
             public void run() {
                 if (!Config.witherbow_enabled) return;
-                int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
+                int enableAfterSec = (arena.getGameLeft() - Config.witherbow_gametime);
+                int enableAfterMinutes = enableAfterSec / 60;
+
                 if (enableAfterMinutes == 15 || enableAfterMinutes == 5) {
                     for (Player player : game.getPlayers()) {
+                        // 分钟提醒
                         player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+                    }
+                }
+                // 秒数提醒
+                if (enableAfterSec <= 5 && enableAfterSec > 0) {
+                    for (Player player : game.getPlayers()) {
+                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterSec + "秒钟 §7后开启!"));
                     }
                 }
                 if (arena.getGameLeft() <= Config.witherbow_gametime) {
@@ -84,7 +93,7 @@ public class WitherBow implements Listener {
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 5);
         PlaySound.playSound(player, Config.play_sound_sound_witherbow);
         skull.setYield(4.0f);
-        skull.setVelocity(e.getProjectile().getVelocity());
+        skull.setVelocity(e.getProjectile().getVelocity().multiply(0.3));
         skull.setShooter(player);
         e.setCancelled(true);
         player.updateInventory();
