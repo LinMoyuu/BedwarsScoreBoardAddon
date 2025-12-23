@@ -34,7 +34,7 @@ public class Actionbar {
             public void run() {
                 sendActionbar();
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 20L));
+        }.runTaskTimer(Main.getInstance(), 0L, 10L));
     }
 
     private void sendActionbar() {
