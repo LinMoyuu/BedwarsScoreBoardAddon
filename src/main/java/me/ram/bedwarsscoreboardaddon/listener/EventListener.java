@@ -503,7 +503,8 @@ public class EventListener implements Listener {
         if (BedwarsRel.getInstance().getBooleanConfig("friendlybreak", true)) return;
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) return;
-        Team playerTeam = game.getPlayerTeam(player);
+        Team playerTeam = game.getPlayerTeam(player);;
+        if (playerTeam == null) return;
         Arena arena = Main.getInstance().getArenaManager().getArenas().get(game.getName());
         if (arena == null) return;
         for (Player teamPlayer : playerTeam.getPlayers()) {
