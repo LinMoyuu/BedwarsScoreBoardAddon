@@ -40,12 +40,16 @@ public class WitherBow implements Listener {
             public void run() {
                 if (!Config.witherbow_enabled) return;
                 int enableAfterSec = (arena.getGameLeft() - Config.witherbow_gametime);
-                int enableAfterMinutes = enableAfterSec / 60;
 
-                if (enableAfterMinutes == 15 || enableAfterMinutes == 5) {
+                if (enableAfterSec == 15 * 60) {
                     for (Player player : game.getPlayers()) {
                         // 分钟提醒
-                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
+                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 15 + " 分钟 §7后开启!"));
+                    }
+                } else if (enableAfterSec == 5 * 60) {
+                    for (Player player : game.getPlayers()) {
+                        // 分钟提醒
+                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 5 + " 分钟 §7后开启!"));
                     }
                 }
                 // 秒数提醒
