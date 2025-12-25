@@ -19,7 +19,6 @@ import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
-import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -476,7 +475,7 @@ public class EventListener implements Listener {
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) return;
         if (game.getState() != GameState.RUNNING) return;
-        if (Utils.isXpMode(game)) return;
+        if (BedwarsUtil.isXpMode(game)) return;
 
         if (event.getDamager() instanceof EnderPearl) {
             event.setCancelled(true);

@@ -6,8 +6,8 @@ import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
+import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
-import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,7 +35,7 @@ public class SoulItem implements Listener {
         Player killer = e.getKiller();
         Player player = e.getPlayer();
         Game game = e.getGame();
-        if (game.getState() != GameState.RUNNING || Utils.isXpMode(game)) {
+        if (game.getState() != GameState.RUNNING || BedwarsUtil.isXpMode(game)) {
             return;
         }
         if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
@@ -76,7 +76,7 @@ public class SoulItem implements Listener {
         if (arena == null) {
             return;
         }
-        if (Utils.isXpMode(game) || game.getPlayerTeam(player) == null || game.isSpectator(player)) {
+        if (BedwarsUtil.isXpMode(game) || game.getPlayerTeam(player) == null || game.isSpectator(player)) {
             return;
         }
 
@@ -107,7 +107,7 @@ public class SoulItem implements Listener {
         UUID playerUUID = player.getUniqueId();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) return;
-        if (Utils.isXpMode(game) || game.getPlayerTeam(player) == null || game.isSpectator(player)) {
+        if (BedwarsUtil.isXpMode(game) || game.getPlayerTeam(player) == null || game.isSpectator(player)) {
             return;
         }
         if (itemsToKeep.containsKey(playerUUID)) {

@@ -214,7 +214,7 @@ public class Title implements Listener {
         }
         Arena arena = Main.getInstance().getArenaManager().getArena(e.getGame().getName());
         int killStreak = arena.getKillStreak(killer.getUniqueId());
-        boolean needSendTitle = !Utils.isXpMode(game) || Utils.isXpMode(game) && Utils.getPlayerXP(game, player) == 0;
+        boolean needSendTitle = !BedwarsUtil.isXpMode(game) || BedwarsUtil.isXpMode(game) && BedwarsUtil.getPlayerXP(game, player) == 0;
 
         // 没人知道为什么花雨庭没有11 杀
         if (killStreak <= 10) {

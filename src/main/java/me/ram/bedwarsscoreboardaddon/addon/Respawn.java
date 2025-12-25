@@ -10,6 +10,7 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.ItemUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -158,17 +159,17 @@ public class Respawn {
                         if (playerTeam != null) {
                             int teamSharpnessLvl = arena.getTeamShop().getTeamSharpnessLevel().getOrDefault(playerTeam, 0);
                             if (teamSharpnessLvl != 0) {
-                                Utils.givePlayerSharpness(player, teamSharpnessLvl);
+                                ItemUtil.givePlayerSharpness(player, teamSharpnessLvl);
                             }
 
                             int teamLeggingsLvl = arena.getTeamShop().getTeamLeggingsProtectionLevel().getOrDefault(playerTeam, 0);
                             if (teamLeggingsLvl != 0) {
-                                Utils.giveLeggingsProtection(player, teamLeggingsLvl);
+                                ItemUtil.giveLeggingsProtection(player, teamLeggingsLvl);
                             }
 
                             int teamBootsLvl = arena.getTeamShop().getTeamBootsProtectionLevel().getOrDefault(playerTeam, 0);
                             if (teamBootsLvl != 0) {
-                                Utils.giveBootsProtection(player, teamBootsLvl);
+                                ItemUtil.giveBootsProtection(player, teamBootsLvl);
                             }
                         }
 

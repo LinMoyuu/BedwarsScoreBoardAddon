@@ -14,9 +14,9 @@ import me.ram.bedwarsscoreboardaddon.addon.SelectTeam;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
+import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ScoreboardUtil;
-import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +32,7 @@ public class GameListener implements Listener {
     @EventHandler
     public void onStart(BedwarsGameStartEvent e) {
         Game game = e.getGame();
-        if (!Utils.isXpMode(game)) return;
+        if (!BedwarsUtil.isXpMode(game)) return;
         for (Player player : game.getPlayers()) {
             player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a正在加载配置，请耐心等待!"));
             player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a加载完成，玩的愉快！"));
