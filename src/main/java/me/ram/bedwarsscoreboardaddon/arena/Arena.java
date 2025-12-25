@@ -74,7 +74,7 @@ public class Arena {
     private final List<BukkitTask> gameTasks;
     @Getter
     private Shop shop;
-    private Boolean isOver;
+    private Boolean isOver = false;
     // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
     @Getter
     private Map<String, Team> playerNameTeams;
@@ -83,20 +83,18 @@ public class Arena {
     private Map<UUID, Integer> killStreaks;
     @Getter
     private Map<UUID, Integer> highestKillStreaks;
-    // 用于对齐 TimeTask等 实际上会比游戏时间慢一些
-    @Getter
-    @Setter
-    private int gameLeft;
     // 随机事件 生草一个 以后再说 xDD 有机会会重写的
     @Getter
     private List<RandomEvents> currentGameEvents;
     // 破坏队友脚下方块次数
     private HashMap<Player, Integer> friendlyBreakCount;
+    @Getter
+    @Setter
+    private boolean enabledWitherBow = false;
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
         this.game = game;
-        this.gameLeft = BedwarsRel.getInstance().getMaxLength() + 1;
         World gameWorld = game.getLoc1().getWorld();
         gameWorld.setGameRuleValue("doDaylightCycle", "false");
         gameWorld.setGameRuleValue("doWeatherCycle", "false");
@@ -122,7 +120,6 @@ public class Arena {
             shop = new Shop(this);
         }
         timeTask = new TimeTask(this);
-        isOver = false;
         addGameTask(new BukkitRunnable() {
             @Override
             public void run() {

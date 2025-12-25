@@ -6,12 +6,14 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TimeTask {
 
@@ -19,118 +21,180 @@ public class TimeTask {
     private final Game game;
     @Getter
     private final Arena arena;
-    @Getter
-    private int gameLeft;
+    private final ScoreBoard scoreBoard;
+
+    // 用于存储与时间相关的命令，避免每次都从配置文件读取
+    private final Map<Integer, List<String>> timedCommands;
 
     public TimeTask(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        this.gameLeft = arena.getGameLeft();
+        this.scoreBoard = arena.getScoreBoard();
 
-        // TimeCommand 开局指令
-        for (String cmd : Config.timecommand_startcommand) {
-            if (cmd.isEmpty()) {
+        // 预加载时间命令
+        this.timedCommands = preloadTimedCommands();
+        // 执行开局指令
+        dispatchCommands(Config.timecommand_startcommand);
+        refresh();
+    }
+
+    /**
+     * 预加载所有与时间相关的命令到 Map 中，以游戏剩余时间为键。
+     *
+     * @return 一个包含时间点和对应命令列表的 Map。
+     */
+    public Map<Integer, List<String>> preloadTimedCommands() {
+        ConfigurationSection timeCommandSection = Main.getInstance().getConfig().getConfigurationSection("timecommand");
+        if (timeCommandSection == null) {
+            return java.util.Collections.emptyMap();
+        }
+
+        return timeCommandSection.getKeys(false).stream()
+                .collect(Collectors.toMap(
+                        key -> timeCommandSection.getInt(key + ".gametime"),
+                        key -> timeCommandSection.getStringList(key + ".command")
+                ));
+    }
+
+    /**
+     * 检查并执行当前时间点的命令。
+     */
+    public void checkTimeCommands() {
+        if (timedCommands.containsKey(game.getTimeLeft())) {
+            dispatchCommands(timedCommands.get(game.getTimeLeft()));
+        }
+    }
+
+    public void refresh() {
+        refreshTimer();
+        checkPlans();
+        checkTimeCommands();
+        checkWitherBow();
+        arena.getActionbar().sendActionbar();
+    }
+
+
+    /**
+     * 刷新计分板上的自定义任务。
+     */
+    public void checkPlans() {
+        if (arena.isOver()) {
+            // 游戏结束时清空信息
+            scoreBoard.getPlan_infos().keySet().removeIf(key -> !key.endsWith("_2"));
+            scoreBoard.getPlan_infos().replaceAll((k, v) -> "");
+            return;
+        }
+
+        for (String planName : Config.planinfo) {
+            ConfigurationSection planSection = Main.getInstance().getConfig().getConfigurationSection("planinfo." + planName);
+            if (planSection == null) continue;
+
+            int startTime = planSection.getInt("start_time");
+            int endTime = planSection.getInt("end_time");
+
+
+            if (game.getTimeLeft() <= startTime && game.getTimeLeft() > endTime) {
+                ConfigurationSection plans = planSection.getConfigurationSection("plans");
+                if (plans != null) {
+                    for (String key : plans.getKeys(false)) {
+                        scoreBoard.getPlan_infos().put(key, plans.getString(key));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 刷新自定义倒计时。
+     */
+    public void refreshTimer() {
+        if (arena.isOver()) {
+            // 游戏结束，将所有计时器清零
+            Config.timer.keySet().forEach(id -> {
+                scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", "0:00");
+                scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", "0");
+                Config.timer.put(id, 0);
+            });
+            return;
+        }
+
+        for (String id : Config.timer.keySet()) {
+            if (id == null || id.isEmpty()) continue;
+
+            int remainingSeconds = Config.timer.getOrDefault(id, 0);
+            if (remainingSeconds > 0) {
+                remainingSeconds--;
+                Config.timer.put(id, remainingSeconds);
+            }
+
+            String format = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60);
+            scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", format);
+            scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", String.valueOf(remainingSeconds));
+        }
+    }
+
+    public void checkWitherBow() {
+        if (!Config.witherbow_enabled || arena.isEnabledWitherBow()) return;
+        int enableAfterSec = (game.getTimeLeft() - Config.witherbow_gametime);
+
+        if (enableAfterSec == 15 * 60) {
+            for (Player player : game.getPlayers()) {
+                // 分钟提醒
+                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 15 + " 分钟 §7后开启!"));
+            }
+        } else if (enableAfterSec == 5 * 60) {
+            for (Player player : game.getPlayers()) {
+                // 分钟提醒
+                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 5 + " 分钟 §7后开启!"));
+            }
+        }
+        // 秒数提醒
+        if (enableAfterSec <= 5 && enableAfterSec > 0) {
+            for (Player player : game.getPlayers()) {
+                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterSec + "秒钟 §7后开启!"));
+            }
+        }
+        if (game.getTimeLeft() <= Config.witherbow_gametime) {
+            if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
+                game.getPlayers().forEach(player -> Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle));
+            }
+            if (!Config.witherbow_message.isEmpty()) {
+                game.getPlayers().forEach(player -> player.sendMessage(Config.witherbow_message));
+            }
+            PlaySound.playSound(game, Config.play_sound_sound_enable_witherbow);
+            arena.setEnabledWitherBow(true);
+        }
+    }
+
+    /**
+     * 一个通用的方法，用于分发指令。
+     *
+     * @param commands 要执行的指令列表。
+     */
+    private void dispatchCommands(List<String> commands) {
+        for (String cmd : commands) {
+            if (cmd == null || cmd.isEmpty()) {
                 continue;
             }
+            String coloredCmd = ColorUtil.color(cmd);
             if (cmd.contains("{player}")) {
                 for (Player player : game.getPlayers()) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{player}", player.getName())));
+                    dispatch(coloredCmd.replace("{player}", player.getName()));
                 }
             } else if (cmd.contains("{gamename}")) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{gamename}", game.getName())));
+                dispatch(coloredCmd.replace("{gamename}", game.getName()));
             } else {
-                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd));
+                dispatch(coloredCmd);
             }
         }
+    }
 
-        // 这段包有问题的
-        arena.addGameTask(new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (arena.isOver()) {
-                    this.cancel();
-                    return;
-                }
-                gameLeft--;
-                arena.setGameLeft(gameLeft);
-            }
-        }.runTaskTimer(Main.getInstance(), 0L, 20L));
-
-        ScoreBoard scoreBoard = arena.getScoreBoard();
-        // 刷新 自定义任务
-        Map<String, String> plan_infos = scoreBoard.getPlan_infos();
-        arena.addGameTask(new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (arena.isOver()) {
-                    if (game.getTimeLeft() <= 1 || arena.isOver()) {
-                        for (String key : plan_infos.keySet()) {
-                            if (key.endsWith("_2")) continue;
-                            plan_infos.put(key, "");
-                        }
-                    }
-                    this.cancel();
-                    return;
-                }
-
-                for (String plan : Config.planinfo) {
-                    if (gameLeft <= Main.getInstance().getConfig().getInt("planinfo." + plan + ".start_time") && gameLeft > Main.getInstance().getConfig().getInt("planinfo." + plan + ".end_time")) {
-                        for (String key : Main.getInstance().getConfig().getConfigurationSection("planinfo." + plan + ".plans").getKeys(false)) {
-                            plan_infos.put(key, Main.getInstance().getConfig().getString("planinfo." + plan + ".plans." + key));
-                        }
-                    }
-                }
-            }
-        }.runTaskTimer(Main.getInstance(), 0L, 20L));
-
-        // 刷新 自定义倒计时
-        for (String id : Config.timer.keySet()) {
-            if (id == null || id.isEmpty()) break;
-            arena.addGameTask(new BukkitRunnable() {
-                int i = Config.timer.get(id);
-
-                @Override
-                public void run() {
-                    if (arena.isOver()) {
-                        i = 0;
-                        this.cancel();
-                    }
-
-                    String format = i / 60 + ":" + ((i % 60 < 10) ? ("0" + i % 60) : (i % 60));
-                    scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", format);
-                    scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", String.valueOf(i));
-                    i--;
-                }
-            }.runTaskTimer(Main.getInstance(), 0L, 20L));
-        }
-        // 刷新 TimeCommand
-        for (String cmds : Main.getInstance().getConfig().getConfigurationSection("timecommand").getKeys(false)) {
-            if (cmds == null || cmds.isEmpty()) break;
-            arena.addGameTask(new BukkitRunnable() {
-                final int gametime = Main.getInstance().getConfig().getInt("timecommand." + cmds + ".gametime");
-                final List<String> cmdlist = Main.getInstance().getConfig().getStringList("timecommand." + cmds + ".command");
-
-                @Override
-                public void run() {
-                    if (gameLeft <= gametime) {
-                        for (String cmd : cmdlist) {
-                            if (cmd.isEmpty()) {
-                                continue;
-                            }
-                            if (cmd.contains("{player}")) {
-                                for (Player player : game.getPlayers()) {
-                                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{player}", player.getName())));
-                                }
-                            } else if (cmd.contains("{gamename}")) {
-                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd.replace("{gamename}", game.getName())));
-                            } else {
-                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), ColorUtil.color(cmd));
-                            }
-                        }
-                        cancel();
-                    }
-                }
-            }.runTaskTimer(Main.getInstance(), 0L, 20L));
-        }
+    /**
+     * 封装 Bukkit 的 dispatchCommand。
+     *
+     * @param command
+     */
+    private void dispatch(String command) {
+        Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
     }
 }

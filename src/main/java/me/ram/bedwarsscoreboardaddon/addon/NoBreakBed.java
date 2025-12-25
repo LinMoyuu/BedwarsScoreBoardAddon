@@ -39,9 +39,9 @@ public class NoBreakBed {
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
-                int time = arena.getGameLeft() - Config.nobreakbed_gametime;
+                int time = game.getTimeLeft() - Config.nobreakbed_gametime;
                 formattime = time / 60 + ":" + ((time % 60 < 10) ? ("0" + time % 60) : (time % 60));
-                if (arena.getGameLeft() <= Config.nobreakbed_gametime) {
+                if (game.getTimeLeft() <= Config.nobreakbed_gametime) {
                     bre = true;
                     if (Config.nobreakbed_enabled) {
                         for (Player player : game.getPlayers()) {

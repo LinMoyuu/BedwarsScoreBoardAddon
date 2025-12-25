@@ -29,14 +29,14 @@ public class DeathMode {
 
             @Override
             public void run() {
-                int deathmodetime = arena.getGameLeft() - Config.deathmode_gametime;
+                int deathmodetime = game.getTimeLeft() - Config.deathmode_gametime;
                 deathmode_time = deathmodetime / 60 + ":" + ((deathmodetime % 60 < 10) ? ("0" + deathmodetime % 60) : (deathmodetime % 60));
                 if (Config.deathmode_enabled) {
                     if (isExecuted) {
                         cancel();
                         return;
                     }
-                    if (arena.getGameLeft() <= Config.deathmode_gametime) {
+                    if (game.getTimeLeft() <= Config.deathmode_gametime) {
                         isExecuted = true;
                         BoardAddonDeathModeEvent deathModeEvent = new BoardAddonDeathModeEvent(game);
                         Bukkit.getPluginManager().callEvent(deathModeEvent);

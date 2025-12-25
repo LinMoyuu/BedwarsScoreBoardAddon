@@ -33,16 +33,14 @@ public class HealthLevel {
         nowHealth = 20;
         if (Config.sethealth_start_enabled) {
             nowHealth = Config.sethealth_start_health;
-            arena.addGameTask(new BukkitRunnable() {
-                @Override
-                public void run() {
-                    for (Player player : game.getPlayers()) {
-                        player.setMaxHealth(Config.sethealth_start_health);
-                        player.setHealth(player.getMaxHealth());
-                    }
-                }
-            }.runTaskLater(Main.getInstance(), 0L));
+            for (Player player : game.getPlayers()) {
+                player.setMaxHealth(Config.sethealth_start_health);
+                player.setHealth(player.getMaxHealth());
+            }
         }
+    }
+
+    void startHealthLevelTask() {
         for (String sh : Main.getInstance().getConfig().getConfigurationSection("sethealth").getKeys(false)) {
             if (!sh.equals("start")) {
                 arena.addGameTask(new BukkitRunnable() {
@@ -59,10 +57,10 @@ public class HealthLevel {
                             cancel();
                             return;
                         }
-                        int remtime = arena.getGameLeft() - gametime;
+                        int remtime = game.getTimeLeft() - gametime;
                         String formatremtime = remtime / 60 + ":" + ((remtime % 60 < 10) ? ("0" + remtime % 60) : (remtime % 60));
                         levelTime.put(sh, formatremtime);
-                        if (arena.getGameLeft() <= gametime) {
+                        if (game.getTimeLeft() <= gametime) {
                             isExecuted = true;
                             BoardAddonSetHealthEvent setHealthEvent = new BoardAddonSetHealthEvent(game);
                             Bukkit.getPluginManager().callEvent(setHealthEvent);

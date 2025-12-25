@@ -10,7 +10,6 @@ import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerShootWitherBowEvent;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
-import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Effect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,55 +20,18 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class WitherBow implements Listener {
 
     @EventHandler
     public void onStarted(BedwarsGameStartedEvent e) {
         Game game = e.getGame();
-        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
         if (Config.witherbow_enabled) {
             int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
             for (Player player : game.getPlayers()) {
                 player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
             }
         }
-        arena.addGameTask(new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!Config.witherbow_enabled) return;
-                int enableAfterSec = (arena.getGameLeft() - Config.witherbow_gametime);
-
-                if (enableAfterSec == 15 * 60) {
-                    for (Player player : game.getPlayers()) {
-                        // 分钟提醒
-                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 15 + " 分钟 §7后开启!"));
-                    }
-                } else if (enableAfterSec == 5 * 60) {
-                    for (Player player : game.getPlayers()) {
-                        // 分钟提醒
-                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 5 + " 分钟 §7后开启!"));
-                    }
-                }
-                // 秒数提醒
-                if (enableAfterSec <= 5 && enableAfterSec > 0) {
-                    for (Player player : game.getPlayers()) {
-                        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterSec + "秒钟 §7后开启!"));
-                    }
-                }
-                if (arena.getGameLeft() <= Config.witherbow_gametime) {
-                    if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
-                        game.getPlayers().forEach(player -> Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle));
-                    }
-                    if (!Config.witherbow_message.isEmpty()) {
-                        game.getPlayers().forEach(player -> player.sendMessage(Config.witherbow_message));
-                    }
-                    PlaySound.playSound(game, Config.play_sound_sound_enable_witherbow);
-                    cancel();
-                }
-            }
-        }.runTaskTimer(Main.getInstance(), 0L, 20L));
     }
 
     @EventHandler
@@ -84,10 +46,10 @@ public class WitherBow implements Listener {
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) return;
         Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-        if (arena == null || game.getState() != GameState.RUNNING || BedwarsUtil.isSpectator(game, player) || arena.getGameLeft() > Config.witherbow_gametime) {
+        if (arena == null || game.getState() != GameState.RUNNING || BedwarsUtil.isSpectator(game, player) || !arena.isEnabledWitherBow()) {
             return;
         }
-        WitherSkull skull = player.launchProjectile(WitherSkull.class);
+        WitherSkull skull = player.launchProjectile(WitherSkull.class, e.getProjectile().getVelocity());
         BoardAddonPlayerShootWitherBowEvent shootWitherBowEvent = new BoardAddonPlayerShootWitherBowEvent(game, player, skull);
         BedwarsRel.getInstance().getServer().getPluginManager().callEvent(shootWitherBowEvent);
         if (shootWitherBowEvent.isCancelled()) {
@@ -97,7 +59,6 @@ public class WitherBow implements Listener {
         player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 5);
         PlaySound.playSound(player, Config.play_sound_sound_witherbow);
         skull.setYield(4.0f);
-        skull.setVelocity(e.getProjectile().getVelocity().multiply(0.3));
         skull.setShooter(player);
         e.setCancelled(true);
         player.updateInventory();
@@ -120,6 +81,10 @@ public class WitherBow implements Listener {
         if (game == null) {
             return;
         }
+        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+        if (arena == null || !arena.isEnabledWitherBow()) {
+            return;
+        }
         if (BedwarsUtil.isSpectator(game, player) || BedwarsUtil.isSpectator(game, shooter)) {
             e.setCancelled(true);
             return;
@@ -128,6 +93,7 @@ public class WitherBow implements Listener {
             e.setCancelled(true);
             return;
         }
+
         player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1));
     }
 }

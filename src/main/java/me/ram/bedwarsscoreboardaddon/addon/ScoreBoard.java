@@ -10,6 +10,7 @@ import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.manager.PlaceholderManager;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ScoreboardUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -34,22 +35,16 @@ public class ScoreBoard {
         game = arena.getGame();
         placeholderManager = new PlaceholderManager(game);
         team_status = new HashMap<>();
-        timer_placeholder = new HashMap<>();
         // 这块刷新在TimeTask
+        timer_placeholder = new HashMap<>();
         plan_infos = new HashMap<>();
         // 刷新计分板任务
         arena.addGameTask(new BukkitRunnable() {
-            int i = Config.scoreboard_interval;
-
             @Override
             public void run() {
-                i--;
-                if (i <= 0) {
-                    updateScoreboard();
-                    i = Config.scoreboard_interval;
-                }
+                updateScoreboard();
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 1L));
+        }.runTaskTimer(Main.getInstance(), 0L, Config.scoreboard_interval));
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
@@ -91,6 +86,7 @@ public class ScoreBoard {
                     cancel();
                     return;
                 }
+                arena.getTimeTask().refresh();
                 game.setTimeLeft(game.getTimeLeft() - 1);
             }
         }.runTaskTimer(BedwarsRel.getInstance(), 0L, 20L));
@@ -108,20 +104,20 @@ public class ScoreBoard {
                 remain_teams++;
             }
         }
-        int wither = arena.getGameLeft() - Config.witherbow_gametime;
+        int wither = game.getTimeLeft() - Config.witherbow_gametime;
         String format = wither / 60 + ":" + ((wither % 60 < 10) ? ("0" + wither % 60) : (wither % 60));
         String bowtime = null;
         if (wither > 0) {
             bowtime = format;
         }
-        if (wither <= 0) {
+        if (arena.isEnabledWitherBow()) {
             bowtime = Config.witherbow_already_start;
         }
         String score_title;
         if (title_index >= Config.scoreboard_title.size()) {
             title_index = 0;
         }
-        score_title = Config.scoreboard_title.isEmpty() ? "BedWars" : Config.scoreboard_title.get(title_index).replace("{game}", game.getName()).replace("{time}", getFormattedTimeLeft(game.getTimeLeft()));
+        score_title = Config.scoreboard_title.isEmpty() ? "BedWars" : Config.scoreboard_title.get(title_index).replace("{game}", game.getName()).replace("{time}", Utils.getFormattedTimeLeft(game.getTimeLeft()));
         title_index++;
         String teams = game.getTeams().size() + "";
         List<String> scoreboard_lines;
@@ -185,7 +181,7 @@ public class ScoreBoard {
                         randomPlay = events.get(0).getEventName();
                     }
                     add_line = add_line.replace("{randomplay}", randomPlay);
-                    add_line = add_line.replace("{death_mode}", arena.getDeathMode().getDeathmodeTime()).replace("{remain_teams}", remain_teams + "").replace("{alive_teams}", alive_teams + "").replace("{alive_players}", alive_players + "").replace("{teams}", game.getTeams().size() + "").replace("{color}", player_team_color).replace("{team_peoples}", player_team_players).replace("{player_name}", player.getName()).replace("{team}", player_team_name).replace("{beds}", player_bes).replace("{dies}", player_dis).replace("{totalkills}", player_total_kills).replace("{finalkills}", player_final_kills).replace("{kills}", player_kills).replace("{time}", getGameTime(game.getTimeLeft())).replace("{formattime}", getFormattedTimeLeft(game.getTimeLeft())).replace("{game}", game.getName()).replace("{date}", date).replace("{online}", game.getPlayers().size() + "").replace("{bowtime}", bowtime).replace("{team_bed_status}", player_team_bed_status).replace("{no_break_bed}", arena.getNoBreakBed().getTime());
+                    add_line = add_line.replace("{death_mode}", arena.getDeathMode().getDeathmodeTime()).replace("{remain_teams}", remain_teams + "").replace("{alive_teams}", alive_teams + "").replace("{alive_players}", alive_players + "").replace("{teams}", game.getTeams().size() + "").replace("{color}", player_team_color).replace("{team_peoples}", player_team_players).replace("{player_name}", player.getName()).replace("{team}", player_team_name).replace("{beds}", player_bes).replace("{dies}", player_dis).replace("{totalkills}", player_total_kills).replace("{finalkills}", player_final_kills).replace("{kills}", player_kills).replace("{time}", getGameTime(game.getTimeLeft())).replace("{formattime}", Utils.getFormattedTimeLeft(game.getTimeLeft())).replace("{game}", game.getName()).replace("{date}", date).replace("{online}", game.getPlayers().size() + "").replace("{bowtime}", bowtime).replace("{team_bed_status}", player_team_bed_status).replace("{no_break_bed}", arena.getNoBreakBed().getTime());
                     for (String key : arena.getHealthLevel().getLevelTime().keySet()) {
                         add_line = add_line.replace("{sethealthtime_" + key + "}", arena.getHealthLevel().getLevelTime().get(key));
                     }
@@ -249,14 +245,6 @@ public class ScoreBoard {
             String title = PlaceholderAPIUtil.setPlaceholders(player, score_title);
             ScoreboardUtil.setGameScoreboard(player, title, lines, game);
         }
-    }
-
-    private String getFormattedTimeLeft(int time) {
-        int min = (int) (double) (time / 60);
-        int sec = time % 60;
-        String minStr = ((min < 10) ? ("0" + min) : String.valueOf(min));
-        String secStr = ((sec < 10) ? ("0" + sec) : String.valueOf(sec));
-        return minStr + ":" + secStr;
     }
 
     private String getTeamBedStatus(Game game, Team team) {
