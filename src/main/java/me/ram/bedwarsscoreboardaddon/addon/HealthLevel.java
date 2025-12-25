@@ -10,10 +10,11 @@ import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class HealthLevel {
 
@@ -25,6 +26,7 @@ public class HealthLevel {
     private final Map<String, String> levelTime;
     @Getter
     private Integer nowHealth;
+    private final Set<String> executedHealthStages = new HashSet<>();
 
     public HealthLevel(Arena arena) {
         this.arena = arena;
@@ -40,55 +42,57 @@ public class HealthLevel {
         }
     }
 
-    void startHealthLevelTask() {
+    void checkHealth() {
         for (String sh : Main.getInstance().getConfig().getConfigurationSection("sethealth").getKeys(false)) {
-            if (!sh.equals("start")) {
-                arena.addGameTask(new BukkitRunnable() {
-                    final int gametime = Main.getInstance().getConfig().getInt("sethealth." + sh + ".gametime");
-                    final int maxhealth = Main.getInstance().getConfig().getInt("sethealth." + sh + ".health");
-                    final String title = Main.getInstance().getConfig().getString("sethealth." + sh + ".title");
-                    final String subtitle = Main.getInstance().getConfig().getString("sethealth." + sh + ".subtitle");
-                    final String message = Main.getInstance().getConfig().getString("sethealth." + sh + ".message");
-                    Boolean isExecuted = false;
+            if (sh.equals("start")) {
+                continue;
+            }
 
-                    @Override
-                    public void run() {
-                        if (isExecuted) {
-                            cancel();
-                            return;
-                        }
-                        int remtime = game.getTimeLeft() - gametime;
-                        String formatremtime = remtime / 60 + ":" + ((remtime % 60 < 10) ? ("0" + remtime % 60) : (remtime % 60));
-                        levelTime.put(sh, formatremtime);
-                        if (game.getTimeLeft() <= gametime) {
-                            isExecuted = true;
-                            BoardAddonSetHealthEvent setHealthEvent = new BoardAddonSetHealthEvent(game);
-                            Bukkit.getPluginManager().callEvent(setHealthEvent);
-                            if (setHealthEvent.isCancelled()) {
-                                cancel();
-                                return;
-                            }
-                            nowHealth = maxhealth;
-                            for (Player player : game.getPlayers()) {
-                                double dhealth = maxhealth - player.getMaxHealth();
-                                player.setMaxHealth(maxhealth);
-                                if (dhealth > 0) {
-                                    double nhealth = player.getHealth() + dhealth;
-                                    nhealth = nhealth > maxhealth ? maxhealth : nhealth;
-                                    player.setHealth(nhealth);
-                                }
-                                if (!title.isEmpty() || !subtitle.isEmpty()) {
-                                    Utils.sendTitle(player, 10, 50, 10, ColorUtil.color(title), ColorUtil.color(subtitle));
-                                }
-                                if (!message.isEmpty()) {
-                                    player.sendMessage(ColorUtil.color(message));
-                                }
-                            }
-                            PlaySound.playSound(game, Config.play_sound_sound_sethealth);
-                            cancel();
-                        }
+            if (executedHealthStages.contains(sh)) {
+                continue;
+            }
+
+            final int gametime = Main.getInstance().getConfig().getInt("sethealth." + sh + ".gametime");
+            final int timeLeft = game.getTimeLeft();
+
+            int remtime = timeLeft - gametime;
+            String formatremtime = remtime / 60 + ":" + ((remtime % 60 < 10) ? ("0" + remtime % 60) : (remtime % 60));
+            levelTime.put(sh, formatremtime);
+
+            if (timeLeft <= gametime) {
+                executedHealthStages.add(sh);
+
+                BoardAddonSetHealthEvent setHealthEvent = new BoardAddonSetHealthEvent(game);
+                Bukkit.getPluginManager().callEvent(setHealthEvent);
+                if (setHealthEvent.isCancelled()) {
+                    continue;
+                }
+
+                final int maxhealth = Main.getInstance().getConfig().getInt("sethealth." + sh + ".health");
+                final String title = Main.getInstance().getConfig().getString("sethealth." + sh + ".title");
+                final String subtitle = Main.getInstance().getConfig().getString("sethealth." + sh + ".subtitle");
+                final String message = Main.getInstance().getConfig().getString("sethealth." + sh + ".message");
+
+                nowHealth = maxhealth;
+                for (Player player : game.getPlayers()) {
+                    double dhealth = maxhealth - player.getMaxHealth();
+                    player.setMaxHealth(maxhealth);
+
+                    if (dhealth > 0) {
+                        double nhealth = player.getHealth() + dhealth;
+                        nhealth = nhealth > maxhealth ? maxhealth : nhealth;
+                        player.setHealth(nhealth);
                     }
-                }.runTaskTimer(Main.getInstance(), 0L, 20L));
+
+                    if (title != null && !title.isEmpty() || subtitle != null && !subtitle.isEmpty()) {
+                        Utils.sendTitle(player, 10, 50, 10, ColorUtil.color(title), ColorUtil.color(subtitle));
+                    }
+                    if (message != null && !message.isEmpty()) {
+                        player.sendMessage(ColorUtil.color(message));
+                    }
+                }
+
+                PlaySound.playSound(game, Config.play_sound_sound_sethealth);
             }
         }
     }

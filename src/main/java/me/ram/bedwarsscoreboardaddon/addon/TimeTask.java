@@ -70,6 +70,7 @@ public class TimeTask {
         checkPlans();
         checkTimeCommands();
         checkWitherBow();
+        arena.getHealthLevel().checkHealth();
         arena.getActionbar().sendActionbar();
     }
 
