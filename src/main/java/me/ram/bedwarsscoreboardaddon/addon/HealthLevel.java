@@ -42,7 +42,7 @@ public class HealthLevel {
         }
     }
 
-    void checkHealth() {
+    public void checkHealth() {
         for (String sh : Main.getInstance().getConfig().getConfigurationSection("sethealth").getKeys(false)) {
             if (sh.equals("start")) {
                 continue;

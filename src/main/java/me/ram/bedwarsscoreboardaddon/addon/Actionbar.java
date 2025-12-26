@@ -29,7 +29,7 @@ public class Actionbar {
         placeholderManager = new PlaceholderManager(game);
     }
 
-    void sendActionbar() {
+    public void sendActionbar() {
         String ab = Config.actionbar;
         if (ab == null || ab.isEmpty()) return;
         int wither = game.getTimeLeft() - Config.witherbow_gametime;

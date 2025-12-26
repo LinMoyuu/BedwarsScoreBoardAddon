@@ -38,6 +38,18 @@ public class TimeTask {
         refresh();
     }
 
+    public void refresh() {
+        refreshTimer();
+        checkPlans();
+        checkTimeCommands();
+        checkWitherBow();
+        arena.getActionbar().sendActionbar();
+        arena.getHealthLevel().checkHealth();
+        arena.getNoBreakBed().checkBedBreakState();
+        arena.getResourceUpgrade().checkResourceUpgrade();
+        arena.getDeathMode().checkDeathMode();
+    }
+
     /**
      * 预加载所有与时间相关的命令到 Map 中，以游戏剩余时间为键。
      *
@@ -48,7 +60,9 @@ public class TimeTask {
         if (timeCommandSection == null) {
             return java.util.Collections.emptyMap();
         }
-
+        if (timedCommands != null) {
+            timedCommands.clear();
+        }
         return timeCommandSection.getKeys(false).stream()
                 .collect(Collectors.toMap(
                         key -> timeCommandSection.getInt(key + ".gametime"),
@@ -64,16 +78,6 @@ public class TimeTask {
             dispatchCommands(timedCommands.get(game.getTimeLeft()));
         }
     }
-
-    public void refresh() {
-        refreshTimer();
-        checkPlans();
-        checkTimeCommands();
-        checkWitherBow();
-        arena.getHealthLevel().checkHealth();
-        arena.getActionbar().sendActionbar();
-    }
-
 
     /**
      * 刷新计分板上的自定义任务。

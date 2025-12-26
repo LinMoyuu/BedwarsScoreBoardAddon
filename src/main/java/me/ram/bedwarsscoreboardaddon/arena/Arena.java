@@ -75,6 +75,9 @@ public class Arena {
     @Getter
     private Shop shop;
     private Boolean isOver = false;
+    @Getter
+    @Setter
+    private boolean enabledWitherBow = false;
     // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
     @Getter
     private Map<String, Team> playerNameTeams;
@@ -88,9 +91,6 @@ public class Arena {
     private List<RandomEvents> currentGameEvents;
     // 破坏队友脚下方块次数
     private HashMap<Player, Integer> friendlyBreakCount;
-    @Getter
-    @Setter
-    private boolean enabledWitherBow = false;
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);

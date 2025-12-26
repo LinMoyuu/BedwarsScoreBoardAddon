@@ -25,9 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResourceUpgrade {
 
@@ -40,18 +38,23 @@ public class ResourceUpgrade {
     private final Map<String, String> upg_time;
     private final Map<Material, String> levels;
 
+    private final Set<String> executedUpgradeStages = new HashSet<>();
+
     public ResourceUpgrade(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        interval = new HashMap<>();
-        spawn_time = new HashMap<>();
-        upg_time = new HashMap<>();
-        levels = new HashMap<>();
+        this.interval = new HashMap<>();
+        this.spawn_time = new HashMap<>();
+        this.upg_time = new HashMap<>();
+        this.levels = new HashMap<>();
+
+        // 初始化每个资源点的等级和初始间隔
         for (ResourceSpawner spawner : game.getResourceSpawners()) {
             for (ItemStack itemStack : spawner.getResources()) {
                 levels.put(itemStack.getType(), "I");
                 interval.put(itemStack.getType(), spawner.getInterval() / 50);
             }
+
             Location sloc = spawner.getLocation();
             for (ItemStack itemStack : spawner.getResources()) {
                 arena.addGameTask(new BukkitRunnable() {
@@ -108,56 +111,61 @@ public class ResourceUpgrade {
                 }.runTaskTimer(Main.getInstance(), 0L, 1L));
             }
         }
-        for (String rs : Main.getInstance().getConfig().getConfigurationSection("resourceupgrade").getKeys(false)) {
-            if (rs == null || rs.isEmpty()) break;
-            arena.addGameTask(new BukkitRunnable() {
-                final int gametime = Main.getInstance().getConfig().getInt("resourceupgrade." + rs + ".gametime");
-                final List<String> upgrade = Main.getInstance().getConfig().getStringList("resourceupgrade." + rs + ".upgrade");
-                final String message = Main.getInstance().getConfig().getString("resourceupgrade." + rs + ".message");
-                final String title = Main.getInstance().getConfig().getString("resourceupgrade." + rs + ".title");
-                final String subtitle = Main.getInstance().getConfig().getString("resourceupgrade." + rs + ".subtitle");
-                Boolean isExecuted = false;
+    }
 
-                @Override
-                public void run() {
-                    if (isExecuted) {
-                        cancel();
-                        return;
-                    }
-                    int remtime = game.getTimeLeft() - gametime;
-                    String formatremtime = remtime / 60 + ":" + ((remtime % 60 < 10) ? ("0" + remtime % 60) : (remtime % 60));
-                    upg_time.put(rs, formatremtime);
-                    if (game.getTimeLeft() <= gametime) {
-                        isExecuted = true;
-                        BoardAddonResourceUpgradeEvent resourceUpgradeEvent = new BoardAddonResourceUpgradeEvent(game, upgrade);
-                        Bukkit.getPluginManager().callEvent(resourceUpgradeEvent);
-                        if (resourceUpgradeEvent.isCancelled()) {
-                            cancel();
-                            return;
-                        }
-                        for (String upg : resourceUpgradeEvent.getUpgrade()) {
-                            String[] ary = upg.split(",");
-                            if (levels.containsKey(Material.valueOf(ary[0]))) {
-                                levels.put(Material.valueOf(ary[0]), getLevel(levels.get(Material.valueOf(ary[0]))));
-                                interval.put(Material.valueOf(ary[0]), Integer.valueOf(ary[1]));
-                            }
-                        }
+    public void checkResourceUpgrade() {
+        FileConfiguration config = Main.getInstance().getConfig();
+        for (String rs : config.getConfigurationSection("resourceupgrade").getKeys(false)) {
+            if (rs == null || rs.isEmpty()) {
+                continue;
+            }
 
-                        if (!message.isEmpty()) {
-                            for (Player player : game.getPlayers()) {
-                                player.sendMessage(ColorUtil.color(message));
-                            }
-                        }
-                        if (!title.isEmpty() || !subtitle.isEmpty()) {
-                            for (Player player : game.getPlayers()) {
-                                Utils.sendTitle(player, 0, 60, 20, ColorUtil.color(title), ColorUtil.color(subtitle));
-                            }
-                        }
-                        PlaySound.playSound(game, Config.play_sound_sound_upgrade);
-                        cancel();
+            if (executedUpgradeStages.contains(rs)) {
+                continue;
+            }
+
+            final int gametime = config.getInt("resourceupgrade." + rs + ".gametime");
+            final int timeLeft = game.getTimeLeft();
+
+            int remtime = timeLeft - gametime;
+            String formatremtime = remtime / 60 + ":" + ((remtime % 60 < 10) ? ("0" + remtime % 60) : (remtime % 60));
+            upg_time.put(rs, formatremtime);
+
+            if (timeLeft <= gametime) {
+                executedUpgradeStages.add(rs);
+
+                final List<String> upgrade = config.getStringList("resourceupgrade." + rs + ".upgrade");
+                final String message = config.getString("resourceupgrade." + rs + ".message");
+                final String title = config.getString("resourceupgrade." + rs + ".title");
+                final String subtitle = config.getString("resourceupgrade." + rs + ".subtitle");
+
+                BoardAddonResourceUpgradeEvent resourceUpgradeEvent = new BoardAddonResourceUpgradeEvent(game, upgrade);
+                Bukkit.getPluginManager().callEvent(resourceUpgradeEvent);
+                if (resourceUpgradeEvent.isCancelled()) {
+                    continue;
+                }
+
+                for (String upg : resourceUpgradeEvent.getUpgrade()) {
+                    String[] ary = upg.split(",");
+                    if (levels.containsKey(Material.valueOf(ary[0]))) {
+                        levels.put(Material.valueOf(ary[0]), getLevel(levels.get(Material.valueOf(ary[0]))));
+                        interval.put(Material.valueOf(ary[0]), Integer.valueOf(ary[1]));
                     }
                 }
-            }.runTaskTimer(Main.getInstance(), 0L, 20L));
+
+                if (message != null && !message.isEmpty()) {
+                    for (Player player : game.getPlayers()) {
+                        player.sendMessage(ColorUtil.color(message));
+                    }
+                }
+                if (title != null && !title.isEmpty() || subtitle != null && !subtitle.isEmpty()) {
+                    for (Player player : game.getPlayers()) {
+                        Utils.sendTitle(player, 0, 60, 20, ColorUtil.color(title), ColorUtil.color(subtitle));
+                    }
+                }
+
+                PlaySound.playSound(game, Config.play_sound_sound_upgrade);
+            }
         }
     }
 

@@ -16,7 +16,6 @@ import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class NoBreakBed {
 
@@ -36,27 +35,28 @@ public class NoBreakBed {
             return;
         }
         registerPacketListener();
-        arena.addGameTask(new BukkitRunnable() {
-            @Override
-            public void run() {
-                int time = game.getTimeLeft() - Config.nobreakbed_gametime;
-                formattime = time / 60 + ":" + ((time % 60 < 10) ? ("0" + time % 60) : (time % 60));
-                if (game.getTimeLeft() <= Config.nobreakbed_gametime) {
-                    bre = true;
-                    if (Config.nobreakbed_enabled) {
-                        for (Player player : game.getPlayers()) {
-                            if (!Config.nobreakbed_title.isEmpty() || !Config.nobreakbed_subtitle.isEmpty()) {
-                                Utils.sendTitle(player, 10, 50, 10, Config.nobreakbed_title, Config.nobreakbed_subtitle);
-                            }
-                            if (!Config.nobreakbed_message.isEmpty()) {
-                                player.sendMessage(Config.nobreakbed_message);
-                            }
-                        }
-                    }
-                    cancel();
+    }
+
+    public void checkBedBreakState() {
+        if (!Config.nobreakbed_enabled || bre) {
+            return;
+        }
+
+        int time = game.getTimeLeft() - Config.nobreakbed_gametime;
+        formattime = time / 60 + ":" + ((time % 60 < 10) ? ("0" + time % 60) : (time % 60));
+
+        if (game.getTimeLeft() <= Config.nobreakbed_gametime) {
+            this.bre = true;
+
+            for (Player player : game.getPlayers()) {
+                if (!Config.nobreakbed_title.isEmpty() || !Config.nobreakbed_subtitle.isEmpty()) {
+                    Utils.sendTitle(player, 10, 50, 10, Config.nobreakbed_title, Config.nobreakbed_subtitle);
+                }
+                if (!Config.nobreakbed_message.isEmpty()) {
+                    player.sendMessage(Config.nobreakbed_message);
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 20L));
+        }
     }
 
     public String getTime() {

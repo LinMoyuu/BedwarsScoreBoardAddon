@@ -30,6 +30,7 @@ public class Rejoin {
     private final Game game;
     @Getter
     private final Arena arena;
+    @Getter
     private final Map<String, RejoinData> players;
     private final Map<String, List<String>> teams;
 
@@ -69,10 +70,6 @@ public class Rejoin {
             players.remove(player);
             Bukkit.getPluginManager().callEvent(new BoardAddonPlayerRemoveRejoinEvent(game, player, this));
         }
-    }
-
-    public Map<String, RejoinData> getPlayers() {
-        return players;
     }
 
     public void rejoin(Player player) {
