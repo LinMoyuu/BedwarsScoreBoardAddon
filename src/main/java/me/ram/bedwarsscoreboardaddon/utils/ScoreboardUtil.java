@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.Team;
+import lombok.Getter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import org.bukkit.Bukkit;
@@ -18,12 +19,9 @@ import java.util.*;
 
 public class ScoreboardUtil {
 
-    private static final Map<Player, Scoreboard> scoreboards = new HashMap<Player, Scoreboard>();
-    private static final Map<Player, Map<Player, Integer>> player_health = new HashMap<Player, Map<Player, Integer>>();
-
-    public static Map<Player, Scoreboard> getScoreboards() {
-        return scoreboards;
-    }
+    @Getter
+    private static final Map<Player, Scoreboard> scoreboards = new HashMap<>();
+    private static final Map<Player, Map<Player, Integer>> player_health = new HashMap<>();
 
     public static void removePlayer(Player player) {
         scoreboards.remove(player);
@@ -95,45 +93,39 @@ public class ScoreboardUtil {
                     scoreboard.resetScores(entry);
                 }
             }
-
-            for (Team team : game.getTeams().values()) {
-                org.bukkit.scoreboard.Team score_team = scoreboard.getTeam(game.getName() + ":" + team.getName());
-                if (score_team == null) {
-                    score_team = scoreboard.registerNewTeam(game.getName() + ":" + team.getName());
+            for (Team t : game.getTeams().values()) {
+                org.bukkit.scoreboard.Team team = scoreboard.getTeam(game.getName() + ":" + t.getName());
+                if (team == null) {
+                    team = scoreboard.registerNewTeam(game.getName() + ":" + t.getName());
                 }
 
                 // playerTag
                 String playerTagPrefix = "";
                 if (!Config.playertag_prefix.isEmpty()) {
-                    playerTagPrefix = (Config.playertag_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                    playerTagPrefix = (Config.playertag_prefix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
                 }
                 String playerTagSuffix = "";
                 if (!Config.playertag_prefix.isEmpty()) {
-                    playerTagSuffix = (Config.playertag_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                    playerTagSuffix = (Config.playertag_suffix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
                 }
-                score_team.setPrefix(playerTagPrefix);
-                score_team.setSuffix(playerTagSuffix);
-                score_team.setAllowFriendlyFire(false);
+                team.setPrefix(playerTagPrefix);
+                team.setSuffix(playerTagSuffix);
+                team.setAllowFriendlyFire(false);
 
                 // playerList 获取
                 String playerListPrefix = "";
                 if (!Config.playerlist_prefix.isEmpty()) {
-                    playerListPrefix = (Config.playerlist_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                    playerListPrefix = (Config.playerlist_prefix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
                 }
                 String playerListSuffix = "";
                 if (!Config.playerlist_suffix.isEmpty()) {
-                    playerListSuffix = (Config.playerlist_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
+                    playerListSuffix = (Config.playerlist_suffix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
                 }
-
-                // 循环Rel队伍玩家
-                for (Player pl : team.getPlayers()) {
-                    // 修改 playerListName
-                    pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
-                    // 如果scoreboardTeam查无此人
-                    if (!score_team.hasPlayer(pl)) {
-                        // 添加其进Scoreboard Team
-                        pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
+                for (Player pl : t.getPlayers()) {
+                    if (!team.hasPlayer(pl)) {
+                        team.addPlayer(pl);
                     }
+                    pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
                 }
             }
         } catch (Exception e) {
