@@ -49,7 +49,7 @@ public class WitherBow implements Listener {
         if (arena == null || game.getState() != GameState.RUNNING || BedwarsUtil.isSpectator(game, player) || !arena.isEnabledWitherBow()) {
             return;
         }
-        WitherSkull skull = player.launchProjectile(WitherSkull.class, e.getProjectile().getVelocity());
+        WitherSkull skull = player.launchProjectile(WitherSkull.class, e.getProjectile().getVelocity().multiply(0.3));
         BoardAddonPlayerShootWitherBowEvent shootWitherBowEvent = new BoardAddonPlayerShootWitherBowEvent(game, player, skull);
         BedwarsRel.getInstance().getServer().getPluginManager().callEvent(shootWitherBowEvent);
         if (shootWitherBowEvent.isCancelled()) {
