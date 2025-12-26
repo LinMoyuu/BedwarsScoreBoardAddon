@@ -18,7 +18,8 @@ public class DeathMode {
     private final Game game;
     @Getter
     private final Arena arena;
-    private String deathmode_time;
+    @Getter
+    private String deathmode_time = "00:00";
     @Getter
     @Setter
     private boolean enabledDeathMode = false;
@@ -53,10 +54,6 @@ public class DeathMode {
             PlaySound.playSound(game, Config.play_sound_sound_deathmode);
             startShrinking();
         }
-    }
-
-    public String getDeathmodeTime() {
-        return deathmode_time;
     }
 
     private void destroyBlock(Game game, Team team) {
