@@ -173,11 +173,8 @@ public class Respawn {
         if (!protected_time.containsKey(player)) {
             return;
         }
-        int protime = 500;
-        if (Config.respawn_protected_enabled) {
-            protime = Config.respawn_protected_time > 0 ? Config.respawn_protected_time * 1000 : 500;
-        }
-        if ((System.currentTimeMillis() - protected_time.get(player)) < protime) {
+        int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time * 1000 : 0;
+        if ((System.currentTimeMillis() - protected_time.get(player)) < respawn_protectedTime) {
             e.setCancelled(true);
             return;
         }
@@ -196,13 +193,11 @@ public class Respawn {
         if (!protected_time.containsKey(player)) {
             return;
         }
-        int protime = 500;
-        if (Config.respawn_protected_enabled) {
-            protime = Config.respawn_protected_time > 0 ? Config.respawn_protected_time * 1000 : 500;
-        }
-        if ((System.currentTimeMillis() - protected_time.get(player)) < protime) {
+        int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time * 1000 : 0;
+        if ((System.currentTimeMillis() - protected_time.get(player)) < respawn_protectedTime) {
             e.setCancelled(true);
-            damager.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a该玩家正处于无敌时间!"));
+            if (respawn_protectedTime > 0)
+                damager.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a该玩家正处于无敌时间!"));
             return;
         }
         protected_time.remove(player);
