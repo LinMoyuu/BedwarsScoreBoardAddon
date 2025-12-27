@@ -67,8 +67,9 @@ public class DeathItem implements Listener {
             if (Config.deathitem_item_name_chinesize) {
                 itemName = getRealName(item);
             }
-            if (Config.deathitem_message.isEmpty()) continue;
-            killer.sendMessage(getColor(item) + Config.deathitem_message.replace("{amount}", playeritems.get(item) + "").replace("{item}", itemName));
+            if (!Config.deathitem_message.isEmpty()) {
+                killer.sendMessage(getColor(item) + Config.deathitem_message.replace("{amount}", playeritems.get(item) + "").replace("{item}", itemName));
+            }
         }
     }
 

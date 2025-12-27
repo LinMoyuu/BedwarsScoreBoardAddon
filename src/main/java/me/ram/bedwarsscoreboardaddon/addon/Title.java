@@ -253,11 +253,6 @@ public class Title implements Listener {
                 return "&a" + killer.getDisplayName() + " &6如同神一般！";
             case 10:
                 return "&a" + killer.getDisplayName() + " &6已经超越神了！拜托谁去杀了他吧！";
-            case 1:
-            case 2:
-            case 4:
-            case 6:
-            case 8:
             default:
                 break;
         }

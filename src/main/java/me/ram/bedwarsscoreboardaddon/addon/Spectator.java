@@ -23,7 +23,9 @@ import me.ram.bedwarsscoreboardaddon.utils.LocationUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -193,23 +195,19 @@ public class Spectator implements Listener {
         resitems.addAll(getResource());
         Timer logTimer = new Timer();
         TimerTask task = new TimerTask() {
+            final Game game = e.getGame();
             @Override
             public void run() {
-                if (e.getGame().getState() == GameState.RUNNING) {
-                    Game game = e.getGame();
+                if (game.getState() == GameState.RUNNING) {
                     for (Player player : game.getPlayers()) {
                         if (!BedwarsUtil.isSpectator(game, player) && !BedwarsUtil.isRespawning(player)) {
                             continue;
                         }
-                        if (BedwarsUtil.isSpectator(game, player)) {
-                            for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), 2, 3.5, 2)) {
-                                if (entity instanceof Arrow || entity instanceof Fireball || entity instanceof WitherSkull || entity instanceof TNTPrimed) {
-                                    if (player.getGameMode() != GameMode.SPECTATOR) {
-                                        player.teleport(LocationUtil.getPosition(player.getLocation(), entity.getLocation()));
-                                        player.setVelocity(LocationUtil.getPositionVector(player.getLocation(), entity.getLocation()).multiply(0.07));
-                                    }
-                                    break;
-                                }
+                        for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), 2, 3.5, 2)) {
+                            if (entity instanceof Projectile && player.getGameMode() != GameMode.SPECTATOR) {
+                                player.teleport(LocationUtil.getPosition(player.getLocation(), entity.getLocation()));
+                                player.setVelocity(LocationUtil.getPositionVector(player.getLocation(), entity.getLocation()).multiply(0.07));
+                                break;
                             }
                         }
                     }

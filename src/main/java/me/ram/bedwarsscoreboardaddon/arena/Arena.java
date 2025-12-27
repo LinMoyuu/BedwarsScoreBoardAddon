@@ -159,11 +159,7 @@ public class Arena {
         }
         Map<String, Integer> beds = playerGameStorage.getPlayerBeds();
         Player player = e.getPlayer();
-        if (beds.containsKey(player.getName())) {
-            beds.put(player.getName(), beds.get(player.getName()) + 1);
-        } else {
-            beds.put(player.getName(), 1);
-        }
+        beds.put(player.getName(), beds.getOrDefault(player.getName(), 0) + 1);
         holographic.onTargetBlockDestroyed(e);
     }
 
@@ -173,11 +169,7 @@ public class Arena {
             return;
         }
         Map<String, Integer> dies = playerGameStorage.getPlayerDies();
-        if (dies.containsKey(player.getName())) {
-            dies.put(player.getName(), dies.get(player.getName()) + 1);
-        } else {
-            dies.put(player.getName(), 1);
-        }
+        dies.put(player.getName(), dies.getOrDefault(player.getName(), 0) + 1);
         PlaySound.playSound(player, Config.play_sound_sound_death);
         resetKillStreak(player.getUniqueId());
     }
@@ -236,24 +228,12 @@ public class Arena {
         Map<String, Integer> kills = playerGameStorage.getPlayerKills();
         Map<String, Integer> finalkills = playerGameStorage.getPlayerFinalKills();
         if (!game.getPlayerTeam(player).isDead(game)) {
-            if (kills.containsKey(killer.getName())) {
-                kills.put(killer.getName(), kills.get(killer.getName()) + 1);
-            } else {
-                kills.put(killer.getName(), 1);
-            }
+            kills.put(player.getName(), kills.getOrDefault(player.getName(), 0) + 1);
         }
         if (game.getPlayerTeam(player).isDead(game)) {
-            if (finalkills.containsKey(killer.getName())) {
-                finalkills.put(killer.getName(), finalkills.get(killer.getName()) + 1);
-            } else {
-                finalkills.put(killer.getName(), 1);
-            }
+            finalkills.put(player.getName(), finalkills.getOrDefault(player.getName(), 0) + 1);
         }
-        if (totalkills.containsKey(killer.getName())) {
-            totalkills.put(killer.getName(), totalkills.get(killer.getName()) + 1);
-        } else {
-            totalkills.put(killer.getName(), 1);
-        }
+        totalkills.put(player.getName(), totalkills.getOrDefault(player.getName(), 0) + 1);
         PlaySound.playSound(killer, Config.play_sound_sound_kill);
 
         // 连杀
