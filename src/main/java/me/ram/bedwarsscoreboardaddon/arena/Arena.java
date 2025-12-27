@@ -228,12 +228,12 @@ public class Arena {
         Map<String, Integer> kills = playerGameStorage.getPlayerKills();
         Map<String, Integer> finalkills = playerGameStorage.getPlayerFinalKills();
         if (!game.getPlayerTeam(player).isDead(game)) {
-            kills.put(player.getName(), kills.getOrDefault(player.getName(), 0) + 1);
+            kills.put(killer.getName(), kills.getOrDefault(killer.getName(), 0) + 1);
         }
         if (game.getPlayerTeam(player).isDead(game)) {
-            finalkills.put(player.getName(), finalkills.getOrDefault(player.getName(), 0) + 1);
+            finalkills.put(killer.getName(), finalkills.getOrDefault(killer.getName(), 0) + 1);
         }
-        totalkills.put(player.getName(), totalkills.getOrDefault(player.getName(), 0) + 1);
+        totalkills.put(killer.getName(), totalkills.getOrDefault(killer.getName(), 0) + 1);
         PlaySound.playSound(killer, Config.play_sound_sound_kill);
 
         // 连杀
