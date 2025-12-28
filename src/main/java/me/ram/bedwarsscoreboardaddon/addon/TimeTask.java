@@ -84,9 +84,12 @@ public class TimeTask {
      */
     public void checkPlans() {
         if (arena.isOver()) {
-            // 游戏结束时清空信息
-            scoreBoard.getPlan_infos().keySet().removeIf(key -> !key.endsWith("_2"));
-            scoreBoard.getPlan_infos().replaceAll((k, v) -> "");
+            // 游戏结束，将所有计时器清零
+            Config.timer.keySet().forEach(id -> {
+                scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", "0:00");
+                scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", "0");
+                Config.timer.put(id, 0);
+            });
             return;
         }
 
@@ -114,11 +117,11 @@ public class TimeTask {
      */
     public void refreshTimer() {
         if (arena.isOver()) {
-            // 游戏结束，将所有计时器清零
-            Config.timer.keySet().forEach(id -> {
-                scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", "0:00");
-                scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", "0");
-                Config.timer.put(id, 0);
+            // 游戏结束时清空信息
+            scoreBoard.getPlan_infos().forEach((key, value) -> {
+                if (!key.endsWith("_2")) {
+                    scoreBoard.getPlan_infos().put(key, "");
+                }
             });
             return;
         }

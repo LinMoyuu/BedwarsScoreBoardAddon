@@ -70,11 +70,12 @@ public class Arena {
     @Getter
     private final Rejoin rejoin;
     @Getter
-    private final TimeTask timeTask;
+    private TimeTask timeTask;
     private final List<BukkitTask> gameTasks;
     @Getter
     private Shop shop;
-    private Boolean isOver = false;
+    @Getter
+    private boolean isOver = false;
     @Getter
     @Setter
     private boolean enabledWitherBow = false;
@@ -147,10 +148,6 @@ public class Arena {
 
     public void addGameTask(BukkitTask task) {
         gameTasks.add(task);
-    }
-
-    public Boolean isOver() {
-        return isOver;
     }
 
     public void onTargetBlockDestroyed(BedwarsTargetBlockDestroyedEvent e) {
@@ -246,8 +243,9 @@ public class Arena {
     }
 
     public void onOver(BedwarsGameOverEvent e) {
-        if (!e.getGame().getName().equals(this.game.getName())) return;
         isOver = true;
+        timeTask.refresh();
+        if (!e.getGame().getName().equals(this.game.getName())) return;
         if (Config.overstats_enabled && e.getWinner() != null) {
             Team winner = e.getWinner();
             Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
@@ -331,6 +329,7 @@ public class Arena {
         }
         graffiti.reset();
         gameChest.clearChest();
+        timeTask = null;
         playerNameTeams = null;
         killStreaks = null;
         highestKillStreaks = null;
