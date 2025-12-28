@@ -30,8 +30,8 @@ public class Actionbar {
     }
 
     public void sendActionbar() {
-        String ab = Config.actionbar;
-        if (ab == null || ab.isEmpty()) return;
+        String actionbarConfig = Config.actionbar;
+        if (actionbarConfig == null || actionbarConfig.isEmpty()) return;
         int wither = game.getTimeLeft() - Config.witherbow_gametime;
         String bowtime;
         if (arena.isEnabledWitherBow()) {
@@ -47,6 +47,7 @@ public class Actionbar {
         }
         for (Player player : game.getPlayers()) {
             if (game.getPlayerTeam(player) == null) continue;
+            String ab = actionbarConfig;
             if (player.getLocation().getWorld().equals(game.getPlayerTeam(player).getSpawnLocation().getWorld())) {
                 Team playerteam = game.getPlayerTeam(player);
                 for (String identifier : placeholderManager.getGamePlaceholder().keySet()) {
