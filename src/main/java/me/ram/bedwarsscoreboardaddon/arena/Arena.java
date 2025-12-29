@@ -120,7 +120,6 @@ public class Arena {
             shop = new Shop(this);
         }
         timeTask = new TimeTask(this);
-            playerNameTeams.put(player.getName(), game.getPlayerTeam(player));
         // 不清楚何意味 可能是指令停止游戏时会用上?
 //        addGameTask(new BukkitRunnable() {
 //            @Override
@@ -130,6 +129,7 @@ public class Arena {
 //                    onEnd();
 //                }
 //            }
+//        }.runTaskTimer(Main.getInstance(), 1L, 1L));
         killStreak = new KillStreak(this);
         randomEventsManager = new RandomEvents(this);
 
@@ -186,12 +186,32 @@ public class Arena {
         Player player = event.getPlayer();
         friendlyBreakCount.put(player, friendlyBreakCount.getOrDefault(player, 0) + 1);
         int friendlyBreaks = friendlyBreakCount.getOrDefault(player, 0);
-        player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&c&l恶意挖掘队友脚下方块将会被踢出(" + friendlyBreaks + "/5)"));
-        if (friendlyBreaks >= 5) {
+        int max_breaks = Config.friendlybreak_kick_max_breaks;
+
+        player.sendMessage(ColorUtil.color(Config.friendlybreak_warning_message
+                .replace("{bwprefix}", Config.bwrelPrefix)
+                .replace("{breakcount}", String.valueOf(friendlyBreaks))
+                .replace("{max_breaks}", String.valueOf(max_breaks))));
+
+        if (friendlyBreaks >= max_breaks) {
             friendlyBreakCount.remove(player);
-            player.kickPlayer(ColorUtil.color("&c&l你由于涉嫌恶意挖掘队友脚下方块而被踢出游戏！"));
+            player.kickPlayer(ColorUtil.color(Config.friendlybreak_kick_message
+                    .replace("{bwprefix}", Config.bwrelPrefix)
+                    .replace("{breakcount}", String.valueOf(friendlyBreaks))
+                    .replace("{max_breaks}", String.valueOf(max_breaks))));
+
+            Team team = game.getPlayerTeam(player);
+            if (team == null) return;
+            String broadCastMessage = ColorUtil.color(Config.friendlybreak_broadcast_message
+                    .replace("{bwprefix}", Config.bwrelPrefix)
+                    .replace("{breakcount}", String.valueOf(friendlyBreaks))
+                    .replace("{max_breaks}", String.valueOf(max_breaks))
+                    .replace("{playername}", player.getName())
+                    .replace("{playerdisplayname}", player.getDisplayName())
+                    .replace("{team}", team.getDisplayName())
+                    .replace("{teamcolor}", team.getChatColor().toString()));
             for (Player gamePlayer : game.getPlayers()) {
-                gamePlayer.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&c&l由于恶意挖掘队友脚下方块而被踢出游戏，请大家引以为戒!"));
+                gamePlayer.sendMessage(broadCastMessage);
             }
         }
     }

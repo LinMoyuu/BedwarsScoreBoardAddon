@@ -508,11 +508,11 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFriendlyBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (!Config.friendlybreak_kick_enabled) return;
-        if (BedwarsRel.getInstance().getBooleanConfig("friendlybreak", true)) return;
+        if (!Config.friendlybreak_kick_enabled || BedwarsRel.getInstance().getBooleanConfig("friendlybreak", true))
+            return;
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) return;
-        Team playerTeam = game.getPlayerTeam(player);;
+        Team playerTeam = game.getPlayerTeam(player);
         if (playerTeam == null) return;
         Arena arena = Main.getInstance().getArenaManager().getArenas().get(game.getName());
         if (arena == null) return;
@@ -521,10 +521,10 @@ public class EventListener implements Listener {
                 continue;
             }
 
-            if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).equals(event.getBlock())) {
-                return;
+            if (teamPlayer.getLocation().getBlock().getRelative(BlockFace.DOWN).equals(event.getBlock())) {
+                arena.onFriendlyBreak(event);
+                break;
             }
-            arena.onFriendlyBreak(event);
         }
     }
 

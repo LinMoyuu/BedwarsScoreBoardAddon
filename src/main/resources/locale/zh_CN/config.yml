@@ -1110,6 +1110,15 @@ overstats:
 actionbar: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
 
 
+##恶意挖掘 移出 设置选项
+friendlybreak_kick:
+  enabled: true
+  max_breaks: 5
+  warning_message: "{bwprefix}&c&l恶意挖掘队友脚下方块将会被踢出({breakcount}/{max_breaks})"
+  kick_message: "&c&l你由于涉嫌恶意挖掘队友脚下方块而被踢出游戏！"
+  broadcast_message: "{bwprefix}&c&l由于恶意挖掘队友脚下方块而被踢出游戏，请大家引以为戒!"
+  
+
 ## 随机事件
 randomevent:
   enabled: true
