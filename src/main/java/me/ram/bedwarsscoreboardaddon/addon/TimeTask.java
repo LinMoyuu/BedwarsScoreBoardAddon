@@ -11,9 +11,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TimeTask {
 
@@ -35,7 +36,6 @@ public class TimeTask {
         this.timedCommands = preloadTimedCommands();
         // 执行开局指令
         dispatchCommands(Config.timecommand_startcommand);
-        refresh();
     }
 
     public void refresh() {
@@ -60,14 +60,29 @@ public class TimeTask {
         if (timeCommandSection == null) {
             return java.util.Collections.emptyMap();
         }
+
         if (timedCommands != null) {
             timedCommands.clear();
         }
-        return timeCommandSection.getKeys(false).stream()
-                .collect(Collectors.toMap(
-                        key -> timeCommandSection.getInt(key + ".gametime"),
-                        key -> timeCommandSection.getStringList(key + ".command")
-                ));
+
+        Map<Integer, List<String>> result = new HashMap<>();
+
+        for (String key : timeCommandSection.getKeys(false)) {
+            int gameTime = timeCommandSection.getInt(key + ".gametime");
+            List<String> commands = timeCommandSection.getStringList(key + ".command");
+
+            // 如果已存在相同时间的条目，合并命令列表
+            if (result.containsKey(gameTime)) {
+                List<String> existingCommands = result.get(gameTime);
+                List<String> mergedCommands = new ArrayList<>(existingCommands);
+                mergedCommands.addAll(commands);
+                result.put(gameTime, mergedCommands);
+            } else {
+                result.put(gameTime, new ArrayList<>(commands));
+            }
+        }
+
+        return result;
     }
 
     /**
