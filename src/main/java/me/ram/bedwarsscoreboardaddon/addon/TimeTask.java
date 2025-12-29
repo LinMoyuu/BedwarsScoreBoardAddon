@@ -105,11 +105,13 @@ public class TimeTask {
                     scoreBoard.getPlan_infos().put(key, "");
                 }
             });
-            Config.timer.keySet().forEach(id -> {
-                scoreBoard.getTimer_placeholder().put("{plan_timer_" + id + "}", "0:00");
-                scoreBoard.getTimer_placeholder().put("{plan_timer_sec_" + id + "}", "0");
-                Config.timer.put(id, 0);
-            });
+            for (String key : new ArrayList<>(scoreBoard.getTimer_placeholder().keySet())) {
+                if (key.contains("_sec_")) {
+                    scoreBoard.getTimer_placeholder().put(key, "0");
+                } else {
+                    scoreBoard.getTimer_placeholder().put(key, "0:00");
+                }
+            }
             return;
         }
 
