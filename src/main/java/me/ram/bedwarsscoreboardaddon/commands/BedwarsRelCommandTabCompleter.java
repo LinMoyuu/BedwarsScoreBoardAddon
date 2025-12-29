@@ -9,9 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class BedwarsRelCommandTabCompleter implements TabCompleter {
 
@@ -40,100 +38,35 @@ public class BedwarsRelCommandTabCompleter implements TabCompleter {
             games.add(game.getName());
         });
         if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("setspawner")) {
-                if (sender.hasPermission("bw.setup")) {
+            String cmd = args[0].toLowerCase();
+            final Set<String> setupCommands = new HashSet<>(Arrays.asList(
+                    "setspawner", "start", "addteam", "save", "setregion", "setspawn",
+                    "setlobby", "settarget", "setbed", "setmainlobby", "regionname",
+                    "removeteam", "removegame", "clearspawner", "gametime",
+                    "setminplayers", "setgameblock", "setbuilder", "setautobalance",
+                    "addteamjoin"
+            ));
+            switch (cmd) {
+                case "join":
                     return games;
-                }
-            } else if (args[0].equalsIgnoreCase("start")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("addteam")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("save")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setregion")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("join")) {
+                case "stats":
+                    if (sender.hasPermission("bw.base")) {
+                        return null;
+                    }
+                    return null;
+                case "kick":
+                    if (sender.hasPermission("bw.kick")) {
+                        return null;
+                    }
+                    return null;
+                case "stop":
+                    if (sender.hasPermission("bw.base")) {
+                        return games;
+                    }
+                    return null;
+            }
+            if (setupCommands.contains(cmd) && sender.hasPermission("bw.setup")) {
                 return games;
-            } else if (args[0].equalsIgnoreCase("setspawn")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setlobby")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("settarget")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setbed")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setmainlobby")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("regionname")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("removeteam")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("removegame")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("clearspawner")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("gametime")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("stats")) {
-                if (sender.hasPermission("bw.base")) {
-                    return null;
-                }
-            } else if (args[0].equalsIgnoreCase("stop")) {
-                if (sender.hasPermission("bw.base")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setminplayers")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setgameblock")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setbuilder")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("setautobalance")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
-            } else if (args[0].equalsIgnoreCase("kick")) {
-                if (sender.hasPermission("bw.kick")) {
-                    return null;
-                }
-            } else if (args[0].equalsIgnoreCase("addteamjoin")) {
-                if (sender.hasPermission("bw.setup")) {
-                    return games;
-                }
             }
         }
         if (args.length == 3) {
