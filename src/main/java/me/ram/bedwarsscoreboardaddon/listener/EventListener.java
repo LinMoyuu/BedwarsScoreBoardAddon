@@ -508,6 +508,7 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFriendlyBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        if (!Config.friendlybreak_kick_enabled) return;
         if (BedwarsRel.getInstance().getBooleanConfig("friendlybreak", true)) return;
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) return;

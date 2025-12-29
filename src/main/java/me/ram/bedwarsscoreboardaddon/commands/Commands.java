@@ -3,7 +3,6 @@ package me.ram.bedwarsscoreboardaddon.commands;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import me.ram.bedwarsscoreboardaddon.Main;
-import me.ram.bedwarsscoreboardaddon.addon.RandomEvents;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
@@ -15,10 +14,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.Optional;
 
 public class Commands implements CommandExecutor {
 
@@ -85,7 +80,7 @@ public class Commands implements CommandExecutor {
                             Utils.sendTitle(player, 0, 60, 10, "", "§4§l午夜降临");
                         }
                         break;
-                    case "randomplay":
+                    case "randomevent":
                         arena.getRandomEventsManager().switchNextEvent();
                         break;
                     case "teleport":

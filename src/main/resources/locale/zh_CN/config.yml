@@ -1111,8 +1111,9 @@ actionbar: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {col
 
 
 ## 随机事件
-randomplay:
+randomevent:
   enabled: true
+
 
 #设定计划信息
 #变量 {plan_<编号>} 的内容

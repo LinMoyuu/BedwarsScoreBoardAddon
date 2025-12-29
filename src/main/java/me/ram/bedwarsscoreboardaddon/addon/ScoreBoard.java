@@ -173,12 +173,12 @@ public class ScoreBoard {
                     for (String key : plan_infos.keySet()) {
                         add_line = add_line.replace("{plan_" + key + "}", plan_infos.get(key));
                     }
-                    String randomPlay = "";
+                    String randomevent = "";
                     Optional<RandomEvents> event = arena.getRandomEventsManager().getNextEvent();
                     if (event.isPresent()) {
-                        randomPlay = event.get().getEventName();
+                        randomevent = event.get().getEventName();
                     }
-                    add_line = add_line.replace("{randomplay}", randomPlay);
+                    add_line = add_line.replace("{randomevent}", randomevent);
                     add_line = add_line.replace("{death_mode}", arena.getDeathMode().getDeathmode_time())
                             .replace("{remain_teams}", remain_teams + "")
                             .replace("{alive_teams}", alive_teams + "")

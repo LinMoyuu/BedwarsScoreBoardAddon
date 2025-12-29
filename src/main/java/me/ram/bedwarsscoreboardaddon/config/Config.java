@@ -215,7 +215,7 @@ public class Config {
     public static boolean overstats_enabled;
     public static List<String> overstats_message;
     public static String actionbar;
-    public static boolean randomplay_enabled;
+    public static boolean randomevent_enabled;
     public static Map<String, Integer> timer;
     public static List<String> planinfo;
     public static String playertag_prefix;
@@ -478,7 +478,7 @@ public class Config {
         overstats_enabled = config.getBoolean("overstats.enabled");
         overstats_message = ColorUtil.colorList(config.getStringList("overstats.message"));
         actionbar = ColorUtil.color(config.getString("actionbar"));
-        randomplay_enabled = config.getBoolean("randomplay.enabled");
+        randomevent_enabled = config.getBoolean("randomevent.enabled");
         planinfo = new ArrayList<>(config.getConfigurationSection("planinfo").getKeys(false));
         playertag_prefix = ColorUtil.color(config.getString("playertag.prefix"));
         playertag_suffix = ColorUtil.color(config.getString("playertag.suffix"));

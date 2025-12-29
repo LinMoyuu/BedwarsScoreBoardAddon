@@ -31,7 +31,7 @@ public class CommandTabCompleter implements TabCompleter {
 
     private List<String> getSuggest(CommandSender sender, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("help", "shop", "spawner", "edit", "reload", "task", "title", "message", "randomplay");
+            return Arrays.asList("help", "shop", "spawner", "edit", "reload", "task", "title", "message", "randomevent");
         }
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("shop")) {
@@ -40,7 +40,7 @@ public class CommandTabCompleter implements TabCompleter {
             if (args[0].equalsIgnoreCase("spawner")) {
                 return Arrays.asList("list", "remove", "add");
             }
-            if (args[0].equalsIgnoreCase("edit") || args[0].equalsIgnoreCase("task") || args[0].equalsIgnoreCase("title") || args[0].equalsIgnoreCase("message") || args[0].equalsIgnoreCase("randomplay") || args[0].equalsIgnoreCase("teleport")) {
+            if (args[0].equalsIgnoreCase("edit") || args[0].equalsIgnoreCase("task") || args[0].equalsIgnoreCase("title") || args[0].equalsIgnoreCase("message") || args[0].equalsIgnoreCase("randomevent") || args[0].equalsIgnoreCase("teleport")) {
                 return getGames();
             }
         } else if (args.length == 3) {
