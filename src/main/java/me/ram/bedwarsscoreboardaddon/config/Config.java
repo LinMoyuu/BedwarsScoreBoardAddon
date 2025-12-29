@@ -477,10 +477,6 @@ public class Config {
         overstats_message = ColorUtil.colorList(config.getStringList("overstats.message"));
         actionbar = ColorUtil.color(config.getString("actionbar"));
         randomplay_enabled = config.getBoolean("randomplay.enabled");
-        timer = new HashMap<>();
-        for (String w : config.getConfigurationSection("timer").getKeys(false)) {
-            timer.put(w, config.getInt("timer." + w));
-        }
         planinfo = new ArrayList<>(config.getConfigurationSection("planinfo").getKeys(false));
         playertag_prefix = ColorUtil.color(config.getString("playertag.prefix"));
         playertag_suffix = ColorUtil.color(config.getString("playertag.suffix"));

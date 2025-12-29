@@ -55,16 +55,11 @@ public class Commands implements CommandExecutor {
                             p.closeInventory();
                         }
                     }
-                    for (Arena arena : Main.getInstance().getArenaManager().getArenas().values()) {
-                        arena.getTimeTask().preloadTimedCommands();
-                        arena.getTimeTask().refresh();
-                    }
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.reloaded"));
-                    return true;
                 } else {
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.no_permission"));
-                    return true;
                 }
+                return true;
             }
             if (args[0].equalsIgnoreCase("task") && args.length >= 3) {
                 if (!sender.hasPermission("bedwarsscoreboardaddon.task")) return true;

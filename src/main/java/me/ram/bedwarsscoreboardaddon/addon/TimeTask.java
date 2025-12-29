@@ -40,7 +40,6 @@ public class TimeTask {
     }
 
     public void refresh() {
-        refreshTimer();
         checkPlans();
         checkTimeCommands();
         checkWitherBow();
@@ -101,6 +100,11 @@ public class TimeTask {
     public void checkPlans() {
         if (arena.isOver()) {
             // 游戏结束，将所有计时器清零
+            scoreBoard.getPlan_infos().forEach((key, value) -> {
+                if (!key.endsWith("_2")) {
+                    scoreBoard.getPlan_infos().put(key, "");
+                }
+            });
             Config.timer.keySet().forEach(id -> {
                 scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", "0:00");
                 scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", "0");
@@ -109,51 +113,32 @@ public class TimeTask {
             return;
         }
 
-        for (String planName : Config.planinfo) {
-            ConfigurationSection planSection = Main.getInstance().getConfig().getConfigurationSection("planinfo." + planName);
+        ConfigurationSection planInfoSection = Main.getInstance().getConfig().getConfigurationSection("planinfo");
+        if (planInfoSection == null) return;
+
+        int currentTimeLeft = game.getTimeLeft();
+        for (String planName : planInfoSection.getKeys(false)) {
+            ConfigurationSection planSection = planInfoSection.getConfigurationSection(planName);
             if (planSection == null) continue;
 
             int startTime = planSection.getInt("start_time");
             int endTime = planSection.getInt("end_time");
 
+            int remainingSeconds = Math.max(0, currentTimeLeft - endTime);
 
-            if (game.getTimeLeft() <= startTime && game.getTimeLeft() > endTime) {
-                ConfigurationSection plans = planSection.getConfigurationSection("plans");
-                if (plans != null) {
+            ConfigurationSection plans = planSection.getConfigurationSection("plans");
+            if (plans != null) {
+                String format = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60);
+
+                scoreBoard.getTimer_placeholder().put("{plan_timer_" + planName + "}", format);
+                scoreBoard.getTimer_placeholder().put("{plan_timer_sec_" + planName + "}", String.valueOf(remainingSeconds));
+
+                if (currentTimeLeft <= startTime && currentTimeLeft > endTime) {
                     for (String key : plans.getKeys(false)) {
                         scoreBoard.getPlan_infos().put(key, plans.getString(key));
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * 刷新自定义倒计时。
-     */
-    public void refreshTimer() {
-        if (arena.isOver()) {
-            // 游戏结束时清空信息
-            scoreBoard.getPlan_infos().forEach((key, value) -> {
-                if (!key.endsWith("_2")) {
-                    scoreBoard.getPlan_infos().put(key, "");
-                }
-            });
-            return;
-        }
-
-        for (String id : Config.timer.keySet()) {
-            if (id == null || id.isEmpty()) continue;
-
-            int remainingSeconds = Config.timer.getOrDefault(id, 0);
-            if (remainingSeconds > 0) {
-                remainingSeconds--;
-                Config.timer.put(id, remainingSeconds);
-            }
-
-            String format = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60);
-            scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", format);
-            scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", String.valueOf(remainingSeconds));
         }
     }
 
