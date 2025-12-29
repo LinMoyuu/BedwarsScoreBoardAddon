@@ -25,22 +25,17 @@ public class LobbyScoreBoard implements Listener {
 
     public LobbyScoreBoard() {
         new BukkitRunnable() {
-            int i = 0;
             int tc = 0;
 
             @Override
             public void run() {
-                i--;
-                if (i <= 0) {
-                    i = Config.lobby_scoreboard_interval;
-                    title = Config.lobby_scoreboard_title.get(tc);
-                    tc++;
-                    if (tc >= Config.lobby_scoreboard_title.size()) {
-                        tc = 0;
-                    }
+                title = Config.lobby_scoreboard_title.get(tc);
+                tc++;
+                if (tc >= Config.lobby_scoreboard_title.size()) {
+                    tc = 0;
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 0L, 1L);
+        }.runTaskTimer(Main.getInstance(), 0L, Config.lobby_scoreboard_interval);
     }
 
     private String getDate() {

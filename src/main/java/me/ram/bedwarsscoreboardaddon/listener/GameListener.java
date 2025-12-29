@@ -30,7 +30,7 @@ import java.util.Map;
 public class GameListener implements Listener {
 
     @EventHandler
-    public void onStart(BedwarsGameStartEvent e) {
+    public void onXPGameStartMessage(BedwarsGameStartEvent e) {
         Game game = e.getGame();
         if (!BedwarsUtil.isXpMode(game)) return;
         for (Player player : game.getPlayers()) {
@@ -39,8 +39,8 @@ public class GameListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onStarted(BedwarsGameStartedEvent e) {
+    @EventHandler
+    public void onStart(BedwarsGameStartEvent e) {
         Game game = e.getGame();
         Map<Player, Scoreboard> scoreboards = ScoreboardUtil.getScoreboards();
         for (Player player : game.getPlayers()) {
@@ -49,14 +49,6 @@ public class GameListener implements Listener {
             }
         }
         new Arena(game);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
-                    Main.getInstance().getArenaManager().getArenas().get(game.getName()).getScoreBoard().updateScoreboard();
-                }
-            }
-        }.runTaskLater(Main.getInstance(), 2L);
     }
 
     @EventHandler
