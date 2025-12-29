@@ -845,7 +845,9 @@ spread_resource:
 game_chest:
 
   #是否启用
-  enabled: true
+  enabled: false
+  # 此功能与上一项功能二选一启用
+  auto_create_team_chest: true
 
   #箱子与出生点距离
   #用于自动检测箱子位置
@@ -1110,13 +1112,6 @@ actionbar: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {col
 ## 随机事件
 randomplay:
   enabled: true
-
-#自定义倒计时
-#格式:
-#  编号: 时间
-timer:
-  1: 3600
-
 
 #设定计划信息
 #变量 {plan_<编号>} 的内容

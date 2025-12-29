@@ -172,6 +172,7 @@ public class Config {
     public static boolean spread_resource_launch;
     public static double spread_resource_range;
     public static boolean game_chest_enabled;
+    public static boolean game_chest_auto_create_team_chest;
     public static int game_chest_range;
     public static String game_chest_message;
     public static boolean invisibility_player_enabled;
@@ -434,6 +435,7 @@ public class Config {
         spread_resource_launch = config.getBoolean("spread_resource.launch");
         spread_resource_range = config.getDouble("spread_resource.range");
         game_chest_enabled = config.getBoolean("game_chest.enabled");
+        game_chest_auto_create_team_chest = config.getBoolean("game_chest.auto_create_team_chest");
         game_chest_range = config.getInt("game_chest.range");
         game_chest_message = ColorUtil.color(config.getString("game_chest.message"));
         invisibility_player_enabled = config.getBoolean("invisibility_player.enabled");
