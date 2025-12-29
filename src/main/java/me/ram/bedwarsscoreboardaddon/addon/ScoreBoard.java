@@ -86,8 +86,8 @@ public class ScoreBoard {
                     cancel();
                     return;
                 }
-                arena.getTimeTask().refresh();
                 game.setTimeLeft(game.getTimeLeft() - 1);
+                arena.getTimeTask().refresh();
             }
         }.runTaskTimer(BedwarsRel.getInstance(), 0L, 20L));
     }
