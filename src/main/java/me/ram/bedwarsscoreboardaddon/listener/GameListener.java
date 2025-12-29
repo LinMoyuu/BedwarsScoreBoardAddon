@@ -41,6 +41,7 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onStart(BedwarsGameStartEvent e) {
+        if (e.isCancelled()) return;
         Game game = e.getGame();
         Map<Player, Scoreboard> scoreboards = ScoreboardUtil.getScoreboards();
         for (Player player : game.getPlayers()) {
@@ -49,6 +50,14 @@ public class GameListener implements Listener {
             }
         }
         new Arena(game);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
+                    Main.getInstance().getArenaManager().getArenas().get(game.getName()).getScoreBoard().updateScoreboard();
+                }
+            }
+        }.runTaskLater(Main.getInstance(), 2L);
     }
 
     @EventHandler

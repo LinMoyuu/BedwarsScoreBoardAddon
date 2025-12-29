@@ -36,6 +36,7 @@ public class TimeTask {
         this.timedCommands = preloadTimedCommands();
         // 执行开局指令
         dispatchCommands(Config.timecommand_startcommand);
+        refresh();
     }
 
     public void refresh() {
