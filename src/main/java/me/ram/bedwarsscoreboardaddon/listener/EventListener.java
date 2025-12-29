@@ -13,6 +13,7 @@ import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
 import io.github.bedwarsrel.utils.ChatWriter;
 import me.ram.bedwarsscoreboardaddon.Main;
+import me.ram.bedwarsscoreboardaddon.addon.RandomEvents;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
@@ -43,6 +44,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class EventListener implements Listener {
 
@@ -348,12 +350,19 @@ public class EventListener implements Listener {
             if (potionMeta == null) return;
 
             // 物品冷却中
-            if (Config.potion_cooling) {
-                for (PotionEffect potionEffect : potionMeta.getCustomEffects()) {
-                    if (player.hasPotionEffect(potionEffect.getType())) {
-                        e.setCancelled(true);
-                        player.sendMessage("物品冷却中");
-                        return;
+            if (Config.do_not_drink_randomevent_same_effect && arena.getRandomEventsManager().hasActiveEvent()) {
+                // 获取当前事件
+                Optional<RandomEvents> currentEventOptional = arena.getRandomEventsManager().getCurrentEvent();
+                if (currentEventOptional.isPresent()) {
+                    RandomEvents currentEvent = currentEventOptional.get();
+                    PotionEffectType eventEffectType = currentEvent.getEffectType();
+                    for (PotionEffect potionEffect : potionMeta.getCustomEffects()) {
+                        // 如果玩家喝下的药水包含当前事件药水效果 并且 玩家身上也有这个效果时
+                        if (potionEffect.getType().equals(eventEffectType) && player.hasPotionEffect(eventEffectType)) {
+                            e.setCancelled(true);
+                            player.sendMessage("物品冷却中");
+                            return;
+                        }
                     }
                 }
             }

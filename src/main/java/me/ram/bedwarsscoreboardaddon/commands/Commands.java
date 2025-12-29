@@ -86,7 +86,7 @@ public class Commands implements CommandExecutor {
                         }
                         break;
                     case "randomplay":
-                        randomPlay(game, arena);
+                        arena.getRandomEventsManager().switchNextEvent();
                         break;
                     case "teleport":
                         if (args.length >= 4) {
@@ -320,24 +320,6 @@ public class Commands implements CommandExecutor {
             sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.unknown"));
         }
         return true;
-    }
-
-    private void randomPlay(Game game, Arena arena) {
-        Optional<RandomEvents> eventOpt = arena.switchNextEvent();
-        if (!eventOpt.isPresent()) return;
-
-        RandomEvents event = eventOpt.get();
-
-        String subtitle = event.getSubtitle();
-        PotionEffectType potionEffectType = event.getEffectType();
-
-        for (Player player : game.getPlayers()) {
-//            if (game.isSpectator(player)) continue;
-            Utils.sendTitle(player, 0, 60, 0, "", subtitle);
-            if (potionEffectType != null) {
-                player.addPotionEffect(new PotionEffect(potionEffectType, 90 * 20, 0));
-            }
-        }
     }
 
     private void sendShopList(Player player, String game) {

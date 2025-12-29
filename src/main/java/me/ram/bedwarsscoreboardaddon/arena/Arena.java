@@ -84,9 +84,8 @@ public class Arena {
     // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
     @Getter
     private Map<String, Team> playerNameTeams;
-    // 随机事件 生草一个 以后再说 xDD 有机会会重写的
     @Getter
-    private List<RandomEvents> currentGameEvents;
+    private RandomEvents randomEventsManager;
     // 破坏队友脚下方块次数
     private HashMap<Player, Integer> friendlyBreakCount;
     // 随机传送
@@ -96,7 +95,7 @@ public class Arena {
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
         this.game = game;
-        World gameWorld = game.getLoc1().getWorld();
+        World gameWorld = game.getRegion().getWorld();
         gameWorld.setGameRuleValue("doDaylightCycle", "false");
         gameWorld.setGameRuleValue("doWeatherCycle", "false");
         gameWorld.setGameRuleValue("doFireTick", "false");
@@ -136,11 +135,7 @@ public class Arena {
             playerNameTeams.put(player.getName(), game.getPlayerTeam(player));
         }
         killStreak = new KillStreak(this);
-
-        if (Config.randomplay_enabled) {
-            currentGameEvents = new ArrayList<>(Arrays.asList(RandomEvents.values()));
-            Collections.shuffle(currentGameEvents);
-        }
+        randomEventsManager = new RandomEvents(this);
 
         friendlyBreakCount = new HashMap<>();
         teleportTask = new TeleportTask(this);
@@ -328,6 +323,7 @@ public class Arena {
         friendlyBreakCount = null;
         teleportTask.stopTask();
         teleportTask = null;
+        randomEventsManager = null;
     }
 
     public void onDisable() {
@@ -445,12 +441,5 @@ public class Arena {
             double rawKda = (double) totalScore / deaths;
             return Math.round(rawKda * 100.0) / 100.0;
         }
-    }
-
-    public Optional<RandomEvents> switchNextEvent() {
-        if (currentGameEvents == null || currentGameEvents.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(currentGameEvents.remove(0));
     }
 }

@@ -174,9 +174,9 @@ public class ScoreBoard {
                         add_line = add_line.replace("{plan_" + key + "}", plan_infos.get(key));
                     }
                     String randomPlay = "";
-                    List<RandomEvents> events = arena.getCurrentGameEvents();
-                    if (events != null && !events.isEmpty()) {
-                        randomPlay = events.get(0).getEventName();
+                    Optional<RandomEvents> event = arena.getRandomEventsManager().getNextEvent();
+                    if (event.isPresent()) {
+                        randomPlay = event.get().getEventName();
                     }
                     add_line = add_line.replace("{randomplay}", randomPlay);
                     add_line = add_line.replace("{death_mode}", arena.getDeathMode().getDeathmode_time())

@@ -32,7 +32,7 @@ public class Config {
     public static boolean item_merge;
     public static boolean hunger_change;
     public static boolean clear_bottle;
-    public static boolean potion_cooling;
+    public static boolean do_not_drink_randomevent_same_effect;
     public static boolean fast_respawn;
     public static String date_format;
     public static boolean chat_format_enabled;
@@ -287,7 +287,7 @@ public class Config {
         item_merge = config.getBoolean("item_merge");
         hunger_change = config.getBoolean("hunger_change");
         clear_bottle = config.getBoolean("clear_bottle");
-        potion_cooling = config.getBoolean("potion_cooling");
+        do_not_drink_randomevent_same_effect = config.getBoolean("do_not_drink_randomevent_same_effect");
         fast_respawn = config.getBoolean("fast_respawn");
         date_format = config.getString("date_format");
         chat_format_enabled = config.getBoolean("chat_format.enabled");

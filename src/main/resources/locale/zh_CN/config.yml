@@ -51,8 +51,8 @@ hunger_change: false
 clear_bottle: true
 
 
-##在喝下时判断是否与“玩家已有的药水效果”有同一药水效果 如果是，取消喝下
-potion_cooling: true
+##在喝下时判断是否与“玩家随机药水事件”有同一药水效果 如果是，取消喝下
+do_not_drink_randomevent_same_effect: true
 
 
 #快速重生
@@ -251,6 +251,7 @@ damagetitle:
 #玩家加入游戏时的标题
 #变量:
 # {player}   玩家名称
+## {status}   预知
 jointitle:
 
   #是否启用
@@ -1388,10 +1389,10 @@ scoreboard:
     bed_alive: "&a\u2714"
 
     #床存在,但队伍人空
-    bed_alive_empty: "&a\u2714"
+    bed_alive_empty: "&4\u2714"
 
     #床被摧毁
-    bed_destroyed: "&c\u2718"
+    bed_destroyed: "&4\u2718"
 
   #队伍状态格式
   #变量:
@@ -1405,7 +1406,7 @@ scoreboard:
   team_status_format:
 
     #床存在
-    bed_alive:
+    bed_alive: "&a\u2714"
 
     #床存在,但队伍人空
     bed_alive_empty: "&a\u2714"
