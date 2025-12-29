@@ -223,8 +223,9 @@ public class Config {
     public static String friendlybreak_warning_message;
     public static String friendlybreak_kick_message;
     public static String friendlybreak_broadcast_message;
-    public static boolean randomevent_enabled;
-    public static Map<String, Integer> timer;
+    public static boolean anti_gap_breakbed_enabled;
+    public static int anti_gap_breakbed_distance;
+    public static String anti_gap_breakbed_message;
     public static List<String> planinfo;
     public static String playertag_prefix;
     public static String playertag_suffix;
@@ -494,7 +495,9 @@ public class Config {
         friendlybreak_warning_message = config.getString("friendlybreak_kick.warning_message");
         friendlybreak_kick_message = config.getString("friendlybreak_kick.kick_message");
         friendlybreak_broadcast_message = config.getString("friendlybreak_kick.broadcast_message");
-        randomevent_enabled = config.getBoolean("randomevent.enabled");
+        anti_gap_breakbed_enabled = config.getBoolean("anti_gap_breakbed.enabled");
+        anti_gap_breakbed_distance = config.getInt("anti_gap_breakbed.check-distance");
+        anti_gap_breakbed_message = config.getString("anti_gap_breakbed.nmessage");
         planinfo = new ArrayList<>(config.getConfigurationSection("planinfo").getKeys(false));
         playertag_prefix = ColorUtil.color(config.getString("playertag.prefix"));
         playertag_suffix = ColorUtil.color(config.getString("playertag.suffix"));

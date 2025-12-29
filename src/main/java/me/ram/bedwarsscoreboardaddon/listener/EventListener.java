@@ -546,22 +546,21 @@ public class EventListener implements Listener {
                 Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
                 if (game != null && game.getState() == GameState.RUNNING && BedwarsUtil.isSpectator(game, player)) {
                     e.setCancelled(true);
-                    Bukkit.getScheduler().runTask(this.plugin, () -> {
-                        blockLocation.getBlock().getState().update();
-                    });
+                    Bukkit.getScheduler().runTask(this.plugin, () -> blockLocation.getBlock().getState().update());
                     return;
                 }
 
+                if (!Config.anti_gap_breakbed_enabled) return;
                 Block brokenBlock = blockLocation.getBlock();
-
                 if (brokenBlock.getType() != Material.BED_BLOCK) {
                     return;
                 }
-                Block targetBlock = player.getTargetBlock(null, 5);
+                Block targetBlock = player.getTargetBlock(null, Config.anti_gap_breakbed_distance);
 
+                String gap_break_message = Config.anti_gap_breakbed_message;
                 if (targetBlock != null && !targetBlock.equals(brokenBlock)) {
                     e.setCancelled(true);
-                    player.sendMessage("§b起床战争 >>§7§l 请勿从缝隙里敲床 !");
+                    if (!gap_break_message.isEmpty()) player.sendMessage(gap_break_message);
                     brokenBlock.getState().update(true);
                 }
             }
