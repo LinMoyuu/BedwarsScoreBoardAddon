@@ -213,7 +213,7 @@ public class Title implements Listener {
             return;
         }
         Arena arena = Main.getInstance().getArenaManager().getArena(e.getGame().getName());
-        int killStreak = arena.getKillStreak(killer.getUniqueId());
+        int killStreak = arena.getKillStreak().getKillStreaks(killer.getUniqueId());
         boolean needSendTitle = !BedwarsUtil.isXpMode(game) || BedwarsUtil.isXpMode(game) && BedwarsUtil.getPlayerXP(game, player) == 0;
 
         // 没人知道为什么花雨庭没有11 杀

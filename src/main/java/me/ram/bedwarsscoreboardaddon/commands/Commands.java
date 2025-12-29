@@ -55,6 +55,10 @@ public class Commands implements CommandExecutor {
                             p.closeInventory();
                         }
                     }
+                    for (Arena arena : Main.getInstance().getArenaManager().getArenas().values()) {
+                        arena.getTimeTask().preloadTimedCommands();
+                        arena.getTimeTask().refresh();
+                    }
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.reloaded"));
                 } else {
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.no_permission"));

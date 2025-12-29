@@ -79,14 +79,11 @@ public class Arena {
     @Getter
     @Setter
     private boolean enabledWitherBow = false;
+    @Getter
+    private KillStreak killStreak;
     // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
     @Getter
     private Map<String, Team> playerNameTeams;
-    // 连杀记录
-    @Getter
-    private Map<UUID, Integer> killStreaks;
-    @Getter
-    private Map<UUID, Integer> highestKillStreaks;
     // 随机事件 生草一个 以后再说 xDD 有机会会重写的
     @Getter
     private List<RandomEvents> currentGameEvents;
@@ -138,8 +135,7 @@ public class Arena {
         for (Player player : game.getPlayers()) {
             playerNameTeams.put(player.getName(), game.getPlayerTeam(player));
         }
-        killStreaks = new HashMap<>();
-        highestKillStreaks = new HashMap<>();
+        killStreak = new KillStreak(this);
 
         if (Config.randomplay_enabled) {
             currentGameEvents = new ArrayList<>(Arrays.asList(RandomEvents.values()));
@@ -172,7 +168,7 @@ public class Arena {
         Map<String, Integer> dies = playerGameStorage.getPlayerDies();
         dies.put(player.getName(), dies.getOrDefault(player.getName(), 0) + 1);
         PlaySound.playSound(player, Config.play_sound_sound_death);
-        resetKillStreak(player.getUniqueId());
+        killStreak.resetKillStreak(player.getUniqueId());
     }
 
     public void onDamage(EntityDamageEvent e) {
@@ -236,14 +232,7 @@ public class Arena {
         }
         totalkills.put(killer.getName(), totalkills.getOrDefault(killer.getName(), 0) + 1);
         PlaySound.playSound(killer, Config.play_sound_sound_kill);
-
-        // 连杀
-        this.addKillStreak(killer.getUniqueId()); // 增加连杀
-
-        // 重置被击杀者 连杀
-        if (this.getKillStreak(player.getUniqueId()) > 0) {
-            this.resetKillStreak(player.getUniqueId());
-        }
+        killStreak.onKill(player, killer);
     }
 
     public void onOver(BedwarsGameOverEvent e) {
@@ -294,7 +283,7 @@ public class Arena {
             // 第二阶段
             Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
                     Utils.sendTitle(player, 20, 40, 20,
-                            "&c最高连杀： " + getHighestKillStreak(player.getUniqueId()),
+                            "&c最高连杀： " + killStreak.getKillStreaks(player.getUniqueId()),
                             "&eKDA： &c" + calculateSpecialKda(player))), baseDelay + delayBetween);
 
             // 第三阶段
@@ -335,8 +324,7 @@ public class Arena {
         gameChest.clearChest();
         timeTask = null;
         playerNameTeams = null;
-        killStreaks = null;
-        highestKillStreaks = null;
+        killStreak = null;
         friendlyBreakCount = null;
         teleportTask.stopTask();
         teleportTask = null;
@@ -375,6 +363,7 @@ public class Arena {
             }
             rejoin.removePlayer(player.getName());
         }
+        gameChest.onPlayerLeave(player);
         respawn.onPlayerLeave(player);
     }
 
@@ -416,37 +405,6 @@ public class Arena {
             return false;
         }
         return !BedwarsUtil.isSpectator(game, player);
-    }
-
-    // 获取当前连杀数
-    public int getKillStreak(UUID playerId) {
-        return killStreaks.getOrDefault(playerId, 0);
-    }
-
-    // 增加连杀数
-    public void addKillStreak(UUID playerId) {
-        int currentStreak = getKillStreak(playerId) + 1;
-        killStreaks.put(playerId, currentStreak);
-
-        // 检查并更新最高连杀记录
-        if (currentStreak > getHighestKillStreak(playerId)) {
-            setHighestKillStreak(playerId, currentStreak);
-        }
-    }
-
-    // 重置连杀数
-    public void resetKillStreak(UUID playerId) {
-        killStreaks.put(playerId, 0);
-    }
-
-    // 获取最高连杀记录
-    public int getHighestKillStreak(UUID playerId) {
-        return highestKillStreaks.getOrDefault(playerId, 0);
-    }
-
-    // 设置最高连杀记录
-    public void setHighestKillStreak(UUID playerId, int streak) {
-        highestKillStreaks.put(playerId, streak);
     }
 
     // 哈基米给的 我实在没能想出来花雨庭怎么算出来的KDA

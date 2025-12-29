@@ -48,7 +48,6 @@ public class Graffiti {
             int y = Math.abs(loc1.getBlockY() - loc2.getBlockY());
             int z = Math.abs(loc1.getBlockZ() - loc2.getBlockZ());
             arena.addGameTask(new BukkitRunnable() {
-
                 @Override
                 public void run() {
                     for (Entity entity : centre.getWorld().getNearbyEntities(centre, x, y, z)) {

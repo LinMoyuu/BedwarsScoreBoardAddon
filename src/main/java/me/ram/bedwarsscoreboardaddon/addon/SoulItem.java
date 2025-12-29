@@ -55,7 +55,7 @@ public class SoulItem implements Listener {
         // 如果不应该给(不是8队时), 则判断连杀数是否>=3
         if (!shouldGiveSoul) {
             Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-            shouldGiveSoul = arena != null && arena.getKillStreak(killer.getUniqueId()) >= 3;
+            shouldGiveSoul = arena != null && arena.getKillStreak().getKillStreaks(killer.getUniqueId()) >= 3;
         }
         if (shouldGiveSoul) {
             killer.getInventory().addItem(soul);

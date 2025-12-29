@@ -1115,6 +1115,7 @@ randomplay:
 
 #设定计划信息
 #变量 {plan_<编号>} 的内容
+## 原Timer已废弃, 获取事件时间: {plan_timer_sec_编号}
 #
 #格式:
 # 编号
