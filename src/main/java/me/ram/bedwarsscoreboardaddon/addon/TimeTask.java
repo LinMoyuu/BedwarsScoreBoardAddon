@@ -101,13 +101,13 @@ public class TimeTask {
         if (arena.isOver()) {
             // 游戏结束，将所有计时器清零
             scoreBoard.getPlan_infos().forEach((key, value) -> {
-                if (!key.endsWith("_2")) {
+                if (key.endsWith("_1")) {
                     scoreBoard.getPlan_infos().put(key, "");
                 }
             });
             Config.timer.keySet().forEach(id -> {
-                scoreBoard.getTimer_placeholder().put("{timer_" + id + "}", "0:00");
-                scoreBoard.getTimer_placeholder().put("{timer_sec_" + id + "}", "0");
+                scoreBoard.getTimer_placeholder().put("{plan_timer_" + id + "}", "0:00");
+                scoreBoard.getTimer_placeholder().put("{plan_timer_sec_" + id + "}", "0");
                 Config.timer.put(id, 0);
             });
             return;
