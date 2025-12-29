@@ -8,11 +8,14 @@ import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.manager.PlaceholderManager;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
-import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Actionbar {
 
@@ -23,61 +26,185 @@ public class Actionbar {
     @Getter
     private final Arena arena;
 
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(Config.date_format);
+
     public Actionbar(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        placeholderManager = new PlaceholderManager(game);
+        this.placeholderManager = new PlaceholderManager(game);
     }
 
     public void sendActionbar() {
-        String actionbarConfig = Config.actionbar;
+        String actionbarConfig = arena.isEnabledWitherBow()
+                ? Config.actionbar_witherbow
+                : Config.actionbar;
+
         if (actionbarConfig == null || actionbarConfig.isEmpty()) return;
+
         int wither = game.getTimeLeft() - Config.witherbow_gametime;
         String bowtime;
         if (arena.isEnabledWitherBow()) {
             bowtime = Config.witherbow_already_start;
         } else {
-            bowtime = wither / 60 + ":" + ((wither % 60 < 10) ? ("0" + wither % 60) : (wither % 60));
+            int minutes = wither / 60;
+            int seconds = wither % 60;
+            bowtime = minutes + ":" + (seconds < 10 ? "0" + seconds : String.valueOf(seconds));
         }
-        int alive_players = 0;
+
+        int alivePlayers = 0;
         for (Player p : game.getPlayers()) {
             if (!game.isSpectator(p)) {
-                alive_players++;
+                alivePlayers++;
             }
         }
+
+        Map<String, String> globalPlaceholders = new HashMap<>();
+        globalPlaceholders.put("{bowtime}", bowtime);
+        globalPlaceholders.put("{time}", String.valueOf(game.getTimeLeft() / 60));
+        globalPlaceholders.put("{formattime}", Utils.getFormattedTimeLeft(game.getTimeLeft()));
+        globalPlaceholders.put("{game}", game.getName());
+        globalPlaceholders.put("{date}", DATE_FORMAT.format(new Date()));
+        globalPlaceholders.put("{online}", String.valueOf(game.getPlayers().size()));
+        globalPlaceholders.put("{alive_players}", String.valueOf(alivePlayers));
+
+        placeholderManager.getGamePlaceholder().forEach((identifier, placeholder) -> {
+            globalPlaceholders.put(identifier, placeholder.onGamePlaceholderRequest(game));
+        });
+
         for (Player player : game.getPlayers()) {
-            if (game.getPlayerTeam(player) == null) continue;
-            String ab = actionbarConfig;
-            if (player.getLocation().getWorld().equals(game.getPlayerTeam(player).getSpawnLocation().getWorld())) {
-                Team playerteam = game.getPlayerTeam(player);
-                for (String identifier : placeholderManager.getGamePlaceholder().keySet()) {
-                    ab = ab.replace(identifier, placeholderManager.getGamePlaceholder().get(identifier).onGamePlaceholderRequest(game));
-                }
-                if (playerteam == null || !placeholderManager.getTeamPlaceholders().containsKey(playerteam.getName())) {
-                    for (String teamname : placeholderManager.getTeamPlaceholders().keySet())
-                        for (String placeholder : placeholderManager.getTeamPlaceholders().get(teamname).keySet()) {
-                                ab = ab.replace(placeholder, "");
-                        }
-                    } else {
-                    for (String identifier : placeholderManager.getTeamPlaceholder(playerteam.getName()).keySet()) {
-                        ab = ab.replace(identifier, placeholderManager.getTeamPlaceholder(playerteam.getName()).get(identifier).onTeamPlaceholderRequest(playerteam));
-                    }
-                }
-                if (placeholderManager.getPlayerPlaceholders().containsKey(player.getName())) {
-                    for (String identifier : placeholderManager.getPlayerPlaceholder(player.getName()).keySet()) {
-                        ab = ab.replace(identifier, placeholderManager.getPlayerPlaceholder(player.getName()).get(identifier).onPlayerPlaceholderRequest(game, player));
-                    }
-                } else {
-                    for (String playername : placeholderManager.getPlayerPlaceholders().keySet()) {
-                        for (String placeholder : placeholderManager.getPlayerPlaceholders().get(playername).keySet()) {
-                            ab = ab.replace(placeholder, "");
-                        }
-                    }
-                }
-                ab = PlaceholderAPIUtil.setPlaceholders(player, ab);
-                ab = ab.replace("{team_peoples}", game.getPlayerTeam(player).getPlayers().size() + "").replace("{bowtime}", bowtime).replace("{color}", game.getPlayerTeam(player).getChatColor() + "").replace("{team}", game.getPlayerTeam(player).getName()).replace("{range}", (int) player.getLocation().distance(game.getPlayerTeam(player).getSpawnLocation()) + "").replace("{time}", (game.getTimeLeft() / 60) + "").replace("{formattime}", Utils.getFormattedTimeLeft(game.getTimeLeft())).replace("{game}", game.getName()).replace("{date}", new SimpleDateFormat(Config.date_format).format(new Date())).replace("{online}", Bukkit.getOnlinePlayers().size() + "").replace("{alive_players}", alive_players + "");
-                    Utils.sendPlayerActionbar(player, ab);
+            Team playerTeam = game.getPlayerTeam(player);
+            if (playerTeam == null || game.isSpectator(player)) continue;
+
+            if (!player.getLocation().getWorld().equals(playerTeam.getSpawnLocation().getWorld())) {
+                continue;
             }
+
+            // 创建动作栏字符串
+            String actionbar = applyActionbarPlaceholders(actionbarConfig, player, playerTeam, globalPlaceholders);
+            Utils.sendPlayerActionbar(player, actionbar);
+        }
+    }
+
+    /**
+     * 应用所有占位符到动作栏字符串
+     */
+    private String applyActionbarPlaceholders(String template, Player player, Team playerTeam, Map<String, String> globalPlaceholders) {
+        StringBuilder result = new StringBuilder(template);
+        for (Map.Entry<String, String> entry : globalPlaceholders.entrySet()) {
+            int index;
+            while ((index = result.indexOf(entry.getKey())) != -1) {
+                result.replace(index, index + entry.getKey().length(), entry.getValue());
+            }
+        }
+        String directionArrow = getDirectionArrow(player.getLocation(), playerTeam.getSpawnLocation());
+        applyTeamPlaceholders(result, playerTeam);
+        applyPlayerPlaceholders(result, player);
+        String processed = result.toString()
+                .replace("{team_peoples}", String.valueOf(playerTeam.getPlayers().size()))
+                .replace("{color}", String.valueOf(playerTeam.getChatColor()))
+                .replace("{team}", playerTeam.getName())
+                .replace("{range}", String.valueOf((int) player.getLocation().distance(playerTeam.getSpawnLocation())))
+                .replace("{direction}", ("§6" + directionArrow));
+        processed = PlaceholderAPIUtil.setPlaceholders(player, processed);
+
+        return processed;
+    }
+
+    /**
+     * 应用团队占位符
+     */
+    private void applyTeamPlaceholders(StringBuilder result, Team playerTeam) {
+        Map<String, String> replacements = new HashMap<>();
+
+        // 如果团队有占位符
+        if (placeholderManager.getTeamPlaceholder(playerTeam.getName()) != null) {
+            placeholderManager.getTeamPlaceholder(playerTeam.getName()).forEach((identifier, placeholder) -> {
+                replacements.put(identifier, placeholder.onTeamPlaceholderRequest(playerTeam));
+            });
+        } else {
+            placeholderManager.getTeamPlaceholders().values().forEach(teamPlaceholders -> {
+                teamPlaceholders.keySet().forEach(placeholder -> {
+                    replacements.put(placeholder, "");
+                });
+            });
+        }
+
+        applyReplacements(result, replacements);
+    }
+
+    /**
+     * 应用玩家占位符
+     */
+    private void applyPlayerPlaceholders(StringBuilder result, Player player) {
+        Map<String, String> replacements = new HashMap<>();
+
+        // 如果玩家有占位符
+        if (placeholderManager.getPlayerPlaceholder(player.getName()) != null) {
+            placeholderManager.getPlayerPlaceholder(player.getName()).forEach((identifier, placeholder) -> {
+                replacements.put(identifier, placeholder.onPlayerPlaceholderRequest(game, player));
+            });
+        } else {
+            placeholderManager.getPlayerPlaceholders().values().forEach(playerPlaceholders -> {
+                playerPlaceholders.keySet().forEach(placeholder -> {
+                    replacements.put(placeholder, "");
+                });
+            });
+        }
+
+        applyReplacements(result, replacements);
+    }
+
+    /**
+     * 在 StringBuilder 中应用替换
+     */
+    private void applyReplacements(StringBuilder result, Map<String, String> replacements) {
+        StringBuilder temp = new StringBuilder(result.toString());
+
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            int index;
+            while ((index = temp.indexOf(entry.getKey())) != -1) {
+                temp.replace(index, index + entry.getKey().length(), entry.getValue());
+            }
+        }
+
+        // 清空原结果并设置新值
+        result.setLength(0);
+        result.append(temp);
+    }
+
+    /**
+     * 获取玩家到出生点的方向箭头
+     *
+     * @param playerLocation 玩家位置
+     * @param spawnLocation  出生点位置
+     * @return 方向箭头
+     */
+    private String getDirectionArrow(Location playerLocation, Location spawnLocation) {
+        Vector direction = spawnLocation.toVector().subtract(playerLocation.toVector());
+        float playerYaw = playerLocation.getYaw();
+        if (playerYaw < 0) {
+            playerYaw += 360;
+        }
+        double relativeX = direction.getX();
+        double relativeZ = direction.getZ();
+        double angle = Math.toDegrees(Math.atan2(relativeX, relativeZ));
+        if (angle < 0) {
+            angle += 360;
+        }
+        double relativeAngle = angle - playerYaw;
+        if (relativeAngle > 180) {
+            relativeAngle -= 360;
+        } else if (relativeAngle < -180) {
+            relativeAngle += 360;
+        }
+        if (Math.abs(relativeAngle) <= 45) {
+            return "^";
+        } else if (relativeAngle > 45 && relativeAngle <= 135) {
+            return "<";
+        } else if (relativeAngle < -45 && relativeAngle >= -135) {
+            return ">";
+        } else {
+            return "∨";
         }
     }
 }

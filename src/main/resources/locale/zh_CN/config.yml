@@ -884,9 +884,9 @@ witherbow:
   gametime: 2400
 
   #何时提示
-  #大于60秒时用分，反之秒
   tips_on_start: true
   remind_times: [900, 600, 300, 180, 60, 30, 20, 10, 5, 4, 3, 2, 1]
+  #大于60秒时为分，反之秒(自动转换)
   countdown_message: "{bwprefix}§f§l凋零弓 §7将在 §a{time}{unit} §7后开启!"
 
   #当凋零弓开启后变量 {bowtime} 的值
@@ -1113,6 +1113,7 @@ overstats:
 # {team_peoples}       玩家队伍人数
 # {alive_players}      存活玩家数量
 actionbar: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
+actionbar_witherbow: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
 
 
 ##恶意挖掘移出 设置选项
