@@ -92,6 +92,9 @@ public class Arena {
     private List<RandomEvents> currentGameEvents;
     // 破坏队友脚下方块次数
     private HashMap<Player, Integer> friendlyBreakCount;
+    // 随机传送
+    @Getter
+    private TeleportTask teleportTask;
 
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
@@ -144,6 +147,7 @@ public class Arena {
         }
 
         friendlyBreakCount = new HashMap<>();
+        teleportTask = new TeleportTask(this);
     }
 
     public void addGameTask(BukkitTask task) {
@@ -334,6 +338,8 @@ public class Arena {
         killStreaks = null;
         highestKillStreaks = null;
         friendlyBreakCount = null;
+        teleportTask.stopTask();
+        teleportTask = null;
     }
 
     public void onDisable() {

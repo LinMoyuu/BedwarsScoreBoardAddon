@@ -67,40 +67,70 @@ public class Commands implements CommandExecutor {
                 }
             }
             if (args[0].equalsIgnoreCase("task") && args.length >= 3) {
-                if (sender instanceof Player) return true;
+                if (!sender.hasPermission("bedwarsscoreboardaddon.task")) return true;
                 Arena arena = Main.getInstance().getArenaManager().getArena(args[1]);
                 if (arena == null) return true;
                 Game game = arena.getGame();
                 if (game == null) return true;
-                if (args[2].equals("day")) {
-                    game.setTime(1000);
-                    for (Player player : game.getPlayers()) {
-                        Utils.sendTitle(player, 0, 60, 10, "", "§a§l时间恢复");
-                    }
-                }
-                if (args[2].equals("night")) {
-                    game.setTime(18000);
-                    for (Player player : game.getPlayers()) {
-                        Utils.sendTitle(player, 0, 60, 10, "", "§4§l午夜降临");
-                    }
-                }
-                if (args[2].equals("randomplay")) {
-                    randomPlay(game, arena);
+                String subCommand = args[2].toLowerCase();
+                switch (subCommand) {
+                    case "day":
+                        game.setTime(1000);
+                        for (Player player : game.getPlayers()) {
+                            Utils.sendTitle(player, 0, 60, 10, "", "§a§l时间恢复");
+                        }
+                        break;
+                    case "night":
+                        game.setTime(18000);
+                        for (Player player : game.getPlayers()) {
+                            Utils.sendTitle(player, 0, 60, 10, "", "§4§l午夜降临");
+                        }
+                        break;
+                    case "randomplay":
+                        randomPlay(game, arena);
+                        break;
+                    case "teleport":
+                        if (args.length >= 4) {
+                            String teleportAction = args[3].toLowerCase();
+                            if (teleportAction.equals("start")) {
+                                arena.getTeleportTask().startTask();
+                            } else if (teleportAction.equals("stop")) {
+                                arena.getTeleportTask().stopTask();
+                            } else {
+                                sender.sendMessage("?");
+                            }
+                        }
+                        break;
                 }
                 return true;
             }
             if (args[0].equalsIgnoreCase("title") && args.length >= 3) {
-                if (sender instanceof Player) return true;
+                if (!(sender.hasPermission("bedwarsscoreboardaddon.title"))) return true;
                 Arena arena = Main.getInstance().getArenaManager().getArena(args[1]);
                 if (arena == null) return true;
                 Game game = arena.getGame();
                 if (game == null) return true;
                 String title = args[2].replace("\"\"", "");
-                String subtitle = args[3].replace("\"\"", "");
+                String subtitle = "";
+                if (args.length >= 4) {
+                    subtitle = args[3].replace("\"\"", "");
+                }
                 for (Player player : game.getPlayers()) {
                     if (!title.isEmpty() || !subtitle.isEmpty()) {
                         Utils.sendTitle(player, 0, 60, 10, ColorUtil.color(title), ColorUtil.color(subtitle));
                     }
+                }
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("message") && args.length >= 2) {
+                if (!(sender.hasPermission("bedwarsscoreboardaddon.message"))) return true;
+                Arena arena = Main.getInstance().getArenaManager().getArena(args[1]);
+                if (arena == null) return true;
+                Game game = arena.getGame();
+                if (game == null) return true;
+                String message = args[2];
+                for (Player player : game.getPlayers()) {
+                    player.sendMessage(ColorUtil.color(message));
                 }
                 return true;
             }
@@ -161,11 +191,10 @@ public class Commands implements CommandExecutor {
                             sendSpawnerList(player, game);
                         }
                         player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.remove_spawner"));
-                        return true;
                     } else {
                         player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.failed_remove_spawner"));
-                        return true;
                     }
+                    return true;
                 }
                 return true;
             }

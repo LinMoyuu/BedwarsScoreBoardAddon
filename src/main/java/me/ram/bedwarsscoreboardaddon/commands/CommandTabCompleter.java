@@ -31,7 +31,7 @@ public class CommandTabCompleter implements TabCompleter {
 
     private List<String> getSuggest(CommandSender sender, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("help", "shop", "spawner", "edit", "reload");
+            return Arrays.asList("help", "shop", "spawner", "edit", "reload", "task", "title", "message", "randomplay", "teleport");
         }
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("shop")) {
@@ -40,7 +40,7 @@ public class CommandTabCompleter implements TabCompleter {
             if (args[0].equalsIgnoreCase("spawner")) {
                 return Arrays.asList("list", "remove", "add");
             }
-            if (args[0].equalsIgnoreCase("edit")) {
+            if (args[0].equalsIgnoreCase("edit") || args[0].equalsIgnoreCase("task") || args[0].equalsIgnoreCase("title") || args[0].equalsIgnoreCase("message") || args[0].equalsIgnoreCase("randomplay") || args[0].equalsIgnoreCase("teleport")) {
                 return getGames();
             }
         } else if (args.length == 3) {
@@ -51,9 +51,7 @@ public class CommandTabCompleter implements TabCompleter {
                 return getGames();
             }
             if (args[0].equalsIgnoreCase("shop") && args[1].equalsIgnoreCase("remove") && sender.hasPermission("bedwarsscoreboardaddon.shop.remove")) {
-                List<String> list = new ArrayList<>();
-                list.addAll(Config.game_shop_shops.keySet());
-                return list;
+                return new ArrayList<>(Config.game_shop_shops.keySet());
             }
             if (args[0].equalsIgnoreCase("spawner") && args[1].equalsIgnoreCase("list")) {
                 return getGames();
@@ -65,9 +63,7 @@ public class CommandTabCompleter implements TabCompleter {
                 return getGames();
             }
             if (args[0].equalsIgnoreCase("spawner") && args[1].equalsIgnoreCase("remove") && sender.hasPermission("bedwarsscoreboardaddon.spawner.remove")) {
-                List<String> list = new ArrayList<>();
-                list.addAll(Config.game_team_spawners.keySet());
-                return list;
+                return new ArrayList<>(Config.game_team_spawners.keySet());
             }
         } else if (args.length == 4) {
             if (args[0].equalsIgnoreCase("shop") && args[1].equalsIgnoreCase("set") && (args[2].equalsIgnoreCase("item") || args[2].equalsIgnoreCase("team")) && sender.hasPermission("bedwarsscoreboardaddon.shop.set")) {
