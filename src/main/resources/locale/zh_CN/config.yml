@@ -878,11 +878,16 @@ invisibility_player:
 witherbow:
 
   #是否启用
-  #禁用后倒计时任然继续，但不会开启凋零弓
   enabled: true
 
   #当游戏剩余多少秒时开启
   gametime: 2400
+
+  #何时提示
+  #大于60秒时用分，反之秒
+  tips_on_start: true
+  remind_times: [900, 600, 300, 180, 60, 30, 20, 10, 5, 4, 3, 2, 1]
+  countdown_message: "{bwprefix}§f§l凋零弓 §7将在 §a{time}{unit} §7后开启!"
 
   #当凋零弓开启后变量 {bowtime} 的值
   already_start: "已开启"

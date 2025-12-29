@@ -181,6 +181,9 @@ public class Config {
     public static boolean invisibility_player_damage_show_player;
     public static boolean witherbow_enabled;
     public static int witherbow_gametime;
+    public static boolean witherbow_tips_on_start;
+    public static List<Integer> witherbow_remind_times;
+    public static String witherbow_countdown_message;
     public static String witherbow_already_start;
     public static String witherbow_title;
     public static String witherbow_subtitle;
@@ -449,6 +452,9 @@ public class Config {
         invisibility_player_damage_show_player = config.getBoolean("invisibility_player.damage_show_player");
         witherbow_enabled = config.getBoolean("witherbow.enabled");
         witherbow_gametime = config.getInt("witherbow.gametime");
+        witherbow_tips_on_start = config.getBoolean("witherbow.tips_on_start");
+        witherbow_remind_times = config.getIntegerList("witherbow.remind_times");
+        witherbow_countdown_message = config.getString("witherbow.countdown_message");
         witherbow_already_start = ColorUtil.color(config.getString("witherbow.already_start"));
         witherbow_title = ColorUtil.color(config.getString("witherbow.title"));
         witherbow_subtitle = ColorUtil.color(config.getString("witherbow.subtitle"));

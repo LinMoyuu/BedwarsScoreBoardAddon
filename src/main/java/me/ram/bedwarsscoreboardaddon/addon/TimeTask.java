@@ -148,29 +148,20 @@ public class TimeTask {
         if (!Config.witherbow_enabled || arena.isEnabledWitherBow()) return;
         int enableAfterSec = (game.getTimeLeft() - Config.witherbow_gametime);
 
-        if (enableAfterSec == 15 * 60) {
-            for (Player player : game.getPlayers()) {
-                // 分钟提醒
-                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 15 + " 分钟 §7后开启!"));
-            }
-        } else if (enableAfterSec == 5 * 60) {
-            for (Player player : game.getPlayers()) {
-                // 分钟提醒
-                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + 5 + " 分钟 §7后开启!"));
+        if (Config.witherbow_remind_times != null && !Config.witherbow_remind_times.isEmpty()) {
+            if (Config.witherbow_remind_times.contains(enableAfterSec)) {
+                for (Player player : game.getPlayers()) {
+                    player.sendMessage(WitherBow.formatMessage(enableAfterSec));
+                }
             }
         }
-        // 秒数提醒
-        if (enableAfterSec <= 5 && enableAfterSec > 0) {
-            for (Player player : game.getPlayers()) {
-                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterSec + "秒钟 §7后开启!"));
-            }
-        }
+
         if (game.getTimeLeft() <= Config.witherbow_gametime) {
             if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
                 game.getPlayers().forEach(player -> Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle));
             }
             if (!Config.witherbow_message.isEmpty()) {
-                game.getPlayers().forEach(player -> player.sendMessage(Config.witherbow_message));
+                game.getPlayers().forEach(player -> player.sendMessage(Config.witherbow_message.replace("{bwprefix}", Config.bwrelPrefix)));
             }
             PlaySound.playSound(game, Config.play_sound_sound_enable_witherbow);
             arena.setEnabledWitherBow(true);

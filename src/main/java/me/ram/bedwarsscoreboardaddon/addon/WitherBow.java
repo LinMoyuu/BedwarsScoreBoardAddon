@@ -24,17 +24,6 @@ import org.bukkit.potion.PotionEffectType;
 public class WitherBow implements Listener {
 
     @EventHandler
-    public void onStarted(BedwarsGameStartedEvent e) {
-        Game game = e.getGame();
-        if (Config.witherbow_enabled) {
-            int enableAfterMinutes = (BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime) / 60;
-            for (Player player : game.getPlayers()) {
-                player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "§f§l凋零弓 §7将在 §a" + enableAfterMinutes + " 分钟 §7后开启!"));
-            }
-        }
-    }
-
-    @EventHandler
     public void onShoot(EntityShootBowEvent e) {
         if (!Config.witherbow_enabled) {
             return;
@@ -95,5 +84,46 @@ public class WitherBow implements Listener {
         }
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1));
+    }
+
+    @EventHandler
+    public void onStarted(BedwarsGameStartedEvent e) {
+        Game game = e.getGame();
+        if (Config.witherbow_enabled && Config.witherbow_tips_on_start) {
+            int enableAfterSec = BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime;
+            for (Player player : game.getPlayers()) {
+                player.sendMessage(ColorUtil.color(WitherBow.formatMessage(enableAfterSec)));
+            }
+        }
+    }
+
+    /**
+     * 格式化倒计时消息
+     *
+     * @param seconds 剩余秒数
+     * @return 格式化后的消息
+     */
+    public static String formatMessage(int seconds) {
+        String message = Config.witherbow_countdown_message;
+
+        String time;
+        String unit;
+
+        if (seconds >= 60) {
+            int minutes = seconds / 60;
+            time = String.valueOf(minutes);
+            unit = "分钟";
+        } else {
+            time = String.valueOf(seconds);
+            unit = "秒钟";
+        }
+
+        // 替换占位符
+        String formatted = message
+                .replace("{bwprefix}", Config.bwrelPrefix)
+                .replace("{time}", time)
+                .replace("{unit}", unit);
+
+        return ColorUtil.color(formatted);
     }
 }
