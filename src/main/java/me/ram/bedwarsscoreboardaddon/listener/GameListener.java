@@ -50,14 +50,18 @@ public class GameListener implements Listener {
             }
         }
         new Arena(game);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
-                    Main.getInstance().getArenaManager().getArenas().get(game.getName()).getScoreBoard().updateScoreboard();
-                }
+    }
+
+    @EventHandler
+    public void onStarted(BedwarsGameStartedEvent e) {
+        Game game = e.getGame();
+        if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
+            Arena arena = Main.getInstance().getArenaManager().getArenas().get(game.getName());
+            arena.getScoreBoard().updateScoreboard();
+            for (Player player : game.getPlayers()) {
+                arena.getPlayerNameTeams().put(player.getName(), game.getPlayerTeam(player));
             }
-        }.runTaskLater(Main.getInstance(), 2L);
+        }
     }
 
     @EventHandler

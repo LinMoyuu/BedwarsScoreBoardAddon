@@ -83,7 +83,7 @@ public class Arena {
     private KillStreak killStreak;
     // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
     @Getter
-    private Map<String, Team> playerNameTeams;
+    private Map<String, Team> playerNameTeams = new HashMap<>();
     @Getter
     private RandomEvents randomEventsManager;
     // 破坏队友脚下方块次数
@@ -120,20 +120,16 @@ public class Arena {
             shop = new Shop(this);
         }
         timeTask = new TimeTask(this);
-        addGameTask(new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (!game.getState().equals(GameState.RUNNING)) {
-                    onOver(new BedwarsGameOverEvent(game, null));
-                    onEnd();
-                }
-            }
-        }.runTaskTimer(Main.getInstance(), 1L, 1L));
-
-        playerNameTeams = new HashMap<>();
-        for (Player player : game.getPlayers()) {
             playerNameTeams.put(player.getName(), game.getPlayerTeam(player));
-        }
+        // 不清楚何意味 可能是指令停止游戏时会用上?
+//        addGameTask(new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                if (!game.getState().equals(GameState.RUNNING)) {
+//                    onOver(new BedwarsGameOverEvent(game, null));
+//                    onEnd();
+//                }
+//            }
         killStreak = new KillStreak(this);
         randomEventsManager = new RandomEvents(this);
 
