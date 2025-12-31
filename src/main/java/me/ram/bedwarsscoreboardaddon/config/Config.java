@@ -193,6 +193,11 @@ public class Config {
     public static String deathmode_title;
     public static String deathmode_subtitle;
     public static String deathmode_message;
+    public static boolean deathmode_border_enabled;
+    public static int deathmode_border_seconds;
+    public static double deathmode_border_size;
+    public static double deathmode_border_damage;
+    public static int deathmode_border_warningdistance;
     public static boolean deathitem_enabled;
     public static List<String> deathitem_items;
     public static boolean deathitem_item_name_chinesize;
@@ -466,6 +471,11 @@ public class Config {
         deathmode_title = ColorUtil.color(config.getString("deathmode.title"));
         deathmode_subtitle = ColorUtil.color(config.getString("deathmode.subtitle"));
         deathmode_message = ColorUtil.color(config.getString("deathmode.message"));
+        deathmode_border_enabled = config.getBoolean("deathmode.border.enabled");
+        deathmode_border_seconds = config.getInt("deathmode.border.seconds");
+        deathmode_border_size = config.getDouble("deathmode.border.size");
+        deathmode_border_damage = config.getDouble("deathmode.border.damage");
+        deathmode_border_warningdistance = config.getInt("deathmode.border.warningdistance");
         deathitem_enabled = config.getBoolean("deathitem.enabled");
         deathitem_items = config.getStringList("deathitem.items");
         deathitem_item_name_chinesize = config.getBoolean("deathitem.item_name_chinesize");

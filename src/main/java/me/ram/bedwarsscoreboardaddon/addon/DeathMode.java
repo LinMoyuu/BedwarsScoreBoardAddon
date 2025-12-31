@@ -52,7 +52,7 @@ public class DeathMode {
                 destroyBlock(game, team);
             }
             PlaySound.playSound(game, Config.play_sound_sound_deathmode);
-            startShrinking();
+            if (Config.deathmode_border_enabled) startShrinking();
         }
     }
 
@@ -78,7 +78,7 @@ public class DeathMode {
         // 计算中心点
         double centerX = (loc1.getX() + loc2.getX()) / 2;
         double centerZ = (loc1.getZ() + loc2.getZ()) / 2;
-        // 计算初始边界的直径 (取X和Z中较大的值，确保整个区域都在圈内)
+        // 计算初始边界的直径
         double sizeX = Math.abs(loc1.getX() - loc2.getX());
         double sizeZ = Math.abs(loc1.getZ() - loc2.getZ());
         double initialSize = Math.max(sizeX, sizeZ);
@@ -87,11 +87,11 @@ public class DeathMode {
         // 设置初始边界
         border.setCenter(centerX, centerZ);
         border.setSize(initialSize);
-        border.setDamageAmount(0.1); // 边界外的伤害
-        border.setWarningDistance(10); // 靠近边界10格时开始警告
+        border.setDamageAmount(Config.deathmode_border_damage); // 边界外的伤害
+        border.setWarningDistance(Config.deathmode_border_warningdistance); // 靠近边界开始警告
 
-        long shrinkDurationInSeconds = 90; // 缩短秒数
-        double targetSize = 25.0; // 最终大小
+        long shrinkDurationInSeconds = Config.deathmode_border_seconds; // 缩短秒数
+        double targetSize = Config.deathmode_border_size; // 最终大小
 
         // 设置缩小
         border.setSize(targetSize, shrinkDurationInSeconds);

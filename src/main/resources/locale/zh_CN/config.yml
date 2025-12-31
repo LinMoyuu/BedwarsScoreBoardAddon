@@ -920,6 +920,14 @@ deathmode:
   #显示的信息
   message: "&f死亡模式开启，所有队伍床被破坏！"
 
+  border:
+    enabled: true
+    seconds: 90
+    size: 25.0
+    damage: 0.1
+    warningdistance: 10
+
+
 
 #击杀资源抢夺
 deathitem:
