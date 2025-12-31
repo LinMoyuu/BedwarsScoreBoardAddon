@@ -37,7 +37,8 @@ public class ResourceUpgrade {
     private final Map<Material, Integer> spawn_time;
     private final Map<String, String> upg_time;
     private final Map<Material, String> levels;
-
+    @Getter
+    private final Map<String, Boolean> resourcePointFirstSpawn = new HashMap<>();
     private final Set<String> executedUpgradeStages = new HashSet<>();
 
     public ResourceUpgrade(Arena arena) {
@@ -54,7 +55,6 @@ public class ResourceUpgrade {
                 levels.put(itemStack.getType(), "I");
                 interval.put(itemStack.getType(), spawner.getInterval() / 50);
             }
-
             Location sloc = spawner.getLocation();
             for (ItemStack itemStack : spawner.getResources()) {
                 arena.addGameTask(new BukkitRunnable() {

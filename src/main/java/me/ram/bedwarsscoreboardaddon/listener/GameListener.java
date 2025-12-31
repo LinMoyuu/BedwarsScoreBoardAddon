@@ -17,6 +17,7 @@ import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ScoreboardUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -148,6 +149,19 @@ public class GameListener implements Listener {
         for (Player player : game.getPlayers()) {
             if (player == null) continue;
             game.playerLeave(player, false);
+        }
+    }
+
+    @EventHandler
+    public void onResourceSpawnEvent(BedwarsResourceSpawnEvent event) {
+        if (!Config.resource_no_drop_on_first_spawn) return;
+        Arena arena = Main.getInstance().getArenaManager().getArena(event.getGame().getName());
+        if (arena == null) return;
+        String resourcePointKey = Utils.generateResourcePointKey(event);
+        Map<String, Boolean> resourcePointFirstSpawn = arena.getResourceUpgrade().getResourcePointFirstSpawn();
+        if (!resourcePointFirstSpawn.containsKey(resourcePointKey)) {
+            event.setCancelled(true);
+            resourcePointFirstSpawn.put(resourcePointKey, true);
         }
     }
 

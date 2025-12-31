@@ -166,6 +166,7 @@ public class Config {
     public static boolean giveitem_armor_boots_move;
     public static boolean sethealth_start_enabled;
     public static int sethealth_start_health;
+    public static boolean resource_no_drop_on_first_spawn;
     public static boolean resourcelimit_enabled;
     public static List<String[]> resourcelimit_limit;
     public static boolean spread_resource_enabled;
@@ -440,6 +441,7 @@ public class Config {
         respawn_respawn_message = ColorUtil.color(config.getString("respawn.respawn.message"));
         sethealth_start_enabled = config.getBoolean("sethealth.start.enabled");
         sethealth_start_health = config.getInt("sethealth.start.health");
+        resource_no_drop_on_first_spawn = config.getBoolean("resource_no_drop_on_first_spawn");
         resourcelimit_enabled = config.getBoolean("resourcelimit.enabled");
         resourcelimit_limit = new ArrayList<String[]>();
         for (String w : config.getStringList("resourcelimit.limit")) {

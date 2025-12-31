@@ -813,6 +813,8 @@ resourceupgrade:
       - "EMERALD,600"
     message: "&2绿宝石生成点&e已升至&cV&e级"
 
+#第一次刷新资源时不掉落
+resource_no_drop_on_first_spawn: true
 
 #资源数量上限
 resourcelimit:

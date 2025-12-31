@@ -1,7 +1,9 @@
 package me.ram.bedwarsscoreboardaddon.utils;
 
 import io.github.bedwarsrel.BedwarsRel;
+import io.github.bedwarsrel.events.BedwarsResourceSpawnEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
@@ -132,7 +134,17 @@ public class Utils {
         return minStr + ":" + secStr;
     }
 
-
+    // 能写出这个也是可以请高人了
+    public static String generateResourcePointKey(BedwarsResourceSpawnEvent event) {
+        Location loc = event.getLocation();
+        return String.format("%s_%s_%d_%d_%d",
+                event.getGame().getName(),
+                event.getResource().getType().toString(),
+                loc.getBlockX(),
+                loc.getBlockY(),
+                loc.getBlockZ()
+        );
+    }
 }
 
 
