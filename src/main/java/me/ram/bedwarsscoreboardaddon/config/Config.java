@@ -45,8 +45,9 @@ public class Config {
     public static String chat_format_ingame;
     public static String chat_format_ingame_all;
     public static String chat_format_spectator;
-    public static boolean final_killed_enabled;
-    public static String final_killed_message;
+    public static boolean killed_chat_enabled;
+    public static String killed_chat_message;
+    public static String killed_chat_final;
     public static List<String> timecommand_startcommand;
     public static boolean select_team_enabled;
     public static String select_team_status_select;
@@ -314,8 +315,9 @@ public class Config {
         chat_format_ingame = ColorUtil.color(config.getString("chat_format.ingame"));
         chat_format_ingame_all = ColorUtil.color(config.getString("chat_format.ingame_all"));
         chat_format_spectator = ColorUtil.color(config.getString("chat_format.spectator"));
-        final_killed_enabled = config.getBoolean("final_killed.enabled");
-        final_killed_message = ColorUtil.color(config.getString("final_killed.message"));
+        killed_chat_enabled = config.getBoolean("killed_chat.enabled");
+        killed_chat_message = ColorUtil.color(config.getString("killed_chat.message"));
+        killed_chat_final = ColorUtil.color(config.getString("killed_chat.final"));
         timecommand_startcommand = ColorUtil.colorList(config.getStringList("timecommand.startcommand"));
         giveitem_keeparmor = config.getBoolean("giveitem.keeparmor");
         giveitem_armor_helmet_item = (Map<String, Object>) config.getList("giveitem.armor.helmet.item").get(0);

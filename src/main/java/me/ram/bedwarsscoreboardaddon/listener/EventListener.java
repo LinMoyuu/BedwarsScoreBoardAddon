@@ -20,6 +20,7 @@ import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -169,7 +170,7 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDeathLowest(PlayerDeathEvent e) {
-        if (!Config.final_killed_enabled) {
+        if (!Config.killed_chat_enabled) {
             return;
         }
         Player player = e.getEntity();
@@ -178,7 +179,7 @@ public class EventListener implements Listener {
             return;
         }
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null || game.getState() != GameState.RUNNING || game.isSpectator(player) || !game.getPlayers().contains(killer) || game.isSpectator(killer) || !game.getPlayerTeam(player).isDead(game)) {
+        if (game == null || game.getState() != GameState.RUNNING) {
             return;
         }
         Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<>());
@@ -198,8 +199,8 @@ public class EventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDeathHighest(PlayerDeathEvent e) {
-        if (!Config.final_killed_enabled) {
+    public void onKilledHighest(PlayerDeathEvent e) {
+        if (!Config.killed_chat_enabled) {
             return;
         }
         Player player = e.getEntity();
@@ -208,7 +209,7 @@ public class EventListener implements Listener {
             return;
         }
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null || game.getState() != GameState.RUNNING || game.isSpectator(player) || !game.getPlayers().contains(killer) || game.isSpectator(killer) || !game.getPlayerTeam(player).isDead(game)) {
+        if (game == null || game.getState() != GameState.RUNNING) {
             return;
         }
         Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<>());
@@ -228,7 +229,25 @@ public class EventListener implements Listener {
         if (BedwarsRel.getInstance().getBooleanConfig("hearts-on-death", true)) {
             hearts = "[" + ChatColor.RED + "❤" + format.format(health) + ChatColor.GOLD + "]";
         }
-        String string = Config.final_killed_message.replace("{player}", Game.getPlayerWithTeamString(player, game.getPlayerTeam(player), ChatColor.GOLD)).replace("{killer}", Game.getPlayerWithTeamString(killer, game.getPlayerTeam(killer), ChatColor.GOLD, hearts));
+        String finalkilled = "";
+        Team playerTeam = game.getPlayerTeam(player);
+        Team killerTeam = game.getPlayerTeam(killer);
+        if (game.isSpectator(player) || playerTeam.isDead(game)) {
+            finalkilled = ColorUtil.color(Config.killed_chat_final);
+        }
+
+        String string = Config.killed_chat_message
+                .replace("{bwprefix}", Config.bwrelPrefix)
+                .replace("{playerTeamString}", ChatColor.GOLD + "(" + playerTeam.getDisplayName() + ChatColor.GOLD + ")")
+                .replace("{killerTeamString}", ChatColor.GOLD + "(" + killerTeam.getDisplayName() + ChatColor.GOLD + ")")
+                .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                .replace("{killerTeamColor}", killerTeam.getChatColor().toString())
+                .replace("{playerTeam}", playerTeam.getDisplayName())
+                .replace("{killerTeam}", killerTeam.getDisplayName())
+                .replace("{hearts}", hearts)
+                .replace("{player}", player.getDisplayName())
+                .replace("{killer}", killer.getDisplayName())
+                .replace("{final}", finalkilled);
         for (Player p : game.getPlayers()) {
             if (p.isOnline()) {
                 p.sendMessage(string);
