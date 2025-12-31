@@ -128,77 +128,6 @@ public class Commands implements CommandExecutor {
                 }
                 return true;
             }
-            if (args[0].equalsIgnoreCase("spawner") && args.length > 1) {
-                if (!(sender instanceof Player)) {
-                    sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.not_player"));
-                    return true;
-                }
-                Player player = (Player) sender;
-                if (args[1].equalsIgnoreCase("add")) {
-                    if (!player.hasPermission("bedwarsscoreboardaddon.spawner.set")) {
-                        sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.no_permission"));
-                        return true;
-                    }
-                    if (args.length < 4) {
-                        sender.sendMessage("");
-                        sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.add_spawner"));
-                        return true;
-                    }
-                    Config.setTeamSpawner(args[2], args[3], player.getLocation());
-                    player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.add_spawner"));
-                    Main.getInstance().getEditHolographicManager().displayGameLocation(player, args[2]);
-                    return true;
-                }
-                if (args[1].equalsIgnoreCase("list")) {
-                    if (!player.hasPermission("bedwarsscoreboardaddon.spawner.list")) {
-                        sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.no_permission"));
-                        return true;
-                    }
-                    if (args.length == 2) {
-                        sender.sendMessage("");
-                        sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.spawner_list"));
-                        return true;
-                    }
-                    if (!Config.game_team_spawner.containsKey(args[2])) {
-                        player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.spawner_list_error"));
-                        return true;
-                    }
-                    String game = args[2];
-                    sendSpawnerList(player, game);
-                    return true;
-                }
-                if (args[1].equalsIgnoreCase("remove")) {
-                    if (!player.hasPermission("bedwarsscoreboardaddon.spawner.remove")) {
-                        sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.no_permission"));
-                        return true;
-                    }
-                    if (args.length == 2) {
-                        sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.remove_spawner"));
-                        return true;
-                    }
-                    if (Config.game_team_spawners.containsKey(args[2])) {
-                        String shop = Config.game_team_spawners.get(args[2]);
-                        Config.removeShop(shop);
-                        String game = shop.split("\\.")[0];
-                        Main.getInstance().getEditHolographicManager().displayGameLocation(player, game);
-                        if (args.length > 3 && args[3].equalsIgnoreCase("true")) {
-                            sendSpawnerList(player, game);
-                        }
-                        player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.remove_spawner"));
-                    } else {
-                        player.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.failed_remove_spawner"));
-                    }
-                    return true;
-                }
-                return true;
-            }
-            if (args[0].equalsIgnoreCase("spawner")) {
-                sender.sendMessage("");
-                sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.spawner_list"));
-                sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.remove_spawner"));
-                sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.help.add_spawner"));
-                return true;
-            }
             if (args[0].equalsIgnoreCase("shop") && args.length > 1) {
                 if (!(sender instanceof Player)) {
                     sender.sendMessage(Config.getLanguage("commands.message.prefix") + Config.getLanguage("commands.message.not_player"));
@@ -338,29 +267,6 @@ public class Commands implements CommandExecutor {
         Main.getInstance().getEditHolographicManager().displayGameLocation(player, game);
     }
 
-    private void sendSpawnerList(Player player, String game) {
-        player.sendMessage("");
-        player.sendMessage(Config.getLanguage("commands.message.spawner_list"));
-        player.sendMessage("");
-        if (Config.game_team_spawner.containsKey(game)) {
-            Config.game_team_spawner.get(game).forEach((team, locs) -> {
-                locs.forEach(line -> {
-                    try {
-                        String loc = locationToString(line);
-                        Config.game_team_spawners.forEach((id, pl) -> {
-                            if (pl.equals(game + ".team_spawner." + team + " - " + loc)) {
-                                player.sendMessage("§f ID: §a" + id + " §f[" + team + "§f]" + " §f[§e" + loc.replace(",", "§f,§e") + "§f]");
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " {\"text\":\" \",\"extra\":[{\"text\":\"" + Config.getLanguage("button.list_teleport") + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bwsbatp " + game + " " + loc + "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + Config.getLanguage("show_text.list_teleport") + "\"}},{\"text\":\"  \"},{\"text\":\"" + Config.getLanguage("button.list_remove") + "\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/bedwarsscoreboardaddon:bwsba spawner remove " + id + " true\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + Config.getLanguage("show_text.list_remove") + "\"}}]}");
-                                player.sendMessage("");
-                            }
-                        });
-                    } catch (Exception e) {
-                    }
-                });
-            });
-        }
-        Main.getInstance().getEditHolographicManager().displayGameLocation(player, game);
-    }
 
     private String locationToString(Location location) {
         return location.getWorld().getName() + ", " + location.getX() + ", " + location.getY() + ", " + location.getZ() + ", " + location.getYaw() + ", " + location.getPitch();

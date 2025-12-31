@@ -194,26 +194,6 @@ public class EditGame implements Listener {
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_GAME_SPAWNER, inventory, value);
     }
 
-    private static void openEditSpawner(Player player, Game game) {
-        Inventory inventory = Bukkit.createInventory(null, 54, game.getName());
-        ItemStack itemStack = new ItemStack(Material.QUARTZ);
-        ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_team_spawner"));
-        ItemUtil.setItemLore(itemStack, Collections.singletonList(Config.getLanguage("item.edit_game.lore.browse")));
-        inventory.setItem(21, itemStack);
-        itemStack = new ItemStack(Material.BLAZE_POWDER);
-        ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.set_game_spawner"));
-        ItemUtil.setItemLore(itemStack, Collections.singletonList(Config.getLanguage("item.edit_game.lore.browse")));
-        inventory.setItem(23, itemStack);
-        itemStack = new ItemStack(Material.ARROW);
-        ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.back"));
-        inventory.setItem(49, itemStack);
-        player.closeInventory();
-        player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<>();
-        value.put("game", game);
-        Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_SPAWNER, inventory, value);
-    }
-
     private static void openEditTeamBed(Player player, Game game) {
         Inventory inventory = Bukkit.createInventory(null, 54, game.getName());
         int i = 10;
@@ -278,33 +258,6 @@ public class EditGame implements Listener {
         Map<String, Object> value = new HashMap<>();
         value.put("game", game);
         Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_TEAM_SPAWN, inventory, value);
-    }
-
-    private static void openEditTeamSpawner(Player player, Game game) {
-        Inventory inventory = Bukkit.createInventory(null, 54, game.getName());
-        int i = 10;
-        for (Team team : game.getTeams().values()) {
-            if (i == 17) {
-                i = 19;
-            } else if (i == 26) {
-                i = 28;
-            }
-            TeamColor teamColor = team.getColor();
-            ItemStack itemStack = new ItemStack(Material.WOOL);
-            itemStack.setDurability(teamColor.getDyeColor().getWoolData());
-            ItemUtil.setItemName(itemStack, teamColor.getChatColor() + team.getName());
-            ItemUtil.setItemLore(itemStack, Collections.singletonList(Config.getLanguage("item.edit_game.lore.set")));
-            inventory.setItem(i, itemStack);
-            i++;
-        }
-        ItemStack itemStack = new ItemStack(Material.ARROW);
-        ItemUtil.setItemName(itemStack, Config.getLanguage("item.edit_game.name.back"));
-        inventory.setItem(49, itemStack);
-        player.closeInventory();
-        player.openInventory(inventory);
-        Map<String, Object> value = new HashMap<>();
-        value.put("game", game);
-        Main.getInstance().getMenuManager().addPlayer(player, MenuType.EDIT_TEAM_SPAWNER, inventory, value);
     }
 
     private static void openEditTeamsMenu(Player player, Game game) {
@@ -569,7 +522,7 @@ public class EditGame implements Listener {
                         Main.getInstance().getEditHolographicManager().displayGameLocation(player, game.getName());
                         break;
                     case 22:
-                        openEditSpawner(player, game);
+                        openEditGameSpawner(player, game);
                         break;
                     case 23:
                         player.closeInventory();
@@ -655,43 +608,6 @@ public class EditGame implements Listener {
                     Main.getInstance().getEditHolographicManager().displayGameLocation(player, game.getName());
                 }
             }
-        } else if (man.isOpen(player, MenuType.EDIT_TEAM_SPAWNER)) {
-            e.setCancelled(true);
-            Object value = man.getValue(player).getOrDefault("game", null);
-            if (value != null) {
-                Game game = (Game) value;
-                String game_name = game.getName();
-                if (slot == 49) {
-                    openMenu(player, game);
-                    return;
-                }
-                ItemStack itemStack = e.getCurrentItem();
-                if (itemStack != null && !itemStack.getType().equals(Material.AIR)) {
-                    ItemMeta itemMeta = itemStack.getItemMeta();
-                    player.closeInventory();
-                    Bukkit.dispatchCommand(player, "bedwarsscoreboardaddon:bwsba spawner add " + game_name + " " + ColorUtil.removeColor(itemMeta.getDisplayName()));
-                    Main.getInstance().getEditHolographicManager().displayGameLocation(player, game.getName());
-                }
-            }
-        } else if (man.isOpen(player, MenuType.EDIT_SPAWNER)) {
-            e.setCancelled(true);
-            Object value = man.getValue(player).getOrDefault("game", null);
-            if (value != null) {
-                Game game = (Game) value;
-                switch (slot) {
-                    case 21:
-                        openEditTeamSpawner(player, game);
-                        break;
-                    case 23:
-                        openEditGameSpawner(player, game);
-                        break;
-                    case 49:
-                        openMenu(player, game);
-                        break;
-                    default:
-                        break;
-                }
-            }
         } else if (man.isOpen(player, MenuType.EDIT_GAME_SPAWNER)) {
             e.setCancelled(true);
             Object value = man.getValue(player).getOrDefault("game", null);
@@ -699,7 +615,7 @@ public class EditGame implements Listener {
                 Game game = (Game) value;
                 String game_name = game.getName();
                 if (slot == 49) {
-                    openEditSpawner(player, game);
+                    openMenu(player, game);
                     return;
                 }
                 ItemStack itemStack = e.getCurrentItem();

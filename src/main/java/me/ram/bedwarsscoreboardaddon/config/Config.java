@@ -257,8 +257,6 @@ public class Config {
     public static List<String> lobby_scoreboard_lines;
     public static Map<String, List<String>> game_shop_item;
     public static Map<String, String> game_shop_shops;
-    public static Map<String, Map<String, List<Location>>> game_team_spawner;
-    public static Map<String, String> game_team_spawners;
     public static List<MapView> image_maps;
     private static FileConfiguration file_config;
     private static FileConfiguration language_config;
@@ -609,23 +607,6 @@ public class Config {
         loadGameConfig();
     }
 
-    public static void setTeamSpawner(String game, String team, Location location) {
-        File file = getGameFile();
-        FileConfiguration filec = YamlConfiguration.loadConfiguration(file);
-        List<String> loc = new ArrayList<>();
-        if (filec.getStringList(game + ".team_spawner." + team) != null) {
-            loc.addAll(filec.getStringList(game + ".team_spawner." + team));
-        }
-        loc.add(location.getWorld().getName() + ", " + location.getX() + ", " + location.getY() + ", " + location.getZ() + ", " + location.getYaw() + ", " + location.getPitch());
-        filec.set(game + ".team_spawner." + team, loc);
-        try {
-            filec.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        loadGameConfig();
-    }
-
     private static void loadGameConfig() {
         File folder = new File(Main.getInstance().getDataFolder(), "/");
         if (!folder.exists()) {
@@ -634,10 +615,7 @@ public class Config {
         File file = new File(folder.getAbsolutePath() + "/game.yml");
         game_shop_item = new HashMap<>();
         game_shop_shops = new HashMap<>();
-        game_team_spawner = new HashMap<>();
-        game_team_spawners = new HashMap<>();
         int shopId = 0;
-        int spawnerId = 0;
         if (!file.exists()) {
             return;
         }
@@ -653,25 +631,6 @@ public class Config {
                         shopId++;
                     }
                 }
-            }
-            if (configSec.contains("team_spawner")) {
-                ConfigurationSection configst = configSec.getConfigurationSection("team_spawner");
-                Map<String, List<Location>> map = new HashMap<String, List<Location>>();
-                for (String team : configst.getKeys(false)) {
-                    List<Location> locs = new ArrayList<Location>();
-                    for (String loc : configst.getStringList(team)) {
-                        Location location = toLocation(loc);
-                        if (location != null) {
-                            locs.add(location);
-                        }
-                    }
-                    map.put(team, locs);
-                    for (String spawner : configst.getStringList(team)) {
-                        game_team_spawners.put(spawnerId + "", game + ".team_spawner." + team + " - " + spawner);
-                        spawnerId++;
-                    }
-                }
-                game_team_spawner.put(game, map);
             }
         }
     }

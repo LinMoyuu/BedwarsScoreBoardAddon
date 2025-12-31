@@ -62,9 +62,6 @@ public class CommandTabCompleter implements TabCompleter {
             if (args[0].equalsIgnoreCase("spawner") && args[1].equalsIgnoreCase("add") && sender.hasPermission("bedwarsscoreboardaddon.spawner.add")) {
                 return getGames();
             }
-            if (args[0].equalsIgnoreCase("spawner") && args[1].equalsIgnoreCase("remove") && sender.hasPermission("bedwarsscoreboardaddon.spawner.remove")) {
-                return new ArrayList<>(Config.game_team_spawners.keySet());
-            }
         } else if (args.length == 4) {
             if (args[0].equalsIgnoreCase("shop") && args[1].equalsIgnoreCase("set") && (args[2].equalsIgnoreCase("item") || args[2].equalsIgnoreCase("team")) && sender.hasPermission("bedwarsscoreboardaddon.shop.set")) {
                 return getGames();

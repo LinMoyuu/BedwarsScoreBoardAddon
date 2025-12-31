@@ -58,18 +58,6 @@ public class EditHolographicManager {
                     holo.display(player);
                 }
             }
-            if (Config.game_team_spawner.containsKey(g)) {
-                for (Team team : game.getTeams().values()) {
-                    if (Config.game_team_spawner.get(g).containsKey(team.getName())) {
-                        Config.game_team_spawner.get(g).get(team.getName()).forEach(loc -> {
-                            Location location = loc.clone();
-                            HolographicAPI holo = new HolographicAPI(location.add(0, -1.75, 0), Config.getLanguage("holographic.edit_game.team_spawner").replace("{team}", team.getChatColor() + team.getName()));
-                            list.add(holo);
-                            holo.display(player);
-                        });
-                    }
-                }
-            }
             for (ResourceSpawner spawner : game.getResourceSpawners()) {
                 HolographicAPI holo = new HolographicAPI(spawner.getLocation().clone().add(0, -1.75, 0), Config.getLanguage("holographic.edit_game.spawner").replace("{resource}", spawner.getName()));
                 list.add(holo);

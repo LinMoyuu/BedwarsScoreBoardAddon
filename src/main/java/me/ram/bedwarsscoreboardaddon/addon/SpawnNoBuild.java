@@ -6,15 +6,13 @@ import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.ResourceSpawner;
 import io.github.bedwarsrel.game.Team;
 import me.ram.bedwarsscoreboardaddon.config.Config;
-import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-
-import java.util.List;
 
 public class SpawnNoBuild implements Listener {
 
@@ -29,6 +27,7 @@ public class SpawnNoBuild implements Listener {
         }
         Block block = e.getBlock();
         Player player = e.getPlayer();
+        if (e.getBlock() != null && e.getBlock().getType() == Material.TNT) return;
         if (Config.spawn_no_build_spawn_enabled) {
             for (Team team : game.getTeams().values()) {
                 if (team.getSpawnLocation().distanceSquared(block.getLocation().clone().add(0.5, 0, 0.5)) <= Math.pow(Config.spawn_no_build_spawn_range, 2)) {
@@ -44,18 +43,6 @@ public class SpawnNoBuild implements Listener {
                     e.setCancelled(true);
                     player.sendMessage(Config.spawn_no_build_message);
                     return;
-                }
-            }
-            if (!Config.game_team_spawner.containsKey(game.getName())) {
-                return;
-            }
-            for (List<Location> locs : Config.game_team_spawner.get(game.getName()).values()) {
-                for (Location loc : locs) {
-                    if (loc.distanceSquared(block.getLocation().clone().add(0.5, 0, 0.5)) <= Math.pow(Config.spawn_no_build_resource_range, 2)) {
-                        e.setCancelled(true);
-                        player.sendMessage(Config.spawn_no_build_message);
-                        return;
-                    }
                 }
             }
         }
