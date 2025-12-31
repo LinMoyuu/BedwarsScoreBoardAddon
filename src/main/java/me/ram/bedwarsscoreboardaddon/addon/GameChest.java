@@ -60,21 +60,23 @@ public class GameChest {
     }
 
     public void onInteract(PlayerInteractEvent e) {
-        if (!Config.game_chest_enabled && Config.game_chest_auto_create_team_chest) {
-            Player player = e.getPlayer();
-            Block block = e.getClickedBlock();
-            if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
-            if (block == null || block.getType() != Material.ENDER_CHEST) return;
-            Team chestTeam = game.getTeamOfEnderChest(block);
-            Team playerTeam = game.getPlayerTeam(player);
-            if (chestTeam == null) {
-                if (playerTeam.getInventory() == null) {
-                    playerTeam.createTeamInventory();
+        if (!Config.game_chest_enabled) {
+            if (Config.game_chest_auto_create_team_chest) {
+                Player player = e.getPlayer();
+                Block block = e.getClickedBlock();
+                if (!e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+                if (block == null || block.getType() != Material.ENDER_CHEST) return;
+                Team chestTeam = game.getTeamOfEnderChest(block);
+                Team playerTeam = game.getPlayerTeam(player);
+                if (chestTeam == null) {
+                    if (playerTeam.getInventory() == null) {
+                        playerTeam.createTeamInventory();
+                    }
+                    if (!playerTeam.getChests().contains(block)) {
+                            playerTeam.addChest(block);
+                    }
+                    player.openInventory(playerTeam.getInventory());
                 }
-                if (!playerTeam.getChests().contains(block)) {
-                    playerTeam.addChest(block);
-                }
-                player.openInventory(playerTeam.getInventory());
             }
             return;
         }
