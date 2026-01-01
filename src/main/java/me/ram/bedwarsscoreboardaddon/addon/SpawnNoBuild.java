@@ -27,7 +27,9 @@ public class SpawnNoBuild implements Listener {
         }
         Block block = e.getBlock();
         Player player = e.getPlayer();
-        if (e.getBlock() != null && e.getBlock().getType() == Material.TNT) return;
+        if (block == null) return;
+        Material blockType = block.getType();
+        if (blockType == Material.AIR) return;
         if (Config.spawn_no_build_spawn_enabled) {
             for (Team team : game.getTeams().values()) {
                 if (team.getSpawnLocation().distanceSquared(block.getLocation().clone().add(0.5, 0, 0.5)) <= Math.pow(Config.spawn_no_build_spawn_range, 2)) {
