@@ -100,6 +100,16 @@ chat_format:
   spectator: "&7[&f旁观者&7] &f{player} > {message}"
 
 
+##死亡消息显示
+death_chat:
+
+  #是否启用
+  enabled: true
+
+  #信息
+  message: "{bwprefix}&6{player} &6死了{final}"
+
+
 ##击杀消息显示
 killed_chat:
 
@@ -109,7 +119,27 @@ killed_chat:
   final: "最终击杀"
 
   #信息
-  message: "{bwprefix}&6{player} &6被击杀，击杀者： {killer} {finalkilled}"
+  message: "{bwprefix}&6{player} &6被击杀，击杀者： {killer} {final}"
+
+
+##破坏消息消息显示
+bedbreak_chat:
+
+  #是否启用
+  enabled: true
+
+  #信息
+  message: "{bwprefix}&6{player} &6破坏了{deathTeam}的床"
+
+
+##离开消息显示
+quit_chat:
+
+  #是否启用
+  enabled: true
+
+  #信息
+  message: "{bwprefix}&6{player} &6离开了游戏"
 
 
 #定时执行命令

@@ -5,13 +5,10 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.google.common.collect.ImmutableMap;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
-import io.github.bedwarsrel.utils.ChatWriter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.addon.RandomEvents;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
@@ -20,13 +17,14 @@ import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
-import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,14 +40,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class EventListener implements Listener {
-
-    private final Map<String, Map<Event, PacketListener>> deathevents = new HashMap<>();
 
     public EventListener() {
         onPacketReceiving();
@@ -168,25 +161,6 @@ public class EventListener implements Listener {
         }, 1L);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onDeathLowest(PlayerDeathEvent e) {
-        if (!Config.killed_chat_enabled) {
-            return;
-        }
-        Player player = e.getEntity();
-        Player killer = player.getKiller();
-        if (killer == null) {
-            return;
-        }
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null || game.getState() != GameState.RUNNING) {
-            return;
-        }
-        Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<>());
-        map.put(e, registerPacketListener(killer, game.getPlayerTeam(killer), player, game.getPlayerTeam(player)));
-        deathevents.put(game.getName(), map);
-    }
-
     // https://github.com/BedwarsRel/BedwarsRel/blob/master/common/src/main/java/io/github/bedwarsrel/listener/PlayerListener.java#L492-L511
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onToggleFlight(PlayerToggleFlightEvent e) {
@@ -196,91 +170,6 @@ public class EventListener implements Listener {
             return;
         }
         if (player.getGameMode() == GameMode.CREATIVE) e.setCancelled(false);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onKilledHighest(PlayerDeathEvent e) {
-        if (!Config.killed_chat_enabled) {
-            return;
-        }
-        Player player = e.getEntity();
-        Player killer = player.getKiller();
-        if (killer == null) {
-            return;
-        }
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null || game.getState() != GameState.RUNNING) {
-            return;
-        }
-        Map<Event, PacketListener> map = deathevents.getOrDefault(game.getName(), new HashMap<>());
-        if (!map.containsKey(e)) {
-            return;
-        }
-        ProtocolLibrary.getProtocolManager().removePacketListener(map.get(e));
-        map.remove(e);
-        deathevents.put(game.getName(), map);
-        String hearts = "";
-        DecimalFormat format = new DecimalFormat("#");
-        double health = killer.getHealth() / killer.getMaxHealth() * killer.getHealthScale();
-        if (!BedwarsRel.getInstance().getBooleanConfig("hearts-in-halfs", true)) {
-            format = new DecimalFormat("#.#");
-            health /= 2.0;
-        }
-        if (BedwarsRel.getInstance().getBooleanConfig("hearts-on-death", true)) {
-            hearts = "[" + ChatColor.RED + "❤" + format.format(health) + ChatColor.GOLD + "]";
-        }
-        String finalkilled = "";
-        Team playerTeam = game.getPlayerTeam(player);
-        Team killerTeam = game.getPlayerTeam(killer);
-        if (game.isSpectator(player) || playerTeam.isDead(game)) {
-            finalkilled = ColorUtil.color(Config.killed_chat_final);
-        }
-
-        String string = Config.killed_chat_message
-                .replace("{bwprefix}", Config.bwrelPrefix)
-                .replace("{playerTeamString}", ChatColor.GOLD + "(" + playerTeam.getDisplayName() + ChatColor.GOLD + ")")
-                .replace("{killerTeamString}", ChatColor.GOLD + "(" + killerTeam.getDisplayName() + ChatColor.GOLD + ")")
-                .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
-                .replace("{killerTeamColor}", killerTeam.getChatColor().toString())
-                .replace("{playerTeam}", playerTeam.getDisplayName())
-                .replace("{killerTeam}", killerTeam.getDisplayName())
-                .replace("{hearts}", hearts)
-                .replace("{player}", player.getDisplayName())
-                .replace("{killer}", killer.getDisplayName())
-                .replace("{final}", finalkilled);
-        for (Player p : game.getPlayers()) {
-            if (p.isOnline()) {
-                p.sendMessage(string);
-            }
-        }
-    }
-
-    private PacketListener registerPacketListener(Player killer, Team killerTeam, Player player, Team deathTeam) {
-        PacketListener listener = new PacketAdapter(Main.getInstance(), PacketType.Play.Server.CHAT) {
-            public void onPacketSending(PacketEvent e) {
-                Player p = e.getPlayer();
-                WrappedChatComponent chat = e.getPacket().getChatComponents().read(0);
-                String hearts = "";
-                DecimalFormat format = new DecimalFormat("#");
-                double health = killer.getHealth() / killer.getMaxHealth() * killer.getHealthScale();
-                if (!BedwarsRel.getInstance().getBooleanConfig("hearts-in-halfs", true)) {
-                    format = new DecimalFormat("#.#");
-                    health /= 2.0;
-                }
-                if (BedwarsRel.getInstance().getBooleanConfig("hearts-on-death", true)) {
-                    hearts = "[" + ChatColor.RED + "❤" + format.format(health) + ChatColor.GOLD + "]";
-                }
-                WrappedChatComponent[] chats = WrappedChatComponent.fromChatMessage(ChatWriter.pluginMessage(ChatColor.GOLD + BedwarsRel._l(p, "ingame.player.killed", ImmutableMap.of("killer", Game.getPlayerWithTeamString(killer, killerTeam, ChatColor.GOLD, hearts), "player", Game.getPlayerWithTeamString(player, deathTeam, ChatColor.GOLD)))));
-                for (WrappedChatComponent c : chats) {
-                    if (chat.getJson().equals(c.getJson())) {
-                        e.setCancelled(true);
-                        break;
-                    }
-                }
-            }
-        };
-        ProtocolLibrary.getProtocolManager().addPacketListener(listener);
-        return listener;
     }
 
     @EventHandler

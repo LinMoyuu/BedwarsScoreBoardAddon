@@ -1,6 +1,5 @@
 package me.ram.bedwarsscoreboardaddon;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import io.github.bedwarsrel.BedwarsRel;
 import ldcr.BedwarsXP.EventListeners;
 import lombok.Getter;
@@ -211,6 +210,7 @@ public class Main extends JavaPlugin {
     private void registerEvents() {
         Bukkit.getPluginManager().registerEvents(new EventListener(), this);
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);
+        Bukkit.getPluginManager().registerEvents(new GameMessageListener(), this);
         Bukkit.getPluginManager().registerEvents(new LobbyScoreBoard(), this);
         Bukkit.getPluginManager().registerEvents(new SpawnNoBuild(), this);
         if (enabledCitizens) {
@@ -227,9 +227,5 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new Compass(), this);
         Bukkit.getPluginManager().registerEvents(new Title(), this);
         Bukkit.getPluginManager().registerEvents(new SoulItem(), this);
-
-        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-            ProtocolLibrary.getProtocolManager().addPacketListener(new ServerRestartMessageListener(this));
-        }
     }
 }
