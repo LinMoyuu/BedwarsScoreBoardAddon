@@ -253,7 +253,6 @@ public class GameMessageListener implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (player.getKiller() != null) return;
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null || game.getState() != GameState.RUNNING) {
             return;
@@ -341,7 +340,7 @@ public class GameMessageListener implements Listener {
             game = playerGameCache.getOrDefault(player, null);
             if (game == null) return;
         }
-        if (game.getState() == GameState.WAITING) return;
+        if (game.getState() == GameState.WAITING || BedwarsUtil.isSpectator(player)) return;
         Map<Event, PacketListener> map = quitevents.getOrDefault(game.getName(), new HashMap<>());
         map.put(e, registerQuitPacketListener(player, game.getPlayerTeam(player)));
         quitevents.put(game.getName(), map);
@@ -358,7 +357,7 @@ public class GameMessageListener implements Listener {
             game = playerGameCache.getOrDefault(player, null);
             if (game == null) return;
         }
-        if (game.getState() == GameState.WAITING) return;
+        if (game.getState() == GameState.WAITING || BedwarsUtil.isSpectator(player)) return;
         Map<Event, PacketListener> map = quitevents.getOrDefault(game.getName(), new HashMap<>());
         if (!map.containsKey(e)) {
             return;
