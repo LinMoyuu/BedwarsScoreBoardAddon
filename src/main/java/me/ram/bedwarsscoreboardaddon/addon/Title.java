@@ -184,16 +184,16 @@ public class Title implements Listener {
     public void onLeave(BedwarsPlayerLeaveEvent e) {
         Game game = e.getGame();
         if (game.getState() == GameState.WAITING && Config.jointitle_enabled) {
-            for (Player player : game.getPlayers()) {
                 if (game.getLobbyCountdown() != null) {
                     game.setGameLobbyCountdown(null);
                     Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
                         int needplayers = game.getMinPlayers() - game.getPlayers().size();
                         needplayers = Math.max(needplayers, 0);
                         String status = "&f还需 " + needplayers + " 个玩家";
-                        Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
+                        for (Player player : game.getPlayers()) {
+                            Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
+                        }
                     }, 1L);
-                }
             }
         }
     }
