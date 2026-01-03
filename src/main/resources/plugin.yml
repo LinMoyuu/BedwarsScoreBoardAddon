@@ -30,8 +30,6 @@ commands:
 permissions:
   bedwarsscoreboardaddon.reload:
     default: op
-  bedwarsscoreboardaddon.updatecheck:
-    default: op
   bedwarsscoreboardaddon.edit:
     default: op
   bedwarsscoreboardaddon.teleport:

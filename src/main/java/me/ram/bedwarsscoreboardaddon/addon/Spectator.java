@@ -8,7 +8,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.events.BedwarsGameStartedEvent;
 import io.github.bedwarsrel.events.BedwarsOpenShopEvent;
@@ -20,9 +19,10 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.LocationUtil;
-import org.bukkit.*;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -37,16 +37,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Spectator implements Listener {
 
-    private final List<Player> players;
-    private final List<Material> resitems;
-
+    // 其实现在旁观者都是旁观者模式了, 感觉这个类全都可以删了...
     public Spectator() {
-        players = new ArrayList<>();
-        resitems = new ArrayList<>();
         onPacketReceiving();
     }
 
@@ -55,37 +52,15 @@ public class Spectator implements Listener {
         pm.addPacketListener(new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.USE_ENTITY, PacketType.Play.Client.BLOCK_PLACE, PacketType.Play.Client.BLOCK_DIG, PacketType.Play.Client.USE_ITEM) {
             public void onPacketReceiving(PacketEvent e) {
                 Player player = e.getPlayer();
+                if (player.getGameMode() == GameMode.SPECTATOR) {
+                    return;
+                }
                 PacketContainer packet = e.getPacket();
                 Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
                 if (game == null || !game.getState().equals(GameState.RUNNING)) {
                     return;
                 }
-                if (e.getPacketType().equals(PacketType.Play.Client.USE_ENTITY)) {
-                    if (packet.getEntityUseActions().read(0).equals(EntityUseAction.ATTACK) && BedwarsUtil.isSpectator(game, player)) {
-                        e.setCancelled(true);
-                    }
-                    if (packet.getEntityUseActions().read(0).equals(EntityUseAction.INTERACT_AT) || BedwarsUtil.isSpectator(game, player)) {
-                        return;
-                    }
-                    int id = packet.getIntegers().read(0);
-                    Player target = null;
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (p.getEntityId() == id) {
-                            target = p;
-                            break;
-                        }
-                    }
-                    if (target == null) {
-                        return;
-                    }
-                    if (!BedwarsUtil.isSpectator(game, target) && !BedwarsUtil.isRespawning(game, target)) {
-                        return;
-                    }
-                    if (!game.isInGame(target) || !BedwarsUtil.isSpectator(game, target)) {
-                        return;
-                    }
-                    target.teleport(target.getLocation().add(0, 5, 0));
-                } else if (e.getPacketType().equals(PacketType.Play.Client.BLOCK_PLACE) || e.getPacketType().equals(PacketType.Play.Client.USE_ITEM)) {
+                if (e.getPacketType().equals(PacketType.Play.Client.BLOCK_PLACE) || e.getPacketType().equals(PacketType.Play.Client.USE_ITEM)) {
                     if (BedwarsUtil.isRespawning(game, player)) {
                         e.setCancelled(true);
                     }
@@ -170,19 +145,6 @@ public class Spectator implements Listener {
         }
     }
 
-    private List<Material> getResource() {
-        List<Material> items = new ArrayList<>();
-        ConfigurationSection config = BedwarsRel.getInstance().getConfig().getConfigurationSection("resource");
-        for (String res : config.getKeys(false)) {
-            List<Map<String, Object>> list = (List<Map<String, Object>>) BedwarsRel.getInstance().getConfig().getList("resource." + res + ".item");
-            for (Map<String, Object> resource : list) {
-                ItemStack itemStack = ItemStack.deserialize(resource);
-                items.add(itemStack.getType());
-            }
-        }
-        return items;
-    }
-
     @EventHandler
     public void onStarted(BedwarsGameStartedEvent e) {
         for (Player player : e.getGame().getPlayers()) {
@@ -191,8 +153,6 @@ public class Spectator implements Listener {
             player.removePotionEffect(PotionEffectType.SPEED);
             player.removePotionEffect(PotionEffectType.INVISIBILITY);
         }
-        resitems.clear();
-        resitems.addAll(getResource());
         Timer logTimer = new Timer();
         TimerTask task = new TimerTask() {
             final Game game = e.getGame();
@@ -200,11 +160,11 @@ public class Spectator implements Listener {
             public void run() {
                 if (game.getState() == GameState.RUNNING) {
                     for (Player player : game.getPlayers()) {
-                        if (!BedwarsUtil.isSpectator(game, player) && !BedwarsUtil.isRespawning(player)) {
+                        if (player == null || player.getGameMode() == GameMode.SPECTATOR || !BedwarsUtil.isSpectator(game, player) || !BedwarsUtil.isRespawning(player)) {
                             continue;
                         }
                         for (Entity entity : player.getWorld().getNearbyEntities(player.getLocation(), 2, 3.5, 2)) {
-                            if (entity instanceof Projectile && player.getGameMode() != GameMode.SPECTATOR) {
+                            if (entity instanceof Projectile) {
                                 player.teleport(LocationUtil.getPosition(player.getLocation(), entity.getLocation()));
                                 player.setVelocity(LocationUtil.getPositionVector(player.getLocation(), entity.getLocation()).multiply(0.07));
                                 break;
