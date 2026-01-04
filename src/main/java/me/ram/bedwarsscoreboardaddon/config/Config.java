@@ -517,7 +517,7 @@ public class Config {
         friendlybreak_broadcast_message = config.getString("friendlybreak_kick.broadcast_message");
         anti_gap_breakbed_enabled = config.getBoolean("anti_gap_breakbed.enabled");
         anti_gap_breakbed_distance = config.getInt("anti_gap_breakbed.check-distance");
-        anti_gap_breakbed_message = config.getString("anti_gap_breakbed.nmessage");
+        anti_gap_breakbed_message = config.getString("anti_gap_breakbed.message");
         planinfo = new ArrayList<>(config.getConfigurationSection("planinfo").getKeys(false));
         playertag_prefix = ColorUtil.color(config.getString("playertag.prefix"));
         playertag_suffix = ColorUtil.color(config.getString("playertag.suffix"));
