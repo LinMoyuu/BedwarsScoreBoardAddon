@@ -176,9 +176,6 @@ public class Config {
     public static boolean resource_no_drop_on_first_spawn;
     public static boolean resourcelimit_enabled;
     public static List<String[]> resourcelimit_limit;
-    public static boolean spread_resource_enabled;
-    public static boolean spread_resource_launch;
-    public static double spread_resource_range;
     public static boolean game_chest_enabled;
     public static boolean game_chest_auto_create_team_chest;
     public static int game_chest_range;
@@ -460,9 +457,6 @@ public class Config {
             String[] ary = w.split(",");
             resourcelimit_limit.add(ary);
         }
-        spread_resource_enabled = config.getBoolean("spread_resource.enabled");
-        spread_resource_launch = config.getBoolean("spread_resource.launch");
-        spread_resource_range = config.getDouble("spread_resource.range");
         game_chest_enabled = config.getBoolean("game_chest.enabled");
         game_chest_auto_create_team_chest = config.getBoolean("game_chest.auto_create_team_chest");
         game_chest_range = config.getInt("game_chest.range");
