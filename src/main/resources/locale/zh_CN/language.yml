@@ -12,10 +12,8 @@ commands:
   - " &e/bwsba  &7-&f  显示插件信息"
   - " &e/bwsba help  &7-&f  显示帮助菜单"
   - " &e/bwsba shop  &7-&f  商店设置"
-  - " &e/bwsba spawner  &7-&f  资源点设置"
   - " &e/bwsba edit <游戏>  &7-&f  编辑游戏"
   - " &e/bwsba reload  &7-&f  重载配置文件"
-  - " &e/bwsba upcheck  &7-&f  检测版本更新"
   message:
     prefix: "&b&lBWSBA &f>> "
     no_permission: "&c你没有使用该命令的权限！"
@@ -38,7 +36,6 @@ commands:
       shop_list: "&e/bwsba shop list <游戏> &7-&f 已设置商店列表"
       remove_shop: "&e/bwsba shop remove <ID> &7-&f 移除一个商店"
       set_item_shop: "&e/bwsba shop set item <游戏> &7-&f 设置一个道具商店"
-      spawner_list: "&e/bwsba spawner list <游戏> &7-&f 队伍资源点列表"
       remove_spawner: "&e/bwsba spawner remove <ID> &7-&f 移除队伍资源点"
       add_spawner: "&e/bwsba spawner add <游戏> <队伍> &7-&f 添加队伍资源点"
       edit_game: "&e/bwsba edit <游戏> &7-&f 编辑游戏"
