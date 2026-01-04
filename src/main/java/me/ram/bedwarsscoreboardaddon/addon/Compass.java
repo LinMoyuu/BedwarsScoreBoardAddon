@@ -1,11 +1,5 @@
 package me.ram.bedwarsscoreboardaddon.addon;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.PacketListener;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.events.BedwarsGameStartedEvent;
 import io.github.bedwarsrel.game.Game;
@@ -23,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -36,10 +31,6 @@ import org.bukkit.material.Wool;
 public class Compass implements Listener {
 
     private ItemStack compassItem;
-
-    public Compass() {
-        onBlockPlace();
-    }
 
     private static ItemStack getItemItem() {
         ItemStack itemStack = new ItemStack(Material.COMPASS);
@@ -83,6 +74,7 @@ public class Compass implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
+        if (!Config.compass_enabled) return;
         Player player = e.getPlayer();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (!Config.compass_enabled || game == null) {
@@ -100,6 +92,23 @@ public class Compass implements Listener {
         if (e.getItem() != null && e.getItem().isSimilar(compassItem) && (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK))) {
             e.setCancelled(true);
             openMainMenu(player);
+        }
+    }
+
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e) {
+        if (!Config.compass_enabled) return;
+        Player player = e.getPlayer();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null || !game.getPlayers().contains(player) || game.getState() != GameState.RUNNING || BedwarsUtil.isSpectator(game, player)) {
+            return;
+        }
+        if (player.getInventory().getItemInHand() != null && player.getInventory().getItemInHand().isSimilar(compassItem)) {
+            e.setCancelled(true);
+            if (!player.getOpenInventory().getTitle().equals(Config.compass_gui_title)) {
+                openMainMenu(player);
+            }
         }
     }
 
@@ -217,34 +226,6 @@ public class Compass implements Listener {
                 sendMessage(player, game.getPlayerTeam(player), Config.compass_message_VIII_II.replace("{player}", player.getName()).replace("{resource}", e.getCurrentItem().getItemMeta().getDisplayName()));
             }
         }
-    }
-
-    private void onBlockPlace() {
-        PacketListener packetListener = new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.BLOCK_PLACE) {
-            public void onPacketReceiving(PacketEvent e) {
-                Player player = e.getPlayer();
-                Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-                if (!Config.compass_enabled || game == null) {
-                    return;
-                }
-                if (!game.getPlayers().contains(player)) {
-                    return;
-                }
-                if (game.getState() != GameState.RUNNING) {
-                    return;
-                }
-                if (BedwarsUtil.isSpectator(game, player)) {
-                    return;
-                }
-                if (player.getInventory().getItemInHand() != null && player.getInventory().getItemInHand().isSimilar(compassItem)) {
-                    e.setCancelled(true);
-                    if (!player.getOpenInventory().getTitle().equals(Config.compass_gui_title)) {
-                        openMainMenu(player);
-                    }
-                }
-            }
-        };
-        ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
     }
 
     private void sendMessage(Player player, Team team, String message) {
