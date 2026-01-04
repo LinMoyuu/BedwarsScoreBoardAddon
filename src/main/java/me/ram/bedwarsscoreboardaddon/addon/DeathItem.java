@@ -17,6 +17,9 @@ public class DeathItem implements Listener {
 
     @EventHandler
     public void onKilled(BedwarsPlayerKilledEvent e) {
+        if (!Config.deathitem_enabled) {
+            return;
+        }
         if (e.getKiller() == null || e.getPlayer() == null) {
             return;
         }
@@ -29,33 +32,29 @@ public class DeathItem implements Listener {
         if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
             return;
         }
-        if (!Config.deathitem_enabled) {
-            return;
-        }
         if (game.isSpectator(killer)) {
             return;
         }
         Map<ItemStack, Integer> playeritems = new HashMap<>();
         for (ItemStack itemStack : player.getInventory().getContents()) {
-            if (itemStack != null && !itemStack.getType().equals(Material.AIR)) {
-                if (itemStack.getType().equals(Material.NETHER_STAR)) continue;
+            if (itemStack == null || itemStack.getType() == Material.AIR) continue;
+            if (itemStack.getType().equals(Material.NETHER_STAR)) continue;
+            for (String items : Config.deathitem_items) {
                 try {
-                    for (String items : Config.deathitem_items) {
-                        if (itemStack.getType().equals(Material.valueOf(items))) {
-                            boolean l = true;
-                            for (ItemStack item : playeritems.keySet()) {
-                                if (item.getType() == itemStack.getType()) {
-                                    playeritems.put(item, playeritems.get(item) + itemStack.getAmount());
-                                    l = false;
-                                    break;
-                                }
-                            }
-                            if (l) {
-                                playeritems.put(itemStack, itemStack.getAmount());
+                    if (itemStack.getType().equals(Material.valueOf(items))) {
+                        boolean l = true;
+                        for (ItemStack item : playeritems.keySet()) {
+                            if (item.getType() == itemStack.getType()) {
+                                playeritems.put(item, playeritems.get(item) + itemStack.getAmount());
+                                l = false;
+                                break;
                             }
                         }
+                        if (l) {
+                            playeritems.put(itemStack, itemStack.getAmount());
+                        }
                     }
-                } catch (Exception ex) {
+                } catch (IllegalArgumentException ex) {
                 }
             }
         }
