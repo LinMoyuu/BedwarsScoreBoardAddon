@@ -31,6 +31,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
@@ -439,6 +443,7 @@ public class EventListener implements Listener {
     private void onPacketReceiving() {
         PacketListener packetListener = new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.BLOCK_DIG, PacketType.Play.Client.WINDOW_CLICK) {
             public void onPacketReceiving(PacketEvent e) {
+                if (!Config.anti_gap_breakbed_enabled) return;
                 if (e.getPacketType() != PacketType.Play.Client.BLOCK_DIG) {
                     return;
                 }
@@ -451,14 +456,6 @@ public class EventListener implements Listener {
                 BlockPosition pos = packet.getBlockPositionModifier().read(0);
                 Location blockLocation = pos.toLocation(player.getWorld());
 
-                Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-                if (game != null && game.getState() == GameState.RUNNING && BedwarsUtil.isSpectator(game, player)) {
-                    e.setCancelled(true);
-                    Bukkit.getScheduler().runTask(this.plugin, () -> blockLocation.getBlock().getState().update());
-                    return;
-                }
-
-                if (!Config.anti_gap_breakbed_enabled) return;
                 Block brokenBlock = blockLocation.getBlock();
                 if (brokenBlock.getType() != Material.BED_BLOCK) {
                     return;
