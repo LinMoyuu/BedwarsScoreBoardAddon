@@ -78,6 +78,7 @@ public class ScoreBoard {
     }
 
     private void startTimerCountdown(Game game) {
+        game.setTimeLeft(BedwarsRel.getInstance().getMaxLength());
         game.addRunningTask(new BukkitRunnable() {
             public void run() {
                 if (game.getTimeLeft() == 0) {
