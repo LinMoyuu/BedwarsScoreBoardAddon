@@ -51,9 +51,16 @@ public class GameMessageListener implements Listener {
             return;
         }
         Player player = e.getEntity();
-        if (player.getKiller() != null) return;
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null || game.getState() != GameState.RUNNING) {
+            return;
+        }
+        Player killer = player.getKiller();
+        if (killer != null) {
+            return;
+        }
+        Player damager = game.getPlayerDamager(player);
+        if (damager != null) {
             return;
         }
         Map<Event, PacketListener> map = deathEvents.getOrDefault(game.getName(), new HashMap<>());
@@ -67,9 +74,16 @@ public class GameMessageListener implements Listener {
             return;
         }
         Player player = e.getEntity();
-        if (player.getKiller() != null) return;
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null || game.getState() != GameState.RUNNING) {
+            return;
+        }
+        Player killer = player.getKiller();
+        if (killer != null) {
+            return;
+        }
+        Player damager = game.getPlayerDamager(player);
+        if (damager != null) {
             return;
         }
         Map<Event, PacketListener> map = deathEvents.getOrDefault(game.getName(), new HashMap<>());
@@ -129,13 +143,16 @@ public class GameMessageListener implements Listener {
             return;
         }
         Player player = e.getEntity();
-        Player killer = player.getKiller();
-        if (killer == null) {
-            return;
-        }
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null || game.getState() != GameState.RUNNING) {
             return;
+        }
+        Player killer = player.getKiller();
+        if (killer == null) {
+            killer = game.getPlayerDamager(player);
+            if (killer == null) {
+                return;
+            }
         }
         Map<Event, PacketListener> map = killedEvents.getOrDefault(game.getName(), new HashMap<>());
         map.put(e, registerKilledPacketListener(killer, game.getPlayerTeam(killer), player, game.getPlayerTeam(player)));
@@ -148,13 +165,16 @@ public class GameMessageListener implements Listener {
             return;
         }
         Player player = e.getEntity();
-        Player killer = player.getKiller();
-        if (killer == null) {
-            return;
-        }
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null || game.getState() != GameState.RUNNING) {
             return;
+        }
+        Player killer = player.getKiller();
+        if (killer == null) {
+            killer = game.getPlayerDamager(player);
+            if (killer == null) {
+                return;
+            }
         }
         Map<Event, PacketListener> map = killedEvents.getOrDefault(game.getName(), new HashMap<>());
         if (!map.containsKey(e)) {
