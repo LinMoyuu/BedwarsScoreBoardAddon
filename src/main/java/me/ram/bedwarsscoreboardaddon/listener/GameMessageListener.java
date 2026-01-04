@@ -7,6 +7,7 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.collect.ImmutableMap;
 import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.events.BedwarsGameEndEvent;
+import io.github.bedwarsrel.events.BedwarsGameOverEvent;
 import io.github.bedwarsrel.events.BedwarsGameStartedEvent;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
@@ -39,10 +40,6 @@ public class GameMessageListener implements Listener {
     private final Map<String, Map<Event, PacketListener>> bedEvents = new HashMap<>();
     private final Map<String, Map<Event, PacketListener>> quitevents = new HashMap<>();
     private final Map<Player, Game> playerGameCache = new HashMap<>();
-
-    public GameMessageListener() {
-        onPacketSending();
-    }
 
     // 死亡消息部分
     @EventHandler(priority = EventPriority.LOWEST)
@@ -432,12 +429,18 @@ public class GameMessageListener implements Listener {
     }
 
     // 游戏重启消息部分
-    private void onPacketSending() {
+
+    @EventHandler
+    public void onGameOver(BedwarsGameOverEvent event) {
+        if (!BedwarsRel.getInstance().isBungee()) return;
+        if (Config.isBedwarsXPEnabled) return;
+        registerRestartMessageListener();
+    }
+
+    private void registerRestartMessageListener() {
         PacketListener packetListener = new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Server.CHAT) {
             public void onPacketSending(PacketEvent e) {
-                if (Config.isBedwarsXPEnabled) return;
                 if (e.getPacketType() != PacketType.Play.Server.CHAT) return;
-                if (!BedwarsRel.getInstance().isBungee()) return;
 
                 PacketContainer originalPacket = e.getPacket();
                 WrappedChatComponent originalChat = originalPacket.getChatComponents().read(0);

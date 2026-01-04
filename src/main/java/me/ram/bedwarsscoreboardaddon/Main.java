@@ -210,7 +210,9 @@ public class Main extends JavaPlugin {
     private void registerEvents() {
         Bukkit.getPluginManager().registerEvents(new EventListener(), this);
         Bukkit.getPluginManager().registerEvents(new GameListener(), this);
-        Bukkit.getPluginManager().registerEvents(new GameMessageListener(), this);
+        if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            Bukkit.getPluginManager().registerEvents(new GameMessageListener(), this);
+        }
         Bukkit.getPluginManager().registerEvents(new LobbyScoreBoard(), this);
         Bukkit.getPluginManager().registerEvents(new SpawnNoBuild(), this);
         if (enabledCitizens) {
