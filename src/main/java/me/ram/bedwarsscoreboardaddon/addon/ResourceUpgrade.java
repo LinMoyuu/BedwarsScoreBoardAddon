@@ -16,7 +16,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -92,15 +91,10 @@ public class ResourceUpgrade {
                                     if (inchest && spawner.canContainItem(((Chest) block.getState()).getInventory(), itemStack)) {
                                         ((Chest) block.getState()).getInventory().addItem(itemStack.clone());
                                     } else if (drop) {
-                                        ConfigurationSection config = Main.getInstance().getConfig().getConfigurationSection("holographic.resource.resources");
-                                        String res_name = getResourceName(itemStack.getTypeId());
-                                        double i = res_name == null || !config.getBoolean(res_name + ".drop", false) ? 0 : config.getDouble(res_name + ".height", 0.0);
-                                        i = i > 0 ? i : 0.325;
-                                        Item item = loc.getWorld().dropItem(loc.clone().add(0, i, 0), itemStack);
+                                        Item item = loc.getWorld().dropItem(loc.clone().add(0, 0, 0), itemStack);
                                         item.setPickupDelay(0);
                                         Vector vector = item.getVelocity();
                                         vector.multiply(spawner.getSpread());
-                                        vector.setY(0);
                                         item.setVelocity(vector);
                                     }
                                 }
