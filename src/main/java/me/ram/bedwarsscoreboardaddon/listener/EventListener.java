@@ -31,10 +31,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
@@ -281,30 +277,18 @@ public class EventListener implements Listener {
 
             // 清空药水瓶
             if (Config.clear_bottle) {
-                potionMeta.getCustomEffects().forEach(effect -> {
-                    if (player.hasPotionEffect(effect.getType())) {
-                        for (PotionEffect playerEffect : player.getActivePotionEffects()) {
-                            if (playerEffect.getType().equals(effect.getType())) {
-                                if (effect.getAmplifier() > playerEffect.getAmplifier() || (effect.getAmplifier() == playerEffect.getAmplifier() && effect.getDuration() > playerEffect.getDuration())) {
-                                    player.addPotionEffect(new PotionEffect(effect.getType(), effect.getDuration(), effect.getAmplifier(), false, true), true);
-                                }
-                                break;
-                            }
+                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                    ItemStack glassBottle = new ItemStack(Material.GLASS_BOTTLE);
+                    if (BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8")) {
+                        if (player.getInventory().getItemInHand().isSimilar(glassBottle)) {
+                            player.getInventory().setItemInHand(new ItemStack(Material.AIR));
                         }
-                    } else {
-                        player.addPotionEffect(new PotionEffect(effect.getType(), effect.getDuration(), effect.getAmplifier(), false, true), true);
+                    } else if (player.getInventory().getItemInMainHand().isSimilar(glassBottle)) {
+                        player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                    } else if (player.getInventory().getItemInOffHand().isSimilar(glassBottle)) {
+                        player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
                     }
                 });
-                e.setCancelled(true);
-                if (BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8")) {
-                    if (player.getInventory().getItemInHand().isSimilar(itemStack)) {
-                        player.getInventory().setItemInHand(new ItemStack(Material.AIR));
-                    }
-                } else if (player.getInventory().getItemInMainHand().isSimilar(itemStack)) {
-                    player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-                } else if (player.getInventory().getItemInOffHand().isSimilar(itemStack)) {
-                    player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
-                }
             }
             // 隐藏隐身玩家药水粒子效果
             if (Config.invisibility_player_enabled) {
