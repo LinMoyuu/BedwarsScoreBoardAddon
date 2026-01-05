@@ -188,6 +188,7 @@ public class Title implements Listener {
                     Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
                         int needplayers = game.getMinPlayers() - game.getPlayers().size();
                         needplayers = Math.max(needplayers, 0);
+                        if (needplayers == 0) return;
                         String status = "&f还需 " + needplayers + " 个玩家";
                         for (Player player : game.getPlayers()) {
                             Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);

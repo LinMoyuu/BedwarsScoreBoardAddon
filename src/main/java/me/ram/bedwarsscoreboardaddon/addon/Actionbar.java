@@ -181,16 +181,9 @@ public class Actionbar {
      */
     private String getDirectionArrow(Location playerLocation, Location spawnLocation) {
         Vector direction = spawnLocation.toVector().subtract(playerLocation.toVector());
-        float playerYaw = playerLocation.getYaw();
-        if (playerYaw < 0) {
-            playerYaw += 360;
-        }
-        double relativeX = direction.getX();
-        double relativeZ = direction.getZ();
-        double angle = Math.toDegrees(Math.atan2(relativeX, relativeZ));
-        if (angle < 0) {
-            angle += 360;
-        }
+        float playerYaw = ((playerLocation.getYaw() % 360) + 360) % 360;
+        double angle = Math.toDegrees(Math.atan2(direction.getX(), direction.getZ()));
+        angle = ((angle % 360) + 360) % 360;
         double relativeAngle = angle - playerYaw;
         if (relativeAngle > 180) {
             relativeAngle -= 360;
@@ -198,13 +191,13 @@ public class Actionbar {
             relativeAngle += 360;
         }
         if (Math.abs(relativeAngle) <= 45) {
-            return "^";
+            return "^";  // 前方
         } else if (relativeAngle > 45 && relativeAngle <= 135) {
-            return "<";
+            return "<";  // 左方
         } else if (relativeAngle < -45 && relativeAngle >= -135) {
-            return ">";
+            return ">";  // 右方
         } else {
-            return "∨";
+            return "∨";  // 后方
         }
     }
 }
