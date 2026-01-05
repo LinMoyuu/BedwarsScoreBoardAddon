@@ -13,36 +13,39 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class InvisibilityPlayer {
+public class InvisibilityPlayer implements Listener {
 
     @Getter
     private final Game game;
     @Getter
     private final Arena arena;
+    @Getter
     private final List<UUID> players;
     private final List<UUID> hplayers;
+    private final HashMap<Player, Integer> steps;
 
     public InvisibilityPlayer(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        players = new ArrayList<UUID>();
-        hplayers = new ArrayList<UUID>();
-    }
-
-    public List<UUID> getPlayers() {
-        return players;
+        players = new ArrayList<>();
+        hplayers = new ArrayList<>();
+        steps = new HashMap<>();
+        Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
     }
 
     public void removePlayer(Player player) {
@@ -59,6 +62,31 @@ public class InvisibilityPlayer {
         return players.contains(player.getUniqueId());
     }
 
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        if (!Config.invisibility_player_footstep || !BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8"))
+            return;
+        Player player = event.getPlayer();
+        if (!players.contains(player.getUniqueId())) return;
+
+        if (player.isSneaking()) return;
+        Material blockBelow = player.getLocation().clone().add(0, -1, 0).getBlock().getType();
+        if (blockBelow == Material.AIR) return;
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        if (from.getBlock() != to.getBlock()) {
+            if (this.steps.get(player) == 6) {
+                player.getWorld().playEffect(player.getLocation().add(0.0D, 0.01D, 0.4D), Effect.FOOTSTEP, 1);
+                this.steps.put(player, steps.get(player) - 1);
+            } else if (this.steps.get(player) <= 0) {
+                player.getWorld().playEffect(player.getLocation().add(0.4D, 0.01D, 0.0D), Effect.FOOTSTEP, 1);
+                this.steps.put(player, 12);
+            } else {
+                this.steps.put(player, steps.get(player) - 1);
+            }
+        }
+    }
+
     public void hidePlayer(Player player) {
         BoardAddonPlayerInvisibilityEvent playerInvisibilityEvent = new BoardAddonPlayerInvisibilityEvent(game, player);
         Bukkit.getPluginManager().callEvent(playerInvisibilityEvent);
@@ -71,30 +99,16 @@ public class InvisibilityPlayer {
         if (players.contains(player.getUniqueId())) {
             return;
         }
+        steps.put(player, 12);
         players.add(player.getUniqueId());
-        BukkitTask task = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), () -> {
-            if (Config.invisibility_player_footstep) {
-                arena.addGameTask(new BukkitRunnable() {
-                    final Location loc = player.getLocation().clone();
-
-                    @Override
-                    public void run() {
-                        if (player.isOnline() && (loc.getX() != player.getLocation().getX() || loc.getY() != player.getLocation().getY() || loc.getZ() != player.getLocation().getZ())) {
-                            player.getWorld().playEffect(player.getLocation().clone().add((Math.random() - Math.random()) * 0.5, 0.05, (Math.random() - Math.random()) * 0.5), Effect.FOOTSTEP, 0);
-                        }
-                    }
-                }.runTaskLater(Main.getInstance(), 8L));
-            }
-        }, 0, 0);
-        arena.addGameTask(task);
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
                 if (!player.isOnline() || !player.hasPotionEffect(PotionEffectType.INVISIBILITY) || !players.contains(player.getUniqueId()) || !game.getPlayers().contains(player) || game.isSpectator(player)) {
                     cancel();
-                    task.cancel();
                     players.remove(player.getUniqueId());
                     hplayers.remove(player.getUniqueId());
+                    steps.remove(player);
                     if (player.isOnline()) {
                         showArmor(player);
                         if (Config.invisibility_player_hide_particles) {
@@ -109,7 +123,7 @@ public class InvisibilityPlayer {
                     hideArmor(player);
                 }
             }
-        }.runTaskTimer(Main.getInstance(), 2L, 1L));
+        }.runTaskTimer(Main.getInstance(), 0, 20L));
     }
 
     private void hideArmor(Player player) {

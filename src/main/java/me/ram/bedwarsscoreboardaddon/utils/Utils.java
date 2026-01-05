@@ -5,6 +5,10 @@ import io.github.bedwarsrel.events.BedwarsResourceSpawnEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Constructor;
 
@@ -144,6 +148,28 @@ public class Utils {
                 loc.getBlockY(),
                 loc.getBlockZ()
         );
+    }
+
+    public static boolean hasEffectOfType(PotionMeta potionMeta, ItemStack itemStack, PotionEffectType effectType) {
+        // 检查自定义药水效果
+        for (PotionEffect potionEffect : potionMeta.getCustomEffects()) {
+            if (potionEffect.getType().equals(effectType)) {
+                return true;
+            }
+        }
+
+        // 检查基础药水类型
+        try {
+            org.bukkit.potion.Potion potion = org.bukkit.potion.Potion.fromItemStack(itemStack);
+            PotionEffectType type = potion.getType().getEffectType();
+            if (type != null && type.equals(effectType)) {
+                return true;
+            }
+        } catch (Exception ex) {
+            // 处理药水转换异常
+        }
+
+        return false;
     }
 }
 

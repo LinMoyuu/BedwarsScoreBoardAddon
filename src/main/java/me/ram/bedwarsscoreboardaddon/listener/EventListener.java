@@ -17,6 +17,7 @@ import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -251,67 +252,57 @@ public class EventListener implements Listener {
         if (arena == null) {
             return;
         }
+        if (!e.getItem().getType().equals(Material.POTION)) return;
+        ItemStack itemStack = e.getItem().clone();
+        PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
+        if (potionMeta == null) return;
 
-        if (e.getItem().getType().equals(Material.POTION)) {
-            ItemStack itemStack = e.getItem().clone();
-            PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
-            if (potionMeta == null) return;
+        // 物品冷却
+        if (Config.do_not_drink_randomevent_same_effect && arena.getRandomEventsManager().hasActiveEvent()) {
+            Optional<RandomEvents> currentEventOptional = arena.getRandomEventsManager().getCurrentEvent();
+            if (currentEventOptional.isPresent()) {
+                RandomEvents currentEvent = currentEventOptional.get();
+                PotionEffectType eventEffectType = currentEvent.getEffectType();
 
-            // 物品冷却中
-            if (Config.do_not_drink_randomevent_same_effect && arena.getRandomEventsManager().hasActiveEvent()) {
-                // 获取当前事件
-                Optional<RandomEvents> currentEventOptional = arena.getRandomEventsManager().getCurrentEvent();
-                if (currentEventOptional.isPresent()) {
-                    RandomEvents currentEvent = currentEventOptional.get();
-                    PotionEffectType eventEffectType = currentEvent.getEffectType();
-                    for (PotionEffect potionEffect : potionMeta.getCustomEffects()) {
-                        // 如果玩家喝下的药水包含当前事件药水效果 并且 玩家身上也有这个效果时
-                        if (potionEffect.getType().equals(eventEffectType) && player.hasPotionEffect(eventEffectType)) {
-                            e.setCancelled(true);
-                            player.sendMessage("物品冷却中");
-                            return;
-                        }
-                    }
-                }
-            }
-
-            // 清空药水瓶
-            if (Config.clear_bottle) {
-                Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
-                    ItemStack glassBottle = new ItemStack(Material.GLASS_BOTTLE);
-                    if (BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8")) {
-                        if (player.getInventory().getItemInHand().isSimilar(glassBottle)) {
-                            player.getInventory().setItemInHand(new ItemStack(Material.AIR));
-                        }
-                    } else if (player.getInventory().getItemInMainHand().isSimilar(glassBottle)) {
-                        player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-                    } else if (player.getInventory().getItemInOffHand().isSimilar(glassBottle)) {
-                        player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
-                    }
-                });
-            }
-            // 隐藏隐身玩家药水粒子效果
-            if (Config.invisibility_player_enabled) {
-                for (PotionEffect potion : potionMeta.getCustomEffects()) {
-                    if (potion.getType().equals(PotionEffectType.INVISIBILITY)) {
-                        arena.getInvisiblePlayer().hidePlayer(player);
-                        if (Config.invisibility_player_hide_particles) {
-                            for (PotionEffect effect : player.getActivePotionEffects()) {
-                                player.addPotionEffect(new PotionEffect(effect.getType(), effect.getDuration(), effect.getAmplifier(), true, false), true);
-                            }
-                        }
-                        break;
-                    }
+                if (Utils.hasEffectOfType(potionMeta, itemStack, eventEffectType) && player.hasPotionEffect(eventEffectType)) {
+                    e.setCancelled(true);
+                    player.sendMessage("物品冷却中");
+                    return;
                 }
             }
         }
+
+        // 清空药水瓶
+        if (Config.clear_bottle) {
+            Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+                ItemStack glassBottle = new ItemStack(Material.GLASS_BOTTLE);
+                if (BedwarsRel.getInstance().getCurrentVersion().startsWith("v1_8")) {
+                    if (player.getInventory().getItemInHand().isSimilar(glassBottle)) {
+                        player.getInventory().setItemInHand(new ItemStack(Material.AIR));
+                    }
+                } else if (player.getInventory().getItemInMainHand().isSimilar(glassBottle)) {
+                    player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                } else if (player.getInventory().getItemInOffHand().isSimilar(glassBottle)) {
+                    player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+                }
+            });
+        }
+
+        // 隐藏隐身玩家药水粒子效果
+        if (Config.invisibility_player_enabled && Utils.hasEffectOfType(potionMeta, itemStack, PotionEffectType.INVISIBILITY)) {
+            arena.getInvisiblePlayer().hidePlayer(player);
+            if (Config.invisibility_player_hide_particles) {
+                for (PotionEffect effect : player.getActivePotionEffects()) {
+                    player.addPotionEffect(new PotionEffect(effect.getType(), effect.getDuration(), effect.getAmplifier(), true, false), true);
+                }
+            }
+        }
+
         // 隐藏隐身玩家其他药水粒子效果
         if (Config.invisibility_player_enabled && Config.invisibility_player_hide_particles && arena.getInvisiblePlayer().isInvisiblePlayer(player) && (e.getItem().getType() == Material.POTION || e.getItem().getType() == Material.GOLDEN_APPLE || e.getItem().getType() == Material.ROTTEN_FLESH || e.getItem().getType() == Material.RAW_FISH || e.getItem().getType() == Material.RAW_CHICKEN || e.getItem().getType() == Material.SPIDER_EYE || e.getItem().getType() == Material.POISONOUS_POTATO)) {
             Bukkit.getScheduler().runTask(Main.getInstance(), () -> {
-                if (player.isOnline()) {
-                    for (PotionEffect effect : player.getActivePotionEffects()) {
-                        player.addPotionEffect(new PotionEffect(effect.getType(), effect.getDuration(), effect.getAmplifier(), true, false), true);
-                    }
+                for (PotionEffect effect : player.getActivePotionEffects()) {
+                    player.addPotionEffect(new PotionEffect(effect.getType(), effect.getDuration(), effect.getAmplifier(), true, false), true);
                 }
             });
         }
