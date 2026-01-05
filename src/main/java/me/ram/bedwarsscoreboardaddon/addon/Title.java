@@ -185,7 +185,6 @@ public class Title implements Listener {
         Game game = e.getGame();
         if (game.getState() == GameState.WAITING && Config.jointitle_enabled) {
                 if (game.getLobbyCountdown() != null) {
-                    game.setGameLobbyCountdown(null);
                     Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
                         int needplayers = game.getMinPlayers() - game.getPlayers().size();
                         needplayers = Math.max(needplayers, 0);
