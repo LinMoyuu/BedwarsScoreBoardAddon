@@ -31,7 +31,6 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
@@ -48,13 +47,13 @@ public class Arena {
     @Getter
     private final HealthLevel healthLevel;
     @Getter
-    private final NoBreakBed noBreakBed;
+    private NoBreakBed noBreakBed;
     @Getter
     private final ResourceUpgrade resourceUpgrade;
     @Getter
-    private final Holographic holographic;
+    private Holographic holographic;
     @Getter
-    private final TeamShop teamShop;
+    private TeamShop teamShop;
     @Getter
     private final InvisibilityPlayer invisiblePlayer;
     @Getter
@@ -64,9 +63,9 @@ public class Arena {
     @Getter
     private final Actionbar actionbar;
     @Getter
-    private final Graffiti graffiti;
+    private Graffiti graffiti;
     @Getter
-    private final GameChest gameChest;
+    private GameChest gameChest;
     @Getter
     private final Rejoin rejoin;
     @Getter
@@ -333,11 +332,17 @@ public class Arena {
         }
         graffiti.reset();
         gameChest.clearChest();
+        teleportTask.stopTask();
+        teamShop = null;
+        noBreakBed = null;
+        holographic = null;
+        gameChest = null;
+        shop = null;
+        graffiti = null;
         timeTask = null;
         playerNameTeams = null;
         killStreak = null;
         friendlyBreakCount = null;
-        teleportTask.stopTask();
         teleportTask = null;
         randomEventsManager = null;
     }

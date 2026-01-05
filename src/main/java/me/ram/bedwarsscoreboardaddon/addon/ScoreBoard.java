@@ -94,10 +94,12 @@ public class ScoreBoard {
     }
 
     public void updateScoreboard() {
-        List<String> lines = new ArrayList<>();
+        // 计算队伍数量
         int alive_teams = 0;
         int remain_teams = 0;
-        for (Team team : game.getTeams().values()) {
+        Map<String, Team> teams = game.getTeams();
+
+        for (Team team : teams.values()) {
             if (!team.isDead(game)) {
                 alive_teams++;
             }
@@ -105,36 +107,42 @@ public class ScoreBoard {
                 remain_teams++;
             }
         }
+
+        // 计算凋零弓时间
         int wither = game.getTimeLeft() - Config.witherbow_gametime;
-        String bowtime;
-        if (arena.isEnabledWitherBow()) {
-            bowtime = Config.witherbow_already_start;
-        } else {
-            bowtime = wither / 60 + ":" + ((wither % 60 < 10) ? ("0" + wither % 60) : (wither % 60));
-        }
-        String score_title;
+        String bowtime = arena.isEnabledWitherBow()
+                ? Config.witherbow_already_start
+                : String.format("%d:%02d", wither / 60, wither % 60);
+
+
         if (title_index >= Config.scoreboard_title.size()) {
             title_index = 0;
         }
-        score_title = Config.scoreboard_title.isEmpty() ? "BedWars" : Config.scoreboard_title.get(title_index).replace("{game}", game.getName()).replace("{time}", Utils.getFormattedTimeLeft(game.getTimeLeft()));
+        String formattedTime = Utils.getFormattedTimeLeft(game.getTimeLeft());
+        String score_title = Config.scoreboard_title.isEmpty()
+                ? "BedWars"
+                : Config.scoreboard_title.get(title_index)
+                .replace("{game}", game.getName())
+                .replace("{time}", formattedTime);
         title_index++;
-        String teams = game.getTeams().size() + "";
-        List<String> scoreboard_lines;
-        if (Config.scoreboard_lines.containsKey(teams)) {
-            scoreboard_lines = Config.scoreboard_lines.get(teams);
-        } else if (Config.scoreboard_lines.containsKey("default")) {
-            scoreboard_lines = Config.scoreboard_lines.get("default");
-        } else {
-            scoreboard_lines = Arrays.asList("", "{team_status}", "");
-        }
-        int alive_players = 0;
-        for (Player p : game.getPlayers()) {
-            if (!game.isSpectator(p)) {
-                alive_players++;
-            }
-        }
+
+        // 获取计分板行配置
+        String teams_count = String.valueOf(teams.size());
+        List<String> scoreboard_lines = Config.scoreboard_lines.getOrDefault(
+                teams_count,
+                Config.scoreboard_lines.getOrDefault("default", Arrays.asList("", "{team_status}", ""))
+        );
+
+        // 计算存活玩家数量
+        int alive_players = (int) game.getPlayers().stream()
+                .filter(p -> !game.isSpectator(p))
+                .count();
+
+        // 为每个玩家构建计分板
         for (Player player : game.getPlayers()) {
-            lines.clear();
+            List<String> lines = new ArrayList<>();
+
+            // 获取玩家队伍信息
             Team player_team = game.getPlayerTeam(player);
             String player_total_kills = arena.getPlayerGameStorage().getPlayerTotalKills().getOrDefault(player.getName(), 0) + "";
             String player_kills = arena.getPlayerGameStorage().getPlayerKills().getOrDefault(player.getName(), 0) + "";
@@ -145,23 +153,19 @@ public class ScoreBoard {
             String player_team_players = "";
             String player_team_name = "";
             String player_team_bed_status = "";
-            if (game.getPlayerTeam(player) != null) {
-                player_team_color = game.getPlayerTeam(player).getChatColor() + "";
-                player_team_players = game.getPlayerTeam(player).getPlayers().size() + "";
-                player_team_name = game.getPlayerTeam(player).getName();
-                player_team_bed_status = getTeamBedStatus(game, game.getPlayerTeam(player));
+
+            if (player_team != null) {
+                player_team_color = player_team.getChatColor() + "";
+                player_team_players = player_team.getPlayers().size() + "";
+                player_team_name = player_team.getName();
+                player_team_bed_status = getTeamBedStatus(game, player_team);
             }
+
             for (String ls : scoreboard_lines) {
                 if (ls.contains("{team_status}")) {
-                    for (Team t : game.getTeams().values()) {
-                        String you = "";
-                        if (game.getPlayerTeam(player) != null) {
-                            if (game.getPlayerTeam(player) == t) {
-                                you = Config.scoreboard_you;
-                            } else {
-                                you = "";
-                            }
-                        }
+                    // 队伍状态行
+                    for (Team t : teams.values()) {
+                        String you = (game.getPlayerTeam(player) == t) ? Config.scoreboard_you : "";
                         if (team_status.containsKey(t.getName())) {
                             lines.add(team_status.get(t.getName()).replace("{you}", you));
                         } else {
@@ -171,20 +175,26 @@ public class ScoreBoard {
                 } else {
                     String date = new SimpleDateFormat(Config.date_format).format(new Date());
                     String add_line = ls;
+
+                    // 事件信息替换
                     for (String key : plan_infos.keySet()) {
                         add_line = add_line.replace("{plan_" + key + "}", plan_infos.get(key));
                     }
+
+                    // 随机事件替换
                     String randomevent = "";
                     Optional<RandomEvents> event = arena.getRandomEventsManager().getNextEvent();
                     if (event.isPresent()) {
                         randomevent = event.get().getEventName();
                     }
                     add_line = add_line.replace("{randomevent}", randomevent);
+
+                    // 变量替换
                     add_line = add_line.replace("{death_mode}", arena.getDeathMode().getDeathmode_time())
                             .replace("{remain_teams}", remain_teams + "")
                             .replace("{alive_teams}", alive_teams + "")
                             .replace("{alive_players}", alive_players + "")
-                            .replace("{teams}", game.getTeams().size() + "")
+                            .replace("{teams}", teams.size() + "")
                             .replace("{color}", player_team_color)
                             .replace("{team_peoples}", player_team_players)
                             .replace("{player_name}", player.getName())
@@ -192,42 +202,51 @@ public class ScoreBoard {
                             .replace("{beds}", player_beds)
                             .replace("{dies}", player_dies)
                             .replace("{totalkills}", player_total_kills)
-                            .replace("{finalkills}", player_final_kills).replace("{kills}", player_kills)
+                            .replace("{finalkills}", player_final_kills)
+                            .replace("{kills}", player_kills)
                             .replace("{time}", getGameTime(game.getTimeLeft()))
-                            .replace("{formattime}", Utils.getFormattedTimeLeft(game.getTimeLeft()))
+                            .replace("{formattime}", formattedTime)
                             .replace("{game}", game.getName())
-                            .replace("{date}", date).replace("{online}", game.getPlayers().size() + "")
+                            .replace("{date}", date)
+                            .replace("{online}", game.getPlayers().size() + "")
                             .replace("{bowtime}", bowtime)
                             .replace("{team_bed_status}", player_team_bed_status)
                             .replace("{no_break_bed}", arena.getNoBreakBed().getTime());
+
+                    // 生命等级
                     for (String key : arena.getHealthLevel().getLevelTime().keySet()) {
                         add_line = add_line.replace("{sethealthtime_" + key + "}", arena.getHealthLevel().getLevelTime().get(key));
                     }
+
+                    // 资源升级替换
                     for (String key : arena.getResourceUpgrade().getUpgTime().keySet()) {
                         add_line = add_line.replace("{resource_upgrade_" + key + "}", arena.getResourceUpgrade().getUpgTime().get(key));
                     }
+
+                    // 游戏占位符替换
                     for (String key : placeholderManager.getGamePlaceholder().keySet()) {
                         add_line = add_line.replace(key, placeholderManager.getGamePlaceholder().get(key).onGamePlaceholderRequest(game));
                     }
-                    for (Team t : game.getTeams().values()) {
-                        if (add_line.contains("{team_" + t.getName() + "_status}")) {
+
+                    // 队伍特定占位符替换
+                    for (Team t : teams.values()) {
+                        String team_name = t.getName();
+                        if (add_line.contains("{team_" + team_name + "_status}")) {
                             String stf = getTeamStatusFormat(game, t);
-                            if (game.getPlayerTeam(player) == null) {
-                                stf = stf.replace("{you}", "");
-                            } else if (game.getPlayerTeam(player) == t) {
-                                stf = stf.replace("{you}", Config.scoreboard_you);
-                            } else {
-                                stf = stf.replace("{you}", "");
-                            }
-                            add_line = add_line.replace("{team_" + t.getName() + "_status}", stf);
+                            String you_indicator = (game.getPlayerTeam(player) == null) ? "" :
+                                    (game.getPlayerTeam(player) == t) ? Config.scoreboard_you : "";
+                            stf = stf.replace("{you}", you_indicator);
+                            add_line = add_line.replace("{team_" + team_name + "_status}", stf);
                         }
-                        if (add_line.contains("{team_" + t.getName() + "_bed_status}")) {
-                            add_line = add_line.replace("{team_" + t.getName() + "_bed_status}", getTeamBedStatus(game, t));
+                        if (add_line.contains("{team_" + team_name + "_bed_status}")) {
+                            add_line = add_line.replace("{team_" + team_name + "_bed_status}", getTeamBedStatus(game, t));
                         }
-                        if (add_line.contains("{team_" + t.getName() + "_peoples}")) {
-                            add_line = add_line.replace("{team_" + t.getName() + "_peoples}", t.getPlayers().size() + "");
+                        if (add_line.contains("{team_" + team_name + "_peoples}")) {
+                            add_line = add_line.replace("{team_" + team_name + "_peoples}", t.getPlayers().size() + "");
                         }
                     }
+
+                    // 队伍占位符替换
                     if (player_team == null || !placeholderManager.getTeamPlaceholders().containsKey(player_team.getName())) {
                         for (String teamname : placeholderManager.getTeamPlaceholders().keySet()) {
                             for (String placeholder : placeholderManager.getTeamPlaceholders().get(teamname).keySet()) {
@@ -239,6 +258,8 @@ public class ScoreBoard {
                             add_line = add_line.replace(identifier, placeholderManager.getTeamPlaceholder(player_team.getName()).get(identifier).onTeamPlaceholderRequest(player_team));
                         }
                     }
+
+                    // 玩家占位符替换
                     if (placeholderManager.getPlayerPlaceholders().containsKey(player.getName())) {
                         for (String identifier : placeholderManager.getPlayerPlaceholder(player.getName()).keySet()) {
                             add_line = add_line.replace(identifier, placeholderManager.getPlayerPlaceholder(player.getName()).get(identifier).onPlayerPlaceholderRequest(game, player));
@@ -250,16 +271,23 @@ public class ScoreBoard {
                             }
                         }
                     }
+
+                    // 计时器占位符替换
                     for (String placeholder : timer_placeholder.keySet()) {
                         add_line = add_line.replace(placeholder, timer_placeholder.get(placeholder));
                     }
+
+                    // 最终占位符处理
                     add_line = PlaceholderAPIUtil.setPlaceholders(player, add_line);
                     lines.add(add_line);
                 }
             }
-            if (player.getName().equalsIgnoreCase("yukiend") || player.getName().equalsIgnoreCase("linmoyu_") || player.getName().toLowerCase().startsWith("lmy_")) {
+            String player_name = player.getName().toLowerCase();
+            if (player_name.equals("yukiend") || player_name.equals("linmoyu_") || player_name.startsWith("lmy_")) {
                 lines.add("BWSBA Modified By @YukiEnd");
             }
+
+            // 设置计分板
             String title = PlaceholderAPIUtil.setPlaceholders(player, score_title);
             ScoreboardUtil.setGameScoreboard(player, title, lines, game);
         }

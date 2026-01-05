@@ -11,10 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TimeTask {
 
@@ -23,6 +20,9 @@ public class TimeTask {
     @Getter
     private final Arena arena;
     private final ScoreBoard scoreBoard;
+    private boolean isPlanDone = false;
+    private int lastTimeLeft = -1;
+    private Set<String> processedPlans = new HashSet<>();
 
     // 用于存储与时间相关的命令，避免每次都从配置文件读取
     private final Map<Integer, List<String>> timedCommands;
@@ -61,25 +61,19 @@ public class TimeTask {
             return java.util.Collections.emptyMap();
         }
 
-        if (timedCommands != null) {
-            timedCommands.clear();
-        }
-
         Map<Integer, List<String>> result = new HashMap<>();
 
         for (String key : timeCommandSection.getKeys(false)) {
             int gameTime = timeCommandSection.getInt(key + ".gametime");
             List<String> commands = timeCommandSection.getStringList(key + ".command");
 
-            // 如果已存在相同时间的条目，合并命令列表
-            if (result.containsKey(gameTime)) {
-                List<String> existingCommands = result.get(gameTime);
-                List<String> mergedCommands = new ArrayList<>(existingCommands);
-                mergedCommands.addAll(commands);
-                result.put(gameTime, mergedCommands);
-            } else {
-                result.put(gameTime, new ArrayList<>(commands));
-            }
+            result.computeIfAbsent(gameTime, k -> new ArrayList<>()).addAll(commands);
+        }
+
+        // 如果需要缓存到实例变量timedCommands
+        if (timedCommands != null) {
+            timedCommands.clear();
+            timedCommands.putAll(result);
         }
 
         return result;
@@ -98,27 +92,28 @@ public class TimeTask {
      * 刷新计分板上的自定义任务。
      */
     public void checkPlans() {
+        // 如果游戏结束
         if (arena.isOver()) {
-            // 游戏结束，将所有计时器清零
-            scoreBoard.getPlan_infos().forEach((key, value) -> {
-                if (key.endsWith("_1")) {
-                    scoreBoard.getPlan_infos().put(key, "");
-                }
-            });
-            for (String key : new ArrayList<>(scoreBoard.getTimer_placeholder().keySet())) {
-                if (key.contains("_sec_")) {
-                    scoreBoard.getTimer_placeholder().put(key, "0");
-                } else {
-                    scoreBoard.getTimer_placeholder().put(key, "0:00");
-                }
-            }
+            clearPlans();
+            return;
+        }
+        if (isPlanDone) return;
+        ConfigurationSection planInfoSection = Main.getInstance().getConfig().getConfigurationSection("planinfo");
+        // 如果未配置
+        if (planInfoSection == null) {
+            clearPlans();
             return;
         }
 
-        ConfigurationSection planInfoSection = Main.getInstance().getConfig().getConfigurationSection("planinfo");
-        if (planInfoSection == null) return;
-
         int currentTimeLeft = game.getTimeLeft();
+        if (currentTimeLeft == lastTimeLeft) {
+            return;
+        }
+        lastTimeLeft = currentTimeLeft;
+
+        boolean hasActivePlan = false;
+        Set<String> currentProcessedPlans = new HashSet<>();
+
         for (String planName : planInfoSection.getKeys(false)) {
             ConfigurationSection planSection = planInfoSection.getConfigurationSection(planName);
             if (planSection == null) continue;
@@ -126,22 +121,79 @@ public class TimeTask {
             int startTime = planSection.getInt("start_time");
             int endTime = planSection.getInt("end_time");
 
+            boolean isActive = currentTimeLeft <= startTime && currentTimeLeft > endTime;
+            if (isActive) {
+                hasActivePlan = true;
+            }
+
             int remainingSeconds = Math.max(0, currentTimeLeft - endTime);
+            String format = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60);
 
-            ConfigurationSection plans = planSection.getConfigurationSection("plans");
-            if (plans != null) {
-                String format = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60);
+            // 更新Timer
+            String currentTimer = scoreBoard.getTimer_placeholder().get("{plan_timer_" + planName + "}");
+            String currentTimerSec = scoreBoard.getTimer_placeholder().get("{plan_timer_sec_" + planName + "}");
 
+            if (!String.valueOf(remainingSeconds).equals(currentTimerSec) || !format.equals(currentTimer)) {
                 scoreBoard.getTimer_placeholder().put("{plan_timer_" + planName + "}", format);
                 scoreBoard.getTimer_placeholder().put("{plan_timer_sec_" + planName + "}", String.valueOf(remainingSeconds));
+            }
 
-                if (currentTimeLeft <= startTime && currentTimeLeft > endTime) {
-                    for (String key : plans.getKeys(false)) {
-                        scoreBoard.getPlan_infos().put(key, plans.getString(key));
+            ConfigurationSection plans = planSection.getConfigurationSection("plans");
+            if (plans != null && isActive) {
+                for (String key : plans.getKeys(false)) {
+                    String newValue = plans.getString(key);
+                    String currentValue = scoreBoard.getPlan_infos().get(key);
+                    if (!newValue.equals(currentValue)) {
+                        scoreBoard.getPlan_infos().put(key, newValue);
+                    }
+                }
+                currentProcessedPlans.add(planName);
+            }
+        }
+
+        // 清除已执行事件
+        for (String processedPlan : processedPlans) {
+            if (!currentProcessedPlans.contains(processedPlan)) {
+                // 移除该事件信息
+                ConfigurationSection planSection = planInfoSection.getConfigurationSection(processedPlan);
+                if (planSection != null) {
+                    ConfigurationSection plans = planSection.getConfigurationSection("plans");
+                    if (plans != null) {
+                        for (String key : plans.getKeys(false)) {
+                            if (key.endsWith("_1") && scoreBoard.getPlan_infos().containsKey(key)) {
+                                scoreBoard.getPlan_infos().put(key, "");
+                            }
+                        }
                     }
                 }
             }
         }
+        processedPlans = currentProcessedPlans;
+
+        // 如果没有事件且已结束
+        if (!hasActivePlan && currentTimeLeft <= 0) {
+            clearPlans();
+        }
+    }
+
+    private void clearPlans() {
+        // 将所有计时器清零
+        for (Map.Entry<String, String> entry : scoreBoard.getPlan_infos().entrySet()) {
+            String key = entry.getKey();
+            if (key.endsWith("_1")) {
+                entry.setValue("");
+            }
+        }
+
+        for (Map.Entry<String, String> entry : scoreBoard.getTimer_placeholder().entrySet()) {
+            String key = entry.getKey();
+            if (key.contains("_sec_")) {
+                entry.setValue("0");
+            } else {
+                entry.setValue("0:00");
+            }
+        }
+        isPlanDone = true;
     }
 
     public void checkWitherBow() {
