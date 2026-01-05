@@ -29,12 +29,7 @@ public class RandomEvents {
         return Arrays.asList(PLAYERS_SPEED, PLAYERS_JUMP_BOOST, PLAYERS_STRENGTH);
     }
 
-    @Getter
-    private final Game game;
-    @Getter
-    private final Arena arena;
-
-    // 事件属性
+    // 静态事件的属性
     @Getter
     private final String eventName;
     @Getter
@@ -42,11 +37,18 @@ public class RandomEvents {
     @Getter
     private final String subtitle;
 
+    // 实例属性
+    @Getter
+    private final Game game;
+    @Getter
+    private final Arena arena;
+
     @Getter
     private RandomEvents currentActiveEvent;
     @Getter
     private List<RandomEvents> currentGameEvents;
 
+    // 静态事件构造函数
     private RandomEvents(String eventName, PotionEffectType effectType, String subtitle) {
         this.eventName = eventName;
         this.effectType = effectType;
@@ -56,9 +58,11 @@ public class RandomEvents {
         this.currentGameEvents = null;
     }
 
+    // 游戏实例构造函数
     public RandomEvents(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
+        // 实例构造函数不设置静态属性，避免为null
         this.eventName = null;
         this.effectType = null;
         this.subtitle = null;
@@ -91,6 +95,7 @@ public class RandomEvents {
         // 应用事件效果
         applyEventEffects(event);
 
+        // 计划结束事件
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
@@ -106,7 +111,6 @@ public class RandomEvents {
         if (currentGameEvents == null || currentGameEvents.isEmpty()) {
             return Optional.empty();
         }
-        // 返回列表中的第一个事件（即将到来的事件）
         return Optional.of(currentGameEvents.get(0));
     }
 
@@ -121,18 +125,17 @@ public class RandomEvents {
     // 切换到下一个事件
     public void switchNextEvent() {
         if (currentGameEvents == null || currentGameEvents.isEmpty()) {
-            endCurrentEvent();  // 结束当前事件
+            endCurrentEvent();
             return;
         }
 
         RandomEvents nextEvent = currentGameEvents.remove(0);
         startEvent(nextEvent);
-
     }
 
     private void applyEventEffects(RandomEvents event) {
         for (Player player : game.getPlayers()) {
-            Utils.sendTitle(player, 0, 60, 0, "", subtitle);
+            Utils.sendTitle(player, 0, 60, 0, "§r", event.getSubtitle());
             if (event.getEffectType() != null) {
                 player.addPotionEffect(new PotionEffect(event.getEffectType(), 90 * 20, 0));
             }
@@ -153,7 +156,7 @@ public class RandomEvents {
     }
 
     // 根据名称获取事件
-    public Optional<RandomEvents> fromName(String name) {
+    public static Optional<RandomEvents> fromName(String name) {
         for (RandomEvents event : getAllEvents()) {
             if (event.getEventName().equalsIgnoreCase(name)) {
                 return Optional.of(event);
@@ -188,7 +191,7 @@ public class RandomEvents {
     }
 
     // 获取所有可用事件
-    public List<RandomEvents> getAvailableEvents() {
+    public static List<RandomEvents> getAvailableEvents() {
         return getAllEvents();
     }
 
@@ -211,4 +214,23 @@ public class RandomEvents {
         }
         return false;
     }
+
+    // 获取当前活动事件的subtitle
+    public Optional<String> getCurrentActiveSubtitle() {
+        if (currentActiveEvent != null) {
+            return Optional.of(currentActiveEvent.getSubtitle());
+        }
+        return Optional.empty();
+    }
+
+    // 获取当前活动事件的效果类型
+    public Optional<PotionEffectType> getCurrentActiveEffectType() {
+        if (currentActiveEvent != null) {
+            return Optional.of(currentActiveEvent.getEffectType());
+        }
+        return Optional.empty();
+    }
 }
+
+
+
