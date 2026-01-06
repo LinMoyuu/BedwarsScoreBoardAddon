@@ -1,7 +1,9 @@
 package me.ram.bedwarsscoreboardaddon.addon;
 
 import io.github.bedwarsrel.BedwarsRel;
+import io.github.bedwarsrel.events.BedwarsGameOverEvent;
 import io.github.bedwarsrel.game.Game;
+import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
 import lombok.Getter;
 import me.ram.bedwarsscoreboardaddon.Main;
@@ -84,6 +86,12 @@ public class ScoreBoard {
                 if (game.getTimeLeft() == 0) {
                     game.setOver(true);
                     game.getCycle().checkGameOver();
+                    cancel();
+                    return;
+                }
+                if (game.getState() != GameState.RUNNING) {
+                    arena.onOver(new BedwarsGameOverEvent(game, null));
+                    arena.onEnd();
                     cancel();
                     return;
                 }

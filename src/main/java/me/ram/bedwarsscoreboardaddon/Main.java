@@ -100,7 +100,7 @@ public class Main extends JavaPlugin {
             }
         });
         for (Arena arena : arenaManager.getArenas().values()) {
-            arena.onDisable();
+            arena.onEnd();
         }
         editHolographicManager.removeAll();
     }

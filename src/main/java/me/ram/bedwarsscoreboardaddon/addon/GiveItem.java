@@ -9,7 +9,6 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
-import me.ram.bedwarsscoreboardaddon.utils.ItemUtil;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -259,27 +258,5 @@ public class GiveItem implements Listener {
         Game game = event.getGame();
         Team team = game.getPlayerTeam(player);
         GiveItem.giveItem(player, team, true);
-
-        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-        if (arena == null) {
-            return;
-        }
-        Team playerTeam = game.getPlayerTeam(player);
-        if (playerTeam != null) {
-            int teamSharpnessLvl = arena.getTeamShop().getTeamSharpnessLevel().getOrDefault(playerTeam, 0);
-            if (teamSharpnessLvl != 0) {
-                ItemUtil.givePlayerSharpness(player, teamSharpnessLvl);
-            }
-
-            int teamLeggingsLvl = arena.getTeamShop().getTeamLeggingsProtectionLevel().getOrDefault(playerTeam, 0);
-            if (teamLeggingsLvl != 0) {
-                ItemUtil.giveLeggingsProtection(player, teamLeggingsLvl);
-            }
-
-            int teamBootsLvl = arena.getTeamShop().getTeamBootsProtectionLevel().getOrDefault(playerTeam, 0);
-            if (teamBootsLvl != 0) {
-                ItemUtil.giveBootsProtection(player, teamBootsLvl);
-            }
-        }
     }
 }
