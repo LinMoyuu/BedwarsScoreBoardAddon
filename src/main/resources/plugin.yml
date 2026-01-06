@@ -16,7 +16,7 @@ authors:
   - YukiEnd
 website: https://github.com/LinMoyuu/BedwarsScoreBoardAddon
 depend: [BedwarsRel, ProtocolLib]
-softdepend: [Citizens, PlaceholderAPI, ServerJoiner, WorldEdit]
+softdepend: [Citizens, PlaceholderAPI, WorldEdit]
 
 commands:
   bedwarsscoreboardaddon:
