@@ -253,7 +253,7 @@ public class Holographic {
                     if (arena.getRejoin().getPlayers().containsKey(player.getName())) {
                         Team team = game.getPlayerTeam(player);
                         if (team != null && !team.isDead(game)) {
-                            pbtitles.get(team.getName()).display(player);
+                            if (pbtitles != null) pbtitles.get(team.getName()).display(player);
                         }
                     }
                 }

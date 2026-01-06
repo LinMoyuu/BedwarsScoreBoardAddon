@@ -9,6 +9,7 @@ import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.config.Config;
+import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -92,7 +93,7 @@ public class HidePlayer implements Listener {
     }
 
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent e) {
+    public void onReSpawn(PlayerRespawnEvent e) {
         Player player = e.getPlayer();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game == null) {
@@ -104,6 +105,25 @@ public class HidePlayer implements Listener {
         }
         if (team.isDead(game)) {
             Bukkit.getOnlinePlayers().forEach(p -> hidePlayer(p, player));
+        }
+    }
+
+
+    @EventHandler
+    public void onBoardRespawn(BoardAddonPlayerRespawnEvent e) {
+        Player player = e.getPlayer();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) {
+            return;
+        }
+        Team team = game.getPlayerTeam(player);
+        if (team == null) {
+            return;
+        }
+        for (Player pl : game.getPlayers()) {
+            if (BedwarsUtil.isSpectator(game, pl)) {
+                hidePlayer(player, pl);
+            }
         }
     }
 

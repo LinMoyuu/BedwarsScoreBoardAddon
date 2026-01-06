@@ -160,9 +160,6 @@ public class Rejoin {
                             player.getInventory().setChestplate(new ItemStack(Material.AIR));
                             player.getInventory().setLeggings(new ItemStack(Material.AIR));
                             player.getInventory().setBoots(new ItemStack(Material.AIR));
-                            if (Config.compass_enabled) {
-                                Compass.giveCompass(player);
-                            }
                             if (Config.giveitem_keeparmor && !armors.isEmpty()) {
                                 player.getInventory().setHelmet(armors.get(0));
                                 player.getInventory().setChestplate(armors.get(1));
@@ -179,6 +176,9 @@ public class Rejoin {
                                 player.setVelocity(new Vector(0, 0, 0));
                                 player.teleport(team.getSpawnLocation());
                                 GiveItem.giveItem(player, team, true);
+                                if (Config.compass_enabled) {
+                                    Compass.giveCompass(player);
+                                }
                             }
                         }
                     }

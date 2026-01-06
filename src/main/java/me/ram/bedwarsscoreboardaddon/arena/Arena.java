@@ -40,34 +40,34 @@ public class Arena {
     @Getter
     private final ScoreBoard scoreBoard;
     @Getter
-    private final PlayerGameStorage playerGameStorage;
+    private PlayerGameStorage playerGameStorage;
     @Getter
-    private final DeathMode deathMode;
+    private DeathMode deathMode;
     @Getter
-    private final HealthLevel healthLevel;
+    private HealthLevel healthLevel;
     @Getter
     private NoBreakBed noBreakBed;
     @Getter
-    private final ResourceUpgrade resourceUpgrade;
+    private ResourceUpgrade resourceUpgrade;
     @Getter
     private Holographic holographic;
     @Getter
     private InvisibilityPlayer invisiblePlayer;
     @Getter
-    private final LobbyBlock lobbyBlock;
+    private LobbyBlock lobbyBlock;
     @Getter
-    private final Respawn respawn;
+    private Respawn respawn;
     @Getter
-    private final Actionbar actionbar;
+    private Actionbar actionbar;
     @Getter
     private Graffiti graffiti;
     @Getter
     private GameChest gameChest;
     @Getter
-    private final Rejoin rejoin;
+    private Rejoin rejoin;
     @Getter
     private TimeTask timeTask;
-    private final List<BukkitTask> gameTasks;
+    private List<BukkitTask> gameTasks;
     @Getter
     private Shop shop;
     @Getter
@@ -319,18 +319,28 @@ public class Arena {
         graffiti.reset();
         gameChest.clearChest();
         teleportTask.stopTask();
+        playerGameStorage = null;
+        deathMode = null;
+        healthLevel = null;
+        resourceUpgrade = null;
+        lobbyBlock = null;
+        respawn = null;
+        gameTasks = null;
+        actionbar = null;
         invisiblePlayer = null;
         noBreakBed = null;
         holographic = null;
         gameChest = null;
         shop = null;
         graffiti = null;
+        rejoin = null;
         timeTask = null;
         playerNameTeams = null;
         killStreak = null;
         friendlyBreakCount = null;
         teleportTask = null;
         randomEventsManager = null;
+        Main.getInstance().getArenaManager().removeArena(game.getName());
     }
 
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent e) {

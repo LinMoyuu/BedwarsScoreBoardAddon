@@ -8,6 +8,7 @@ import io.github.bedwarsrel.game.Team;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
+import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import org.bukkit.Bukkit;
@@ -57,6 +58,19 @@ public class Compass implements Listener {
                     }
                 }
             }, 5L));
+        }
+    }
+
+
+    @EventHandler
+    public void onBoardRespawn(BoardAddonPlayerRespawnEvent e) {
+        Player player = e.getPlayer();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (!Config.compass_enabled || game == null) {
+            return;
+        }
+        if (!game.isSpectator(player)) {
+            giveCompass(player);
         }
     }
 
