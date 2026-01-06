@@ -67,20 +67,6 @@ public class Shop {
                 }
             }
         }
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (game.getState() != GameState.RUNNING || game.getPlayers().isEmpty()) {
-                    cancel();
-                    for (NPC npc : shops) {
-                        CitizensAPI.getNPCRegistry().deregister(npc);
-                    }
-                    for (HolographicAPI holo : titles) {
-                        holo.remove();
-                    }
-                }
-            }
-        }.runTaskTimer(Main.getInstance(), 0L, 0L);
     }
 
     public boolean isShopNPC(int id) {
