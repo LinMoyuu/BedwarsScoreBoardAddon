@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.addon.*;
-import me.ram.bedwarsscoreboardaddon.addon.teamshop.TeamShop;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
@@ -53,9 +52,7 @@ public class Arena {
     @Getter
     private Holographic holographic;
     @Getter
-    private TeamShop teamShop;
-    @Getter
-    private final InvisibilityPlayer invisiblePlayer;
+    private InvisibilityPlayer invisiblePlayer;
     @Getter
     private final LobbyBlock lobbyBlock;
     @Getter
@@ -107,7 +104,6 @@ public class Arena {
         noBreakBed = new NoBreakBed(this);
         resourceUpgrade = new ResourceUpgrade(this);
         holographic = new Holographic(this, resourceUpgrade);
-        teamShop = new TeamShop(this);
         invisiblePlayer = new InvisibilityPlayer(this);
         lobbyBlock = new LobbyBlock(this);
         respawn = new Respawn(this);
@@ -119,16 +115,6 @@ public class Arena {
             shop = new Shop(this);
         }
         timeTask = new TimeTask(this);
-        // 不清楚何意味 可能是指令停止游戏时会用上?
-//        addGameTask(new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//                if (!game.getState().equals(GameState.RUNNING)) {
-//                    onOver(new BedwarsGameOverEvent(game, null));
-//                    onEnd();
-//                }
-//            }
-//        }.runTaskTimer(Main.getInstance(), 1L, 1L));
         killStreak = new KillStreak(this);
         randomEventsManager = new RandomEvents(this);
 
@@ -324,16 +310,16 @@ public class Arena {
 
     public void onEnd() {
         gameTasks.forEach(BukkitTask::cancel);
-        teamShop.onEnd();
         noBreakBed.onEnd();
         holographic.remove();
         if (Main.getInstance().isEnabledCitizens()) {
             shop.remove();
         }
+        invisiblePlayer.onEnd();
         graffiti.reset();
         gameChest.clearChest();
         teleportTask.stopTask();
-        teamShop = null;
+        invisiblePlayer = null;
         noBreakBed = null;
         holographic = null;
         gameChest = null;
@@ -345,15 +331,6 @@ public class Arena {
         friendlyBreakCount = null;
         teleportTask = null;
         randomEventsManager = null;
-    }
-
-    public void onDisable() {
-        holographic.remove();
-        if (Main.getInstance().isEnabledCitizens()) {
-            shop.remove();
-        }
-        graffiti.reset();
-        gameChest.clearChest();
     }
 
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent e) {

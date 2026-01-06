@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -34,6 +35,7 @@ public class InvisibilityPlayer implements Listener {
     private final Game game;
     @Getter
     private final Arena arena;
+    private final List<Listener> listeners;
     @Getter
     private final List<UUID> players;
     private final List<UUID> hplayers;
@@ -42,10 +44,16 @@ public class InvisibilityPlayer implements Listener {
     public InvisibilityPlayer(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
+        listeners = new ArrayList<>();
         players = new ArrayList<>();
         hplayers = new ArrayList<>();
         steps = new HashMap<>();
+        listeners.add(this);
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+    }
+
+    public void onEnd() {
+        listeners.forEach(HandlerList::unregisterAll);
     }
 
     public void removePlayer(Player player) {
