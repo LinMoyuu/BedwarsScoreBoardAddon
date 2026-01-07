@@ -197,7 +197,7 @@ public class Actionbar {
         } else if (relativeAngle < -45 && relativeAngle >= -135) {
             return ">";  // 右方
         } else {
-            return "∨";  // 后方
+            return "V";  // 后方
         }
     }
 }

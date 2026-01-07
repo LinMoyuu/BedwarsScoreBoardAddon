@@ -152,7 +152,7 @@ public class Arena {
     }
 
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        respawn.onDamage(e);
+        respawn.onPlayerAttack(e);
     }
 
     public void onInteractEntity(PlayerInteractEntityEvent e) {

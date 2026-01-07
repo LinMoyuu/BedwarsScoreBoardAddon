@@ -181,7 +181,7 @@ public class Respawn {
         protected_time.remove(player);
     }
 
-    public void onDamage(EntityDamageByEntityEvent e) {
+    public void onPlayerAttack(EntityDamageByEntityEvent e) {
         if (!(e.getEntity() instanceof Player) || !(e.getDamager() instanceof Player)) {
             return;
         }
@@ -190,18 +190,30 @@ public class Respawn {
         if (!game.isInGame(player) || !game.isInGame(damager)) {
             return;
         }
-        if (!protected_time.containsKey(player)) {
-            return;
-        }
+
         int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time * 1000 : 0;
-        if ((System.currentTimeMillis() - protected_time.get(player)) < respawn_protectedTime) {
-            e.setCancelled(true);
-            if (respawn_protectedTime > 0)
+
+        // 检查被攻击玩家是否在保护时间内
+        if (protected_time.containsKey(player)) {
+            if ((System.currentTimeMillis() - protected_time.get(player)) < respawn_protectedTime) {
+                e.setCancelled(true);
                 damager.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a该玩家正处于无敌时间!"));
-            return;
+                return;
+            }
+            protected_time.remove(player);
         }
-        protected_time.remove(player);
+
+        // 检查攻击玩家是否在保护时间内
+        if (protected_time.containsKey(damager)) {
+            if ((System.currentTimeMillis() - protected_time.get(damager)) < respawn_protectedTime) {
+                e.setCancelled(true);
+                damager.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a无敌时间，无法攻击！"));
+                return;
+            }
+            protected_time.remove(damager);
+        }
     }
+
 
     private void hidePlayer(Player p1, Player p2) {
         if (p1.getUniqueId().equals(p2.getUniqueId())) {
