@@ -166,7 +166,7 @@ public class Title implements Listener {
             newPlayer.kickPlayer("");
         }
         if (game.getState() == GameState.WAITING && Config.jointitle_enabled) {
-            for (Player player : game.getPlayers()) {
+//            for (Player player : game.getPlayers()) {
                     int needplayers = game.getMinPlayers() - game.getPlayers().size();
                     needplayers = Math.max(needplayers, 0);
                     String status = "&f还需 " + needplayers + " 个玩家";
@@ -175,9 +175,10 @@ public class Title implements Listener {
                     }
                     String title = Config.jointitle_title.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
                     String subtitle = Config.jointitle_subtitle.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
-                    Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, title, subtitle);
-            }
+            Utils.sendTitle(newPlayer, newPlayer, 5, 60, 5, title, subtitle);
         }
+//                    Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, title, subtitle);
+//            }
     }
 
     @EventHandler
@@ -219,7 +220,7 @@ public class Title implements Listener {
         // 没人知道为什么花雨庭没有11 杀
         if (killStreak <= 10) {
             if (needSendTitle) {
-                Utils.sendTitle(killer, 0, 60, 20, "&a&l" + killStreak + " &a&l杀", "");
+                Utils.sendMainTitle(killer, 0, 60, 20, "&a&l" + killStreak + " &a&l杀");
             }
             if (!killStreakMessage(killer, killStreak).isEmpty()) {
                 for (Player gamePlayers : game.getPlayers()) {
@@ -228,7 +229,7 @@ public class Title implements Listener {
             }
         } else {
             if (needSendTitle) {
-                Utils.sendTitle(killer, 0, 60, 20, "&a&l" + 10 + " &a&l杀", "");
+                Utils.sendMainTitle(killer, 0, 60, 20, "&a&l" + 10 + " &a&l杀");
             }
             if (!killStreakMessage(killer, 10).isEmpty()) {
                 for (Player gamePlayers : game.getPlayers()) {

@@ -11,7 +11,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TimeTask {
 
@@ -21,8 +24,6 @@ public class TimeTask {
     private final Arena arena;
     private final ScoreBoard scoreBoard;
     private boolean isPlanDone = false;
-    private int lastTimeLeft = -1;
-    private Set<String> processedPlans = new HashSet<>();
 
     // 用于存储与时间相关的命令，避免每次都从配置文件读取
     private final Map<Integer, List<String>> timedCommands;
@@ -106,13 +107,7 @@ public class TimeTask {
         }
 
         int currentTimeLeft = game.getTimeLeft();
-        if (currentTimeLeft == lastTimeLeft) {
-            return;
-        }
-        lastTimeLeft = currentTimeLeft;
-
         boolean hasActivePlan = false;
-        Set<String> currentProcessedPlans = new HashSet<>();
 
         for (String planName : planInfoSection.getKeys(false)) {
             ConfigurationSection planSection = planInfoSection.getConfigurationSection(planName);
@@ -124,54 +119,25 @@ public class TimeTask {
             boolean isActive = currentTimeLeft <= startTime && currentTimeLeft > endTime;
             if (isActive) {
                 hasActivePlan = true;
-            }
+            } else continue;
 
             int remainingSeconds = Math.max(0, currentTimeLeft - endTime);
             String format = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60);
 
             // 更新Timer
-            String currentTimer = scoreBoard.getTimer_placeholder().get("{plan_timer_" + planName + "}");
-            String currentTimerSec = scoreBoard.getTimer_placeholder().get("{plan_timer_sec_" + planName + "}");
-
-            if (!String.valueOf(remainingSeconds).equals(currentTimerSec) || !format.equals(currentTimer)) {
-                scoreBoard.getTimer_placeholder().put("{plan_timer_" + planName + "}", format);
-                scoreBoard.getTimer_placeholder().put("{plan_timer_sec_" + planName + "}", String.valueOf(remainingSeconds));
-            }
+            scoreBoard.getTimer_placeholder().put("{plan_timer_" + planName + "}", format);
+            scoreBoard.getTimer_placeholder().put("{plan_timer_sec_" + planName + "}", String.valueOf(remainingSeconds));
 
             ConfigurationSection plans = planSection.getConfigurationSection("plans");
-            if (plans != null && isActive) {
+            if (plans != null) {
                 for (String key : plans.getKeys(false)) {
-                    String newValue = plans.getString(key);
-                    String currentValue = scoreBoard.getPlan_infos().get(key);
-                    if (!newValue.equals(currentValue)) {
-                        scoreBoard.getPlan_infos().put(key, newValue);
-                    }
-                }
-                currentProcessedPlans.add(planName);
-            }
-        }
-
-        // 清除已执行事件
-        for (String processedPlan : processedPlans) {
-            if (!currentProcessedPlans.contains(processedPlan)) {
-                // 移除该事件信息
-                ConfigurationSection planSection = planInfoSection.getConfigurationSection(processedPlan);
-                if (planSection != null) {
-                    ConfigurationSection plans = planSection.getConfigurationSection("plans");
-                    if (plans != null) {
-                        for (String key : plans.getKeys(false)) {
-                            if (key.endsWith("_1") && scoreBoard.getPlan_infos().containsKey(key)) {
-                                scoreBoard.getPlan_infos().put(key, "");
-                            }
-                        }
-                    }
+                    scoreBoard.getPlan_infos().put(key, plans.getString(key));
                 }
             }
         }
-        processedPlans = currentProcessedPlans;
 
         // 如果没有事件且已结束
-        if (!hasActivePlan && currentTimeLeft <= 0) {
+        if (!hasActivePlan) {
             clearPlans();
         }
     }

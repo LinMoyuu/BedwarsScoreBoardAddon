@@ -126,6 +126,23 @@ public class Utils {
         }
     }
 
+    public static void sendMainTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title) {
+        try {
+            Object e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get(null);
+            Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + ColorUtil.color(title) + "\"}");
+            Constructor subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE);
+            Object titlePacket = subtitleConstructor.newInstance(e, chatTitle, fadeIn, stay, fadeOut);
+            sendPacket(player, titlePacket);
+            e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null);
+            chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + ColorUtil.color(title) + "\"}");
+            subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"));
+            titlePacket = subtitleConstructor.newInstance(e, chatTitle);
+            sendPacket(player, titlePacket);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void clearTitle(Player player) {
         sendTitle(player, 0, 0, 0, "", "");
     }
