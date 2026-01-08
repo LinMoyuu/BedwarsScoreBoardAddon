@@ -169,6 +169,8 @@ public class Arena {
 
     public void onFriendlyBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        Team team = game.getPlayerTeam(player);
+        if (team == null) return;
         friendlyBreakCount.put(player, friendlyBreakCount.getOrDefault(player, 0) + 1);
         int friendlyBreaks = friendlyBreakCount.getOrDefault(player, 0);
         int max_breaks = Config.friendlybreak_kick_max_breaks;
@@ -185,8 +187,6 @@ public class Arena {
                     .replace("{breakcount}", String.valueOf(friendlyBreaks))
                     .replace("{max_breaks}", String.valueOf(max_breaks))));
 
-            Team team = game.getPlayerTeam(player);
-            if (team == null) return;
             String broadCastMessage = ColorUtil.color(Config.friendlybreak_broadcast_message
                     .replace("{bwprefix}", Config.bwrelPrefix)
                     .replace("{breakcount}", String.valueOf(friendlyBreaks))
