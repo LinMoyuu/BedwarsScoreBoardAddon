@@ -47,8 +47,8 @@ public class SoulItem implements Listener {
         // 灵魂
         ItemStack soul = new ItemStack(Material.NETHER_STAR);
         ItemMeta soulMeta = soul.getItemMeta();
-        soulMeta.setDisplayName("灵魂");
-        soulMeta.setLore(Collections.singletonList(ColorUtil.color("&4死亡不掉落")));
+        soulMeta.setDisplayName(ColorUtil.color("&4灵魂"));
+        soulMeta.setLore(Collections.singletonList(ColorUtil.color("死亡不掉落")));
         soul.setItemMeta(soulMeta);
         // 预定判断是否给灵魂 8队时
         boolean shouldGiveSoul = game.getTeams().size() >= 8;
