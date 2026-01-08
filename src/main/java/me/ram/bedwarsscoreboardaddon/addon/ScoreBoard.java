@@ -41,12 +41,15 @@ public class ScoreBoard {
         timer_placeholder = new HashMap<>();
         plan_infos = new HashMap<>();
         // 刷新计分板任务
-        arena.addGameTask(new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateScoreboard();
-            }
-        }.runTaskTimer(Main.getInstance(), 0L, Config.scoreboard_interval));
+        // 如果不是20再进行自定义刷新, 否则交给下方倒计时执行 避免刷新不同步
+        if (Config.scoreboard_interval != 20) {
+            arena.addGameTask(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    updateScoreboard();
+                }
+            }.runTaskTimer(Main.getInstance(), 0L, Config.scoreboard_interval));
+        }
         arena.addGameTask(new BukkitRunnable() {
             @Override
             public void run() {
@@ -97,6 +100,7 @@ public class ScoreBoard {
                 }
                 game.setTimeLeft(game.getTimeLeft() - 1);
                 arena.getTimeTask().refresh();
+                if (Config.scoreboard_interval == 20) updateScoreboard();
             }
         }.runTaskTimer(BedwarsRel.getInstance(), 0L, 20L));
     }
