@@ -1,29 +1,22 @@
 package me.ram.bedwarsscoreboardaddon.addon;
 
-import io.github.bedwarsrel.events.BedwarsGameOverEvent;
 import io.github.bedwarsrel.game.Game;
-import io.github.bedwarsrel.game.GameState;
 import lombok.Getter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
-import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class RandomEvents {
 
-    public static final RandomEvents PLAYERS_SPEED = new RandomEvents("全员速度提升", PotionEffectType.SPEED, "§4§l全体90秒速度加成!");
-    public static final RandomEvents PLAYERS_JUMP_BOOST = new RandomEvents("全员跳跃提升", PotionEffectType.JUMP, "§4§l全体90秒跳跃加成!");
-    public static final RandomEvents PLAYERS_STRENGTH = new RandomEvents("全员力量提升", PotionEffectType.INCREASE_DAMAGE, "§4§l全体90秒力量加成!");
+    public static final RandomEvents PLAYERS_SPEED = new RandomEvents("全员速度提升", PotionEffectType.SPEED, "§4§l全体90秒速度加成");
+    public static final RandomEvents PLAYERS_JUMP_BOOST = new RandomEvents("全员跳跃提升", PotionEffectType.JUMP, "§4§l全体90秒跳跃加成");
+    public static final RandomEvents PLAYERS_STRENGTH = new RandomEvents("全员力量提升", PotionEffectType.INCREASE_DAMAGE, "§4§l全体90秒力量加成");
 
     public static List<RandomEvents> getAllEvents() {
         return Arrays.asList(PLAYERS_SPEED, PLAYERS_JUMP_BOOST, PLAYERS_STRENGTH);

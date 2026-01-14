@@ -138,6 +138,7 @@ public class Respawn {
                         player.teleport(game.getPlayerTeam(player).getSpawnLocation());
                         player.setVelocity(new Vector(0, 0, 0));
                         player.setAllowFlight(false);
+                        player.setFallDistance(0);
                         player.setGameMode(GameMode.SURVIVAL);
                         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
                         player.setFoodLevel(20);
