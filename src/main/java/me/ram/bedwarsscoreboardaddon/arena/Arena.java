@@ -232,9 +232,10 @@ public class Arena {
     }
 
     public void onOver(BedwarsGameOverEvent e) {
+        if (!e.getGame().getName().equals(this.game.getName())) return;
         isOver = true;
         timeTask.refresh();
-        if (!e.getGame().getName().equals(this.game.getName())) return;
+        Bukkit.getScheduler().runTaskLater(Main.getInstance(), scoreBoard::updateScoreboard, 20L);
         if (Config.overstats_enabled && e.getWinner() != null) {
             Team winner = e.getWinner();
             Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();

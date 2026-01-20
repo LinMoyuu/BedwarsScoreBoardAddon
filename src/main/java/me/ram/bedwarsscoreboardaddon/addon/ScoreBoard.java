@@ -92,7 +92,7 @@ public class ScoreBoard {
                     cancel();
                     return;
                 }
-                if (game.getState() != GameState.RUNNING) {
+                if (game.getState() != GameState.RUNNING || game.getPlayers().isEmpty()) {
                     arena.onOver(new BedwarsGameOverEvent(game, null));
                     arena.onEnd();
                     cancel();

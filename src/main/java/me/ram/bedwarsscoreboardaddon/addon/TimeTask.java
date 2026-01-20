@@ -102,7 +102,6 @@ public class TimeTask {
         ConfigurationSection planInfoSection = Main.getInstance().getConfig().getConfigurationSection("planinfo");
         // 如果未配置
         if (planInfoSection == null) {
-            clearPlans();
             return;
         }
 
