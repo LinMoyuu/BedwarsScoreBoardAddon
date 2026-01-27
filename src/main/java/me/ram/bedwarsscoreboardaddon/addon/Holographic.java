@@ -250,10 +250,15 @@ public class Holographic {
                         holo.display(player);
                     }
                     Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-                    if (arena.getRejoin().getPlayers().containsKey(player.getName())) {
+                    if (arena != null && arena.getRejoin() != null && arena.getRejoin().getPlayers().containsKey(player.getName())) {
                         Team team = game.getPlayerTeam(player);
                         if (team != null && !team.isDead(game)) {
-                            if (pbtitles != null) pbtitles.get(team.getName()).display(player);
+                            if (pbtitles != null) {
+                                HolographicAPI hologram = pbtitles.get(team.getName());
+                                if (hologram != null) {
+                                    hologram.display(player);
+                                }
+                            }
                         }
                     }
                 }

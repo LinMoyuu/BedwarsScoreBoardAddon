@@ -134,6 +134,7 @@ public class Arena {
         Player player = e.getPlayer();
         beds.put(player.getName(), beds.getOrDefault(player.getName(), 0) + 1);
         holographic.onTargetBlockDestroyed(e);
+        scoreBoard.updateScoreboard();
     }
 
     public void onDeath(Player player) {
@@ -145,6 +146,7 @@ public class Arena {
         dies.put(player.getName(), dies.getOrDefault(player.getName(), 0) + 1);
         PlaySound.playSound(player, Config.play_sound_sound_death);
         killStreak.resetKillStreak(player.getUniqueId());
+        scoreBoard.updateScoreboard();
     }
 
     public void onDamage(EntityDamageEvent e) {
@@ -229,6 +231,7 @@ public class Arena {
         totalkills.put(killer.getName(), totalkills.getOrDefault(killer.getName(), 0) + 1);
         PlaySound.playSound(killer, Config.play_sound_sound_kill);
         killStreak.onKill(player, killer);
+        scoreBoard.updateScoreboard();
     }
 
     public void onOver(BedwarsGameOverEvent e) {

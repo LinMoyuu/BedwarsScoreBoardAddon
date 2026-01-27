@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import io.github.bedwarsrel.BedwarsRel;
+import io.github.bedwarsrel.events.BedwarsGameStartedEvent;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
@@ -15,8 +16,11 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
+import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRejoinedEvent;
+import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.ScoreboardUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -415,6 +419,89 @@ public class EventListener implements Listener {
         }
     }
 
+    // 生命值刷新
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHbEntityDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        int health = (int) Math.max(0, Math.ceil((player.getHealth() - event.getFinalDamage())));
+        for (Player target : game.getPlayers()) {
+            if (target == null || !target.isOnline()) {
+                continue;
+            }
+            ScoreboardUtil.sendHealthValuePacket(target, player, health);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHbEntityRegain(EntityRegainHealthEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        int health = (int) Math.ceil(player.getHealth() + event.getAmount());
+        for (Player target : game.getPlayers()) {
+            if (target == null || !target.isOnline()) {
+                continue;
+            }
+            ScoreboardUtil.sendHealthValuePacket(target, player, health);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHbRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        for (Player target : game.getPlayers()) {
+            if (target == null || !target.isOnline()) {
+                continue;
+            }
+            ScoreboardUtil.sendHealthValuePacket(target, player, (int) Math.ceil(player.getHealth()));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHbScoreboardRespawn(BoardAddonPlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        Game game = event.getGame();
+        if (game == null) return;
+        for (Player target : game.getPlayers()) {
+            if (target == null || !target.isOnline()) {
+                continue;
+            }
+            ScoreboardUtil.sendHealthValuePacket(target, player, (int) Math.ceil(player.getHealth()));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHbStarted(BedwarsGameStartedEvent event) {
+        Game game = event.getGame();
+        if (game == null) return;
+        for (Player player : game.getPlayers()) {
+            if (player == null || !player.isOnline()) {
+                continue;
+            }
+            int currentHealth = (int) Math.max(0, Math.ceil(player.getHealth()));
+
+            for (Player target : game.getPlayers()) {
+                if (target != null && target.isOnline() && !target.equals(player)) {
+                    ScoreboardUtil.sendHealthValuePacket(target, player, currentHealth);
+                }
+            }
+            ScoreboardUtil.sendHealthValuePacket(player, player, currentHealth);
+        }
+    }
+
+    // 缝隙挖床
     private void onPacketReceiving() {
         PacketListener packetListener = new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.BLOCK_DIG, PacketType.Play.Client.WINDOW_CLICK) {
             public void onPacketReceiving(PacketEvent e) {
@@ -440,21 +527,12 @@ public class EventListener implements Listener {
                 String gap_break_message = Config.anti_gap_breakbed_message;
                 if (targetBlock != null && !targetBlock.equals(brokenBlock)) {
                     e.setCancelled(true);
-                    if (!gap_break_message.isEmpty()) player.sendMessage(gap_break_message);
                     brokenBlock.getState().update(true);
+                    if (!gap_break_message.isEmpty()) player.sendMessage(gap_break_message);
                 }
             }
         };
         ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
-    }
-
-    private PotionEffect getPotionEffect(Player player, PotionEffectType type) {
-        for (PotionEffect effect : player.getActivePotionEffects()) {
-            if (effect.getType().equals(type)) {
-                return effect;
-            }
-        }
-        return null;
     }
 
     private Location toLocation(String loc) {

@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,39 +21,35 @@ public class ScoreboardUtil {
 
     @Getter
     private static final Map<Player, Scoreboard> scoreboards = new ConcurrentHashMap<>();
-    private static final Map<Player, Map<Player, Integer>> playerHealth = new ConcurrentHashMap<>();
-    private static final DecimalFormat decimalFormat = new DecimalFormat("##");
 
     public static void removePlayer(Player player) {
         scoreboards.remove(player);
-        playerHealth.remove(player);
     }
 
-    private static List<String> getNormalizedLines(List<String> lines) {
-        List<String> normalizedLines = new ArrayList<>(lines.size());
-        Set<String> seenLines = new HashSet<>(lines.size());
-
+    private static List<String> getQuellLines(List<String> lines) {
+        List<String> quell_lines = new ArrayList<>();
         for (String line : lines) {
-            String processedLine = line != null && line.length() > 40 ? line.substring(0, 40) : line;
-
-            if (!seenLines.contains(processedLine)) {
-                normalizedLines.add(processedLine);
-                seenLines.add(processedLine);
+            String l = line;
+            while (true) {
+                if (l == null || !quell_lines.contains(l)) {
+                    quell_lines.add(l != null && l.length() > 40 ? l.substring(0, 40) : l);
+                    break;
+                }
+                l += "§r";
             }
         }
-
-        // 填充到至少15行
-        while (normalizedLines.size() < 15) {
-            normalizedLines.add(0, null);
+        if (quell_lines.size() < 15) {
+            for (int i = 0; i < 15 - lines.size(); i++) {
+                quell_lines.add(0, null);
+            }
         }
-
-        return normalizedLines;
+        return quell_lines;
     }
 
     private static String[] toElementArray(String title, List<String> lines) {
         List<String> result = new ArrayList<>();
         result.add(title != null && title.length() > 32 ? title.substring(0, 32) : (title != null ? title : "BedWars"));
-        result.addAll(getNormalizedLines(lines));
+        result.addAll(getQuellLines(lines));
         return result.toArray(new String[0]);
     }
 
@@ -209,7 +204,7 @@ public class ScoreboardUtil {
         }
     }
 
-    private static void sendShowHealthPacket(Player player) {
+    public static void sendShowHealthPacket(Player player) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
         if (Config.tab_health) {
@@ -266,7 +261,8 @@ public class ScoreboardUtil {
         }
     }
 
-    private static void sendHealthValuePacket(Player player, Player target, int value) {
+    // 接收者/所属者/血量值
+    public static void sendHealthValuePacket(Player player, Player target, int value) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
         if (Config.tab_health) {
@@ -308,9 +304,13 @@ public class ScoreboardUtil {
 
             if ((player.getScoreboard() == null || !player.getScoreboard().equals(scoreboard)) && !exists) {
                 sendShowHealthPacket(player);
+                for (Player target : game.getPlayers()) {
+                    if (target == null || !target.isOnline()) {
+                        continue;
+                    }
+                    ScoreboardUtil.sendHealthValuePacket(player, target, (int) Math.ceil(target.getHealth()));
+                }
             }
-
-            updatePlayerHealthTracking(player, game);
 
             Team playerTeam = game.getPlayerTeam(player);
             List<UUID> invisiblePlayers = getInvisiblePlayers(game);
@@ -326,19 +326,6 @@ public class ScoreboardUtil {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void updatePlayerHealthTracking(Player player, Game game) {
-        playerHealth.putIfAbsent(player, new ConcurrentHashMap<>());
-        Map<Player, Integer> healthMap = playerHealth.get(player);
-
-        for (Player target : game.getPlayers()) {
-            int health = Integer.parseInt(decimalFormat.format(target.getHealth()));
-            if (!Objects.equals(healthMap.get(target), health)) {
-                sendHealthValuePacket(player, target, health);
-                healthMap.put(target, health);
-            }
         }
     }
 
