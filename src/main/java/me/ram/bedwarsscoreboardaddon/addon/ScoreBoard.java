@@ -313,10 +313,8 @@ public class ScoreBoard {
         } else {
             return Config.scoreboard_team_bed_status_bed_alive;
         }
-        // 改之后没测试过
     }
 
-    // 改之后没测试过
     private String getTeamStatusFormat(Game game, Team team) {
         String alive = Config.scoreboard_team_status_format_bed_alive;
         String destroyed = Config.scoreboard_team_status_format_bed_destroyed;

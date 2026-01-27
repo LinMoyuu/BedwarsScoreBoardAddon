@@ -16,194 +16,278 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ScoreboardUtil {
 
     @Getter
-    private static final Map<Player, Scoreboard> scoreboards = new HashMap<>();
-    private static final Map<Player, Map<Player, Integer>> player_health = new HashMap<>();
+    private static final Map<Player, Scoreboard> scoreboards = new ConcurrentHashMap<>();
+    private static final Map<Player, Map<Player, Integer>> playerHealth = new ConcurrentHashMap<>();
+    private static final DecimalFormat decimalFormat = new DecimalFormat("##");
 
     public static void removePlayer(Player player) {
         scoreboards.remove(player);
-        player_health.remove(player);
+        playerHealth.remove(player);
     }
 
-    private static List<String> getQuellLines(List<String> lines) {
-        List<String> quell_lines = new ArrayList<>();
+    private static List<String> getNormalizedLines(List<String> lines) {
+        List<String> normalizedLines = new ArrayList<>(lines.size());
+        Set<String> seenLines = new HashSet<>(lines.size());
+
         for (String line : lines) {
-            String l = line;
-            while (true) {
-                if (l == null || !quell_lines.contains(l)) {
-                    quell_lines.add(l != null && l.length() > 40 ? l.substring(0, 40) : l);
-                    break;
-                }
-                l += "§r";
+            String processedLine = line != null && line.length() > 40 ? line.substring(0, 40) : line;
+
+            if (!seenLines.contains(processedLine)) {
+                normalizedLines.add(processedLine);
+                seenLines.add(processedLine);
             }
         }
-        if (quell_lines.size() < 15) {
-            for (int i = 0; i < 15 - lines.size(); i++) {
-                quell_lines.add(0, null);
-            }
+
+        // 填充到至少15行
+        while (normalizedLines.size() < 15) {
+            normalizedLines.add(0, null);
         }
-        return quell_lines;
+
+        return normalizedLines;
     }
 
     private static String[] toElementArray(String title, List<String> lines) {
-        List<String> list = new ArrayList<>();
-        if (title == null) {
-            title = "BedWars";
-        }
-        list.add(title.length() > 32 ? title.substring(0, 32) : title);
-        list.addAll(getQuellLines(lines));
-        return list.toArray(new String[list.size()]);
+        List<String> result = new ArrayList<>();
+        result.add(title != null && title.length() > 32 ? title.substring(0, 32) : (title != null ? title : "BedWars"));
+        result.addAll(getNormalizedLines(lines));
+        return result.toArray(new String[0]);
     }
 
     public static void setLobbyScoreboard(Player player, String title, List<String> lines, Game game) {
         String[] elements = toElementArray(title, lines);
-        Scoreboard scoreboard = player.getScoreboard();
+        Scoreboard scoreboard = initializeScoreboard(player);
+
         try {
-            if (scoreboard == null || scoreboard == Bukkit.getScoreboardManager().getMainScoreboard() || scoreboard.getObjectives().size() != 1) {
-                player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-                scoreboard = player.getScoreboard();
-            }
-            if (scoreboard.getObjective("bwsba-lobby") == null) {
-                scoreboard.registerNewObjective("bwsba-lobby", "dummy");
-                scoreboard.getObjective("bwsba-lobby").setDisplaySlot(DisplaySlot.SIDEBAR);
-            }
-            scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(elements[0]);
-            for (int i = 1; i < elements.length; ++i) {
-                if (elements[i] != null && scoreboard.getObjective(DisplaySlot.SIDEBAR).getScore(elements[i]).getScore() != 16 - i) {
-                    scoreboard.getObjective(DisplaySlot.SIDEBAR).getScore(elements[i]).setScore(16 - i);
-                    for (String string : scoreboard.getEntries()) {
-                        if (scoreboard.getObjective("bwsba-lobby").getScore(string).getScore() == 16 - i && !string.equals(elements[i])) {
-                            scoreboard.resetScores(string);
-                        }
-                    }
-                }
-            }
-            for (String entry : scoreboard.getEntries()) {
-                boolean toErase = true;
-                for (String element : elements) {
-                    if (element != null && element.equals(entry) && scoreboard.getObjective("bwsba-lobby").getScore(entry).getScore() == 16 - Arrays.asList(elements).indexOf(element)) {
-                        toErase = false;
-                        break;
-                    }
-                }
-                if (toErase) {
-                    scoreboard.resetScores(entry);
-                }
-            }
-            for (Team t : game.getTeams().values()) {
-                org.bukkit.scoreboard.Team team = scoreboard.getTeam(game.getName() + ":" + t.getName());
-                if (team == null) {
-                    team = scoreboard.registerNewTeam(game.getName() + ":" + t.getName());
-                }
-
-                // playerTag
-                String playerTagPrefix = "";
-                if (!Config.playertag_prefix.isEmpty()) {
-                    playerTagPrefix = (Config.playertag_prefix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
-                }
-                String playerTagSuffix = "";
-                if (!Config.playertag_prefix.isEmpty()) {
-                    playerTagSuffix = (Config.playertag_suffix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
-                }
-                team.setPrefix(playerTagPrefix);
-                team.setSuffix(playerTagSuffix);
-                team.setAllowFriendlyFire(false);
-
-                // playerList 获取
-                String playerListPrefix = "";
-                if (!Config.playerlist_prefix.isEmpty()) {
-                    playerListPrefix = (Config.playerlist_prefix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
-                }
-                String playerListSuffix = "";
-                if (!Config.playerlist_suffix.isEmpty()) {
-                    playerListSuffix = (Config.playerlist_suffix.replace("{color}", t.getChatColor() + "").replace("{color_initials}", t.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(t.getChatColor().name())).replace("{team_initials}", t.getName().substring(0, 1)).replace("{team}", t.getName()));
-                }
-                for (Player pl : t.getPlayers()) {
-                    if (!team.hasPlayer(pl)) {
-                        team.addPlayer(pl);
-                    }
-                    pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
-                }
-            }
+            updateScoreboardObjective(scoreboard, "bwsba-lobby", elements);
+            setupTeamsForScoreboard(player, game, scoreboard);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void sendShowHealthPacket(Player player) {
-        ProtocolManager man = ProtocolLibrary.getProtocolManager();
-        if (Config.tab_health) {
-            try {
-                PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
-                packet.getIntegers().write(0, 0);
-                packet.getStrings().write(0, "bwsba-game-list");
-                packet.getStrings().write(1, "bwsba-game-list");
-                man.sendServerPacket(player, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
-                packet.getIntegers().write(0, 0);
-                packet.getStrings().write(0, "bwsba-game-list");
-                man.sendServerPacket(player, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    private static Scoreboard initializeScoreboard(Player player) {
+        Scoreboard currentScoreboard = player.getScoreboard();
+
+        if (currentScoreboard == null ||
+                currentScoreboard == Bukkit.getScoreboardManager().getMainScoreboard() ||
+                currentScoreboard.getObjectives().size() != 1) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+            return player.getScoreboard();
         }
-        if (Config.tag_health) {
-            try {
-                PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
-                packet.getIntegers().write(0, 0);
-                packet.getStrings().write(0, "bwsba-game-name");
-                packet.getStrings().write(1, "bwsba-game-name");
-                man.sendServerPacket(player, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
-                packet.getIntegers().write(0, 2);
-                packet.getStrings().write(0, "bwsba-game-name");
-                man.sendServerPacket(player, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
-                packet.getIntegers().write(0, 2);
-                packet.getStrings().write(0, "bwsba-game-name");
-                packet.getStrings().write(1, "§4❤");
-                man.sendServerPacket(player, packet);
-            } catch (Exception e) {
-                e.printStackTrace();
+
+        return currentScoreboard;
+    }
+
+    private static void updateScoreboardObjective(Scoreboard scoreboard, String objectiveName, String[] elements) {
+        org.bukkit.scoreboard.Objective objective = scoreboard.getObjective(objectiveName);
+        if (objective == null) {
+            objective = scoreboard.registerNewObjective(objectiveName, "dummy");
+            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        }
+
+        // 设置显示名
+        objective.setDisplayName(elements[0]);
+
+        // 更新分数
+        updateScores(scoreboard, objectiveName, elements);
+
+        // 清理不需要的条目
+        cleanupEntries(scoreboard, objectiveName, elements);
+    }
+
+    private static void updateScores(Scoreboard scoreboard, String objectiveName, String[] elements) {
+        for (int i = 1; i < elements.length; i++) {
+            if (elements[i] != null) {
+                int expectedScore = 16 - i;
+                org.bukkit.scoreboard.Score score = scoreboard.getObjective(DisplaySlot.SIDEBAR).getScore(elements[i]);
+
+                if (score.getScore() != expectedScore) {
+                    score.setScore(expectedScore);
+
+                    // 清理冲突的条目
+                    for (String entry : scoreboard.getEntries()) {
+                        org.bukkit.scoreboard.Score otherScore = scoreboard.getObjective(objectiveName).getScore(entry);
+                        if (otherScore.getScore() == expectedScore && !entry.equals(elements[i])) {
+                            scoreboard.resetScores(entry);
+                        }
+                    }
+                }
             }
         }
     }
 
+    private static void cleanupEntries(Scoreboard scoreboard, String objectiveName, String[] elements) {
+        Set<String> validEntries = new HashSet<>();
+        for (String element : elements) {
+            if (element != null) {
+                validEntries.add(element);
+            }
+        }
+
+        for (String entry : scoreboard.getEntries()) {
+            if (!validEntries.contains(entry)) {
+                scoreboard.resetScores(entry);
+            }
+        }
+    }
+
+    private static void setupTeamsForScoreboard(Player player, Game game, Scoreboard scoreboard) {
+        for (Team bedwarsTeam : game.getTeams().values()) {
+            String teamId = game.getName() + ":" + bedwarsTeam.getName();
+            org.bukkit.scoreboard.Team bukkitTeam = scoreboard.getTeam(teamId);
+
+            if (bukkitTeam == null) {
+                bukkitTeam = scoreboard.registerNewTeam(teamId);
+            }
+
+            configureTeamTags(bukkitTeam, player, bedwarsTeam);
+            configurePlayerListNames(player, bedwarsTeam);
+        }
+    }
+
+    private static void configureTeamTags(org.bukkit.scoreboard.Team bukkitTeam, Player player, Team bedwarsTeam) {
+        String color = bedwarsTeam.getChatColor().toString();
+        String colorInitials = bedwarsTeam.getChatColor().name().substring(0, 1);
+        String colorName = upperInitials(bedwarsTeam.getChatColor().name());
+        String teamInitials = bedwarsTeam.getName().substring(0, 1);
+        String teamName = bedwarsTeam.getName();
+
+        String prefix = Config.playertag_prefix.isEmpty() ? "" :
+                Config.playertag_prefix
+                        .replace("{color}", color)
+                        .replace("{color_initials}", colorInitials)
+                        .replace("{color_name}", colorName)
+                        .replace("{team_initials}", teamInitials)
+                        .replace("{team}", teamName);
+
+        String suffix = Config.playertag_suffix.isEmpty() ? "" :
+                Config.playertag_suffix
+                        .replace("{color}", color)
+                        .replace("{color_initials}", colorInitials)
+                        .replace("{color_name}", colorName)
+                        .replace("{team_initials}", teamInitials)
+                        .replace("{team}", teamName);
+
+        bukkitTeam.setPrefix(ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, prefix)));
+        bukkitTeam.setSuffix(ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, suffix)));
+        bukkitTeam.setAllowFriendlyFire(false);
+    }
+
+    private static void configurePlayerListNames(Player player, Team bedwarsTeam) {
+        String color = bedwarsTeam.getChatColor().toString();
+        String colorInitials = bedwarsTeam.getChatColor().name().substring(0, 1);
+        String colorName = upperInitials(bedwarsTeam.getChatColor().name());
+        String teamInitials = bedwarsTeam.getName().substring(0, 1);
+        String teamName = bedwarsTeam.getName();
+
+        String prefix = Config.playerlist_prefix.isEmpty() ? "" :
+                Config.playerlist_prefix
+                        .replace("{color}", color)
+                        .replace("{color_initials}", colorInitials)
+                        .replace("{color_name}", colorName)
+                        .replace("{team_initials}", teamInitials)
+                        .replace("{team}", teamName);
+
+        String suffix = Config.playerlist_suffix.isEmpty() ? "" :
+                Config.playerlist_suffix
+                        .replace("{color}", color)
+                        .replace("{color_initials}", colorInitials)
+                        .replace("{color_name}", colorName)
+                        .replace("{team_initials}", teamInitials)
+                        .replace("{team}", teamName);
+
+        for (Player teamPlayer : bedwarsTeam.getPlayers()) {
+            String playerName = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(teamPlayer, prefix)) +
+                    teamPlayer.getName() +
+                    ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(teamPlayer, suffix));
+            teamPlayer.setPlayerListName(playerName);
+        }
+    }
+
+    private static void sendShowHealthPacket(Player player) {
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+
+        if (Config.tab_health) {
+            sendTabHealthPackets(protocolManager, player);
+        }
+
+        if (Config.tag_health) {
+            sendTagHealthPackets(protocolManager, player);
+        }
+    }
+
+    private static void sendTabHealthPackets(ProtocolManager protocolManager, Player player) {
+        try {
+            // 创建目标
+            PacketContainer objectivePacket = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+            objectivePacket.getIntegers().write(0, 0);
+            objectivePacket.getStrings().write(0, "bwsba-game-list");
+            objectivePacket.getStrings().write(1, "bwsba-game-list");
+            protocolManager.sendServerPacket(player, objectivePacket);
+
+            // 显示目标
+            PacketContainer displayPacket = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
+            displayPacket.getIntegers().write(0, 0);
+            displayPacket.getStrings().write(0, "bwsba-game-list");
+            protocolManager.sendServerPacket(player, displayPacket);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void sendTagHealthPackets(ProtocolManager protocolManager, Player player) {
+        try {
+            // 创建目标
+            PacketContainer objectivePacket = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+            objectivePacket.getIntegers().write(0, 0);
+            objectivePacket.getStrings().write(0, "bwsba-game-name");
+            objectivePacket.getStrings().write(1, "bwsba-game-name");
+            protocolManager.sendServerPacket(player, objectivePacket);
+
+            // 显示目标
+            PacketContainer displayPacket = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
+            displayPacket.getIntegers().write(0, 2);
+            displayPacket.getStrings().write(0, "bwsba-game-name");
+            protocolManager.sendServerPacket(player, displayPacket);
+
+            // 设置图标
+            PacketContainer iconPacket = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+            iconPacket.getIntegers().write(0, 2);
+            iconPacket.getStrings().write(0, "bwsba-game-name");
+            iconPacket.getStrings().write(1, "§4❤");
+            protocolManager.sendServerPacket(player, iconPacket);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void sendHealthValuePacket(Player player, Player target, int value) {
-        ProtocolManager man = ProtocolLibrary.getProtocolManager();
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+
         if (Config.tab_health) {
             try {
-                PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
+                PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
                 packet.getIntegers().write(0, value);
                 packet.getStrings().write(0, target.getName());
                 packet.getStrings().write(1, "bwsba-game-list");
-                man.sendServerPacket(player, packet);
+                protocolManager.sendServerPacket(player, packet);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
         if (Config.tag_health) {
             try {
-                PacketContainer packet = man.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
+                PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_SCORE);
                 packet.getIntegers().write(0, value);
                 packet.getStrings().write(0, target.getName());
                 packet.getStrings().write(1, "bwsba-game-name");
-                man.sendServerPacket(player, packet);
+                protocolManager.sendServerPacket(player, packet);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -211,121 +295,125 @@ public class ScoreboardUtil {
     }
 
     public static void setGameScoreboard(Player player, String title, List<String> lines, Game game) {
-        boolean exist = scoreboards.containsKey(player);
-        if (!exist) {
+        boolean exists = scoreboards.containsKey(player);
+        if (!exists) {
             scoreboards.put(player, Bukkit.getScoreboardManager().getNewScoreboard());
         }
+
         String[] elements = toElementArray(title, lines);
         Scoreboard scoreboard = scoreboards.get(player);
+
         try {
-            if (scoreboard.getObjective("bwsba-game") == null) {
-                scoreboard.registerNewObjective("bwsba-game", "dummy");
-                scoreboard.getObjective("bwsba-game").setDisplaySlot(DisplaySlot.SIDEBAR);
-            }
-            if ((player.getScoreboard() == null || !player.getScoreboard().equals(scoreboard)) && !exist) {
+            updateScoreboardObjective(scoreboard, "bwsba-game", elements);
+
+            if ((player.getScoreboard() == null || !player.getScoreboard().equals(scoreboard)) && !exists) {
                 sendShowHealthPacket(player);
             }
-            scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(elements[0]);
-            for (int i = 1; i < elements.length; ++i) {
-                if (elements[i] != null && scoreboard.getObjective(DisplaySlot.SIDEBAR).getScore(elements[i]).getScore() != 16 - i) {
-                    scoreboard.getObjective(DisplaySlot.SIDEBAR).getScore(elements[i]).setScore(16 - i);
-                    for (String string : scoreboard.getEntries()) {
-                        if (scoreboard.getObjective("bwsba-game").getScore(string).getScore() == 16 - i && !string.equals(elements[i])) {
-                            scoreboard.resetScores(string);
-                        }
+
+            updatePlayerHealthTracking(player, game);
+
+            Team playerTeam = game.getPlayerTeam(player);
+            List<UUID> invisiblePlayers = getInvisiblePlayers(game);
+
+            setupTeamsForScoreboard(player, game, scoreboard);
+
+            updateTeamMembership(player, game, scoreboard, playerTeam, invisiblePlayers);
+
+            hideInvisiblePlayerTags(player, game, playerTeam, invisiblePlayers);
+
+            if (player.getScoreboard() == null || !player.getScoreboard().equals(scoreboard)) {
+                player.setScoreboard(scoreboard);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void updatePlayerHealthTracking(Player player, Game game) {
+        playerHealth.putIfAbsent(player, new ConcurrentHashMap<>());
+        Map<Player, Integer> healthMap = playerHealth.get(player);
+
+        for (Player target : game.getPlayers()) {
+            int health = Integer.parseInt(decimalFormat.format(target.getHealth()));
+            if (!Objects.equals(healthMap.get(target), health)) {
+                sendHealthValuePacket(player, target, health);
+                healthMap.put(target, health);
+            }
+        }
+    }
+
+    private static List<UUID> getInvisiblePlayers(Game game) {
+        if (Main.getInstance().getArenaManager().getArena(game.getName()) != null) {
+            return Main.getInstance().getArenaManager().getArena(game.getName())
+                    .getInvisiblePlayer().getPlayers();
+        }
+        return Collections.emptyList();
+    }
+
+    private static void updateTeamMembership(Player player, Game game, Scoreboard scoreboard,
+                                             Team playerTeam, List<UUID> invisiblePlayers) {
+        for (Team bedwarsTeam : game.getTeams().values()) {
+            String teamId = game.getName() + ":" + bedwarsTeam.getName();
+            org.bukkit.scoreboard.Team bukkitTeam = scoreboard.getTeam(teamId);
+
+            String color = bedwarsTeam.getChatColor().toString();
+            String colorInitials = bedwarsTeam.getChatColor().name().substring(0, 1);
+            String colorName = upperInitials(bedwarsTeam.getChatColor().name());
+            String teamInitials = bedwarsTeam.getName().substring(0, 1);
+            String teamName = bedwarsTeam.getName();
+
+            String prefix = Config.playerlist_prefix.isEmpty() ? "" :
+                    Config.playerlist_prefix
+                            .replace("{color}", color)
+                            .replace("{color_initials}", colorInitials)
+                            .replace("{color_name}", colorName)
+                            .replace("{team_initials}", teamInitials)
+                            .replace("{team}", teamName);
+
+            String suffix = Config.playerlist_suffix.isEmpty() ? "" :
+                    Config.playerlist_suffix
+                            .replace("{color}", color)
+                            .replace("{color_initials}", colorInitials)
+                            .replace("{color_name}", colorName)
+                            .replace("{team_initials}", teamInitials)
+                            .replace("{team}", teamName);
+
+            for (Player teamPlayer : bedwarsTeam.getPlayers()) {
+                String playerName = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, prefix)) +
+                        teamPlayer.getName() +
+                        ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, suffix));
+                teamPlayer.setPlayerListName(playerName);
+
+                if (!bukkitTeam.hasPlayer(teamPlayer)) {
+                    boolean canAddToTeam = !invisiblePlayers.contains(teamPlayer.getUniqueId()) ||
+                            (playerTeam != null && playerTeam.getPlayers().contains(teamPlayer));
+
+                    if (canAddToTeam) {
+                        bukkitTeam.addPlayer(teamPlayer);
+                    } else {
+                        teamPlayer.setPlayerListName(playerName);
                     }
                 }
             }
-            for (String entry : scoreboard.getEntries()) {
-                boolean toErase = true;
-                for (String element : elements) {
-                    if (element != null && element.equals(entry) && scoreboard.getObjective("bwsba-game").getScore(entry).getScore() == 16 - Arrays.asList(elements).indexOf(element)) {
-                        toErase = false;
-                        break;
-                    }
-                }
-                if (toErase) {
-                    scoreboard.resetScores(entry);
-                }
-            }
-            if (!player_health.containsKey(player)) {
-                player_health.put(player, new HashMap<>());
-            }
-            Map<Player, Integer> map = player_health.get(player);
-            // 发送血量值数据包
-            for (Player pl : game.getPlayers()) {
-                int health = Integer.valueOf(new DecimalFormat("##").format(pl.getHealth()));
-                if (map.getOrDefault(pl, 0) != health) {
-                    sendHealthValuePacket(player, pl, health);
-                    map.put(pl, health);
-                }
-            }
-            Team player_team = game.getPlayerTeam(player);
-            List<UUID> players = Main.getInstance().getArenaManager().getArena(game.getName()).getInvisiblePlayer().getPlayers();
-            for (Team team : game.getTeams().values()) {
-                org.bukkit.scoreboard.Team score_team = scoreboard.getTeam(game.getName() + ":" + team.getName());
-                if (score_team == null) {
-                    score_team = scoreboard.registerNewTeam(game.getName() + ":" + team.getName());
-                }
+        }
+    }
 
-                // playerTag
-                String playerTagPrefix = "";
-                if (!Config.playertag_prefix.isEmpty()) {
-                    playerTagPrefix = (Config.playertag_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
-                }
-                String playerTagSuffix = "";
-                if (!Config.playertag_prefix.isEmpty()) {
-                    playerTagSuffix = (Config.playertag_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
-                }
-                score_team.setPrefix(playerTagPrefix);
-                score_team.setSuffix(playerTagSuffix);
-                score_team.setAllowFriendlyFire(false);
-
-                // playerList 获取
-                String playerListPrefix = "";
-                if (!Config.playerlist_prefix.isEmpty()) {
-                    playerListPrefix = (Config.playerlist_prefix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
-                }
-                String playerListSuffix = "";
-                if (!Config.playerlist_suffix.isEmpty()) {
-                    playerListSuffix = (Config.playerlist_suffix.replace("{color}", team.getChatColor() + "").replace("{color_initials}", team.getChatColor().name().substring(0, 1)).replace("{color_name}", upperInitials(team.getChatColor().name())).replace("{team_initials}", team.getName().substring(0, 1)).replace("{team}", team.getName()));
-                }
-
-                // 循环Rel队伍玩家
-                for (Player pl : team.getPlayers()) {
-                    // 修改 playerListName
-                    pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
-                    // 如果scoreboardTeam查无此人
-                    if (!score_team.hasPlayer(pl)) {
-                        // 添加其进Scoreboard Team
-                        if (!players.contains(pl.getUniqueId()) || (player_team != null && player_team.getPlayers().contains(pl))) {
-                            score_team.addPlayer(pl);
-                        } else {
-                            pl.setPlayerListName(playerListPrefix + pl.getName() + playerListSuffix);
-                        }
-                    }
-                }
-            }
-            // 隐藏隐身玩家Tag
-            if (player_team != null && players.contains(player.getUniqueId())) {
-                for (Team team : game.getTeams().values()) {
-                    if (!team.getName().equals(player_team.getName())) {
-                        for (Player pl : team.getPlayers()) {
-                            Scoreboard scoreboard2 = pl.getScoreboard();
-                            for (org.bukkit.scoreboard.Team score_team : scoreboard2.getTeams()) {
-                                if (player_team.getPlayers().contains(player)) {
-                                    score_team.removePlayer(player);
+    private static void hideInvisiblePlayerTags(Player player, Game game, Team playerTeam, List<UUID> invisiblePlayers) {
+        if (playerTeam != null && invisiblePlayers.contains(player.getUniqueId())) {
+            for (Team otherTeam : game.getTeams().values()) {
+                if (!otherTeam.getName().equals(playerTeam.getName())) {
+                    for (Player otherPlayer : otherTeam.getPlayers()) {
+                        Scoreboard otherScoreboard = otherPlayer.getScoreboard();
+                        if (otherScoreboard != null) {
+                            for (org.bukkit.scoreboard.Team team : otherScoreboard.getTeams()) {
+                                if (playerTeam.getPlayers().contains(player)) {
+                                    team.removePlayer(player);
                                 }
                             }
                         }
                     }
                 }
             }
-            if (player.getScoreboard() == null || !player.getScoreboard().equals(scoreboard)) {
-                player.setScoreboard(scoreboard);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
