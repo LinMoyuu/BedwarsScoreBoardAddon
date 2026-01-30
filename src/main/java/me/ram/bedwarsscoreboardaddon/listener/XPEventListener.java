@@ -16,7 +16,7 @@ public class XPEventListener extends EventListeners implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             return;
         }
         super.onItemPickup(e);

@@ -93,7 +93,7 @@ public class Spectator implements Listener {
             return;
         }
         Player player = (Player) e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }
     }
@@ -101,7 +101,7 @@ public class Spectator implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }
     }
@@ -112,7 +112,7 @@ public class Spectator implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }
     }
@@ -123,7 +123,7 @@ public class Spectator implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }
     }
@@ -135,7 +135,7 @@ public class Spectator implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }
     }
@@ -146,7 +146,7 @@ public class Spectator implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }
     }
@@ -157,7 +157,7 @@ public class Spectator implements Listener {
             return;
         }
         Player player = e.getPlayer();
-        if (BedwarsUtil.isSpectator(player) || BedwarsUtil.isRespawning(player)) {
+        if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }
     }
