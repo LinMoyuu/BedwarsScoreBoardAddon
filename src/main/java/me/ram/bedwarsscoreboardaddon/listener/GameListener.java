@@ -178,14 +178,6 @@ public class GameListener implements Listener {
         Game game = e.getGame();
         if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
             Main.getInstance().getArenaManager().getArenas().get(game.getName()).onTargetBlockDestroyed(e);
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
-                        Main.getInstance().getArenaManager().getArenas().get(game.getName()).getScoreBoard().updateScoreboard();
-                    }
-                }
-            }.runTaskLater(Main.getInstance(), 1L);
         }
     }
 
