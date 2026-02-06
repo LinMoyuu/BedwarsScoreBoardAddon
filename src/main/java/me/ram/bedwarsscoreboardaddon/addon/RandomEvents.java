@@ -15,7 +15,7 @@ import java.util.*;
 public class RandomEvents {
 
     public static final RandomEvents PLAYERS_SPEED = new RandomEvents("全员速度提升", PotionEffectType.SPEED, "§4§l全体90秒速度加成");
-    public static final RandomEvents PLAYERS_JUMP_BOOST = new RandomEvents("全员跳跃提升", PotionEffectType.JUMP, "§4§l全体90秒跳跃加成");
+    public static final RandomEvents PLAYERS_JUMP_BOOST = new RandomEvents("全员跳跃提升", PotionEffectType.JUMP, "§4§l全体90秒跳跃II加成");
     public static final RandomEvents PLAYERS_STRENGTH = new RandomEvents("全员力量提升", PotionEffectType.INCREASE_DAMAGE, "§4§l全体90秒力量加成");
 
     public static List<RandomEvents> getAllEvents() {

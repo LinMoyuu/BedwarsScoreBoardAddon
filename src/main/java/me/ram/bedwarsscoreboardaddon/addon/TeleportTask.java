@@ -6,12 +6,14 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,8 @@ public class TeleportTask {
     private void teleportToRandomPlayer() {
         List<Player> alivePlayers = game.getPlayers().stream()
                 .filter(player -> !BedwarsUtil.isSpectator(player))
+                .filter(Objects::nonNull)
+                .filter(OfflinePlayer::isOnline)
                 .collect(Collectors.toList());
 
         if (alivePlayers.isEmpty()) {

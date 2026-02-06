@@ -67,27 +67,20 @@ public class Main extends JavaPlugin {
         menuManager = new MenuManager();
         localeConfig = new LocaleConfig();
         Main.getInstance().getLocaleConfig().loadLocaleConfig();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (Bukkit.getPluginManager().getPlugin("BedwarsRel") == null || Bukkit.getPluginManager().getPlugin("Citizens") == null || Bukkit.getPluginManager().getPlugin("ProtocolLib") == null || (Bukkit.getPluginManager().isPluginEnabled("BedwarsRel") && Bukkit.getPluginManager().isPluginEnabled("Citizens") && Bukkit.getPluginManager().isPluginEnabled("ProtocolLib"))) {
-                    cancel();
-                    printMessage("§f===========================================================");
-                    printMessage("§7 ");
-                    printMessage("§b                  BedwarsScoreBoardAddon");
-                    printMessage("§7 ");
-                    printMessage("§7 ");
-                    printMessage("§f  " + getLocaleConfig().getLanguage("version") + ": §a" + getDescription().getVersion());
-                    printMessage("§7 ");
-                    printMessage("§f  " + getLocaleConfig().getLanguage("author") + ": §aRam" + ", §eModified By YukiEnd");
-                    printMessage("§7 ");
-                    printMessage("§f  " + getLocaleConfig().getLanguage("website") + ": §ehttps://github.com/LinMoyuu/BedwarsScoreBoardAddon");
-                    printMessage("§7 ");
-                    printMessage("§f===========================================================");
-                    init();
-                }
-            }
-        }.runTaskTimer(this, 1L, 1L);
+
+        printMessage("§f===========================================================");
+        printMessage("§7 ");
+        printMessage("§b                  BedwarsScoreBoardAddon");
+        printMessage("§7 ");
+        printMessage("§7 ");
+        printMessage("§f  " + getLocaleConfig().getLanguage("version") + ": §a" + getDescription().getVersion());
+        printMessage("§7 ");
+        printMessage("§f  " + getLocaleConfig().getLanguage("author") + ": §aRam" + ", §eModified By YukiEnd");
+        printMessage("§7 ");
+        printMessage("§f  " + getLocaleConfig().getLanguage("website") + ": §ehttps://github.com/LinMoyuu/BedwarsScoreBoardAddon");
+        printMessage("§7 ");
+        printMessage("§f===========================================================");
+        init();
     }
 
     public void onDisable() {

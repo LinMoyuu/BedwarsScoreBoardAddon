@@ -126,7 +126,6 @@ public class ScoreBoard {
                 ? Config.witherbow_already_start
                 : String.format("%d:%02d", wither / 60, wither % 60);
 
-
         if (title_index >= Config.scoreboard_title.size()) {
             title_index = 0;
         }
