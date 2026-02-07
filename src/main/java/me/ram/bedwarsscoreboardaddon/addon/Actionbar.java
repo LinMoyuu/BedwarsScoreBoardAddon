@@ -19,14 +19,13 @@ import java.util.Map;
 
 public class Actionbar {
 
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(Config.date_format);
     @Getter
     private final Game game;
     @Getter
     private final PlaceholderManager placeholderManager;
     @Getter
     private final Arena arena;
-
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(Config.date_format);
 
     public Actionbar(Arena arena) {
         this.arena = arena;

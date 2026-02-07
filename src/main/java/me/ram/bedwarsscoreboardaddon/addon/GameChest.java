@@ -74,7 +74,7 @@ public class GameChest {
                         playerTeam.createTeamInventory();
                     }
                     if (!playerTeam.getChests().contains(block)) {
-                            playerTeam.addChest(block);
+                        playerTeam.addChest(block);
                     }
                     player.openInventory(playerTeam.getInventory());
                 }

@@ -24,9 +24,9 @@ public class HealthLevel {
     private final Arena arena;
     @Getter
     private final Map<String, String> levelTime;
+    private final Set<String> executedHealthStages = new HashSet<>();
     @Getter
     private Integer nowHealth;
-    private final Set<String> executedHealthStages = new HashSet<>();
 
     public HealthLevel(Arena arena) {
         this.arena = arena;

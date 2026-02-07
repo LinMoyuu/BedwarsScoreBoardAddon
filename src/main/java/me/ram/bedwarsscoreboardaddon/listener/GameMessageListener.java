@@ -358,8 +358,10 @@ public class GameMessageListener implements Listener {
             if (game == null) return;
         }
         if (BedwarsUtil.isSpectator(player)) return;
+        Team team = game.getPlayerTeam(player);
+        if (team == null) return;
         Map<Event, PacketListener> map = quitevents.getOrDefault(game.getName(), new HashMap<>());
-        map.put(e, registerQuitPacketListener(player, game.getPlayerTeam(player)));
+        map.put(e, registerQuitPacketListener(player, team));
         quitevents.put(game.getName(), map);
     }
 

@@ -23,10 +23,9 @@ public class TimeTask {
     @Getter
     private final Arena arena;
     private final ScoreBoard scoreBoard;
-    private boolean isPlanDone = false;
-
     // 用于存储与时间相关的命令，避免每次都从配置文件读取
     private final Map<Integer, List<String>> timedCommands;
+    private boolean isPlanDone = false;
 
     public TimeTask(Arena arena) {
         this.arena = arena;

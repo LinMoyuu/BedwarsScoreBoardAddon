@@ -167,14 +167,14 @@ public class Title implements Listener {
         }
         if (game.getState() == GameState.WAITING && Config.jointitle_enabled) {
 //            for (Player player : game.getPlayers()) {
-                    int needplayers = game.getMinPlayers() - game.getPlayers().size();
-                    needplayers = Math.max(needplayers, 0);
-                    String status = "&f还需 " + needplayers + " 个玩家";
-                    if (game.getLobbyCountdown() != null) {
-                        status = "游戏马上开始";
-                    }
-                    String title = Config.jointitle_title.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
-                    String subtitle = Config.jointitle_subtitle.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
+            int needplayers = game.getMinPlayers() - game.getPlayers().size();
+            needplayers = Math.max(needplayers, 0);
+            String status = "&f还需 " + needplayers + " 个玩家";
+            if (game.getLobbyCountdown() != null) {
+                status = "游戏马上开始";
+            }
+            String title = Config.jointitle_title.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
+            String subtitle = Config.jointitle_subtitle.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
             Utils.sendTitle(newPlayer, newPlayer, 5, 60, 5, title, subtitle);
         }
 //                    Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, title, subtitle);
@@ -185,16 +185,16 @@ public class Title implements Listener {
     public void onLeave(BedwarsPlayerLeaveEvent e) {
         Game game = e.getGame();
         if (game.getState() == GameState.WAITING && Config.jointitle_enabled) {
-                if (game.getLobbyCountdown() != null) {
-                    Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-                        int needplayers = game.getMinPlayers() - game.getPlayers().size();
-                        needplayers = Math.max(needplayers, 0);
-                        if (needplayers == 0) return;
-                        String status = "&f还需 " + needplayers + " 个玩家";
-                        for (Player player : game.getPlayers()) {
-                            Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
-                        }
-                    }, 1L);
+            if (game.getLobbyCountdown() != null) {
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+                    int needplayers = game.getMinPlayers() - game.getPlayers().size();
+                    needplayers = Math.max(needplayers, 0);
+                    if (needplayers == 0) return;
+                    String status = "&f还需 " + needplayers + " 个玩家";
+                    for (Player player : game.getPlayers()) {
+                        Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
+                    }
+                }, 1L);
             }
         }
     }

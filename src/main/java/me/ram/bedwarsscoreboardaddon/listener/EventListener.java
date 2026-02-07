@@ -16,7 +16,6 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
-import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRejoinedEvent;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;

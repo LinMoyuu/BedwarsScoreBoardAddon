@@ -17,11 +17,6 @@ public class RandomEvents {
     public static final RandomEvents PLAYERS_SPEED = new RandomEvents("全员速度提升", PotionEffectType.SPEED, "§4§l全体90秒速度加成");
     public static final RandomEvents PLAYERS_JUMP_BOOST = new RandomEvents("全员跳跃提升", PotionEffectType.JUMP, "§4§l全体90秒跳跃II加成");
     public static final RandomEvents PLAYERS_STRENGTH = new RandomEvents("全员力量提升", PotionEffectType.INCREASE_DAMAGE, "§4§l全体90秒力量加成");
-
-    public static List<RandomEvents> getAllEvents() {
-        return Arrays.asList(PLAYERS_SPEED, PLAYERS_JUMP_BOOST, PLAYERS_STRENGTH);
-    }
-
     // 静态事件的属性
     @Getter
     private final String eventName;
@@ -29,18 +24,15 @@ public class RandomEvents {
     private final PotionEffectType effectType;
     @Getter
     private final String subtitle;
-
     // 实例属性
     @Getter
     private final Game game;
     @Getter
     private final Arena arena;
-
     @Getter
     private RandomEvents currentActiveEvent;
     @Getter
     private List<RandomEvents> currentGameEvents;
-
     // 静态事件构造函数
     private RandomEvents(String eventName, PotionEffectType effectType, String subtitle) {
         this.eventName = eventName;
@@ -62,6 +54,25 @@ public class RandomEvents {
         this.currentActiveEvent = null;
 
         initializeEventList();
+    }
+
+    public static List<RandomEvents> getAllEvents() {
+        return Arrays.asList(PLAYERS_SPEED, PLAYERS_JUMP_BOOST, PLAYERS_STRENGTH);
+    }
+
+    // 根据名称获取事件
+    public static Optional<RandomEvents> fromName(String name) {
+        for (RandomEvents event : getAllEvents()) {
+            if (event.getEventName().equalsIgnoreCase(name)) {
+                return Optional.of(event);
+            }
+        }
+        return Optional.empty();
+    }
+
+    // 获取所有可用事件
+    public static List<RandomEvents> getAvailableEvents() {
+        return getAllEvents();
     }
 
     // 初始化事件列表
@@ -148,16 +159,6 @@ public class RandomEvents {
         endCurrentEvent();
     }
 
-    // 根据名称获取事件
-    public static Optional<RandomEvents> fromName(String name) {
-        for (RandomEvents event : getAllEvents()) {
-            if (event.getEventName().equalsIgnoreCase(name)) {
-                return Optional.of(event);
-            }
-        }
-        return Optional.empty();
-    }
-
     // 检查是否有事件
     public boolean hasActiveEvent() {
         return currentActiveEvent != null;
@@ -181,11 +182,6 @@ public class RandomEvents {
     // 获取剩余事件数量
     public int getRemainingEventCount() {
         return currentGameEvents != null ? currentGameEvents.size() : 0;
-    }
-
-    // 获取所有可用事件
-    public static List<RandomEvents> getAvailableEvents() {
-        return getAllEvents();
     }
 
     // 判断当前事件是否是指定类型

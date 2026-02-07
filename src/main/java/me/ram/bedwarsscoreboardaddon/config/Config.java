@@ -262,10 +262,10 @@ public class Config {
     public static Map<String, List<String>> game_shop_item;
     public static Map<String, String> game_shop_shops;
     public static List<MapView> image_maps;
-    private static FileConfiguration file_config;
-    private static FileConfiguration language_config;
     public static boolean isBedwarsXPEnabled = false;
     public static String bwrelPrefix;
+    private static FileConfiguration file_config;
+    private static FileConfiguration language_config;
 
     private static FileConfiguration getVerifiedConfig(String fileName) {
         Map<String, String> configVersion = new HashMap<>();
