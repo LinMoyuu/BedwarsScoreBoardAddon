@@ -124,10 +124,6 @@ public class Graffiti {
         if (!Config.graffiti_enabled) {
             return;
         }
-        Player player = e.getPlayer();
-        if (!game.isInGame(player) || BedwarsUtil.isSpectator(game, player) || player.getGameMode().equals(GameMode.SPECTATOR)) {
-            return;
-        }
         if (!(e.getRightClicked() instanceof ItemFrame)) {
             return;
         }

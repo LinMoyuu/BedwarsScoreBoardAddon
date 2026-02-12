@@ -17,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -93,6 +94,17 @@ public class Spectator implements Listener {
             return;
         }
         Player player = (Player) e.getPlayer();
+        if (BedwarsUtil.isSpectator(player)) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityDamage(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) e.getDamager();
         if (BedwarsUtil.isSpectator(player)) {
             e.setCancelled(true);
         }

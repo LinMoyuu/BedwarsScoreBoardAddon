@@ -66,7 +66,6 @@ public class GameChest {
                 Player player = e.getPlayer();
                 Block block = e.getClickedBlock();
                 if (block == null || block.getType() != Material.ENDER_CHEST) return;
-                if (BedwarsUtil.isSpectator(game, player)) return;
                 Team chestTeam = game.getTeamOfEnderChest(block);
                 Team playerTeam = game.getPlayerTeam(player);
                 if (chestTeam == null) {
@@ -85,9 +84,6 @@ public class GameChest {
             return;
         }
         Player player = e.getPlayer();
-        if (!game.isInGame(player) || BedwarsUtil.isSpectator(game, player)) {
-            return;
-        }
         Block block = e.getClickedBlock();
         if (!block.getType().equals(Material.CHEST) && !block.getType().equals(Material.ENDER_CHEST)) {
             return;

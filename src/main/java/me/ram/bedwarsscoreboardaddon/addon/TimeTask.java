@@ -6,7 +6,6 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
-import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -25,7 +24,6 @@ public class TimeTask {
     private final ScoreBoard scoreBoard;
     // 用于存储与时间相关的命令，避免每次都从配置文件读取
     private final Map<Integer, List<String>> timedCommands;
-    private boolean isPlanDone = false;
 
     public TimeTask(Arena arena) {
         this.arena = arena;
@@ -42,7 +40,7 @@ public class TimeTask {
     public void refresh() {
         checkPlans();
         checkTimeCommands();
-        checkWitherBow();
+        arena.getWitherBow().checkWitherBow();
         arena.getActionbar().sendActionbar();
         arena.getHealthLevel().checkHealth();
         arena.getNoBreakBed().checkBedBreakState();
@@ -94,10 +92,9 @@ public class TimeTask {
     public void checkPlans() {
         // 如果游戏结束
         if (arena.isOver()) {
-            clearPlans();
+            clearPlanInfo();
             return;
         }
-        if (isPlanDone) return;
         ConfigurationSection planInfoSection = Main.getInstance().getConfig().getConfigurationSection("planinfo");
         // 如果未配置
         if (planInfoSection == null) {
@@ -136,11 +133,11 @@ public class TimeTask {
 
         // 如果没有事件且已结束
         if (!hasActivePlan) {
-            clearPlans();
+            clearPlanInfo();
         }
     }
 
-    private void clearPlans() {
+    private void clearPlanInfo() {
         // 将所有计时器清零
         for (Map.Entry<String, String> entry : scoreBoard.getPlan_infos().entrySet()) {
             String key = entry.getKey();
@@ -156,31 +153,6 @@ public class TimeTask {
             } else {
                 entry.setValue("0:00");
             }
-        }
-        isPlanDone = true;
-    }
-
-    public void checkWitherBow() {
-        if (!Config.witherbow_enabled || arena.isEnabledWitherBow()) return;
-        int enableAfterSec = (game.getTimeLeft() - Config.witherbow_gametime);
-
-        if (Config.witherbow_remind_times != null && !Config.witherbow_remind_times.isEmpty()) {
-            if (Config.witherbow_remind_times.contains(enableAfterSec)) {
-                for (Player player : game.getPlayers()) {
-                    player.sendMessage(WitherBow.formatMessage(enableAfterSec));
-                }
-            }
-        }
-
-        if (game.getTimeLeft() <= Config.witherbow_gametime) {
-            if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
-                game.getPlayers().forEach(player -> Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle));
-            }
-            if (!Config.witherbow_message.isEmpty()) {
-                game.getPlayers().forEach(player -> player.sendMessage(Config.witherbow_message.replace("{bwprefix}", Config.bwrelPrefix)));
-            }
-            PlaySound.playSound(game, Config.play_sound_sound_enable_witherbow);
-            arena.setEnabledWitherBow(true);
         }
     }
 

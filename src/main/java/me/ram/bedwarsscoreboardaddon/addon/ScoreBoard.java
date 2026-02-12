@@ -122,7 +122,7 @@ public class ScoreBoard {
 
         // 计算凋零弓时间
         int wither = game.getTimeLeft() - Config.witherbow_gametime;
-        String bowtime = arena.isEnabledWitherBow()
+        String bowtime = arena.getWitherBow().isWitherbowEnabled()
                 ? Config.witherbow_already_start
                 : String.format("%d:%02d", wither / 60, wither % 60);
 

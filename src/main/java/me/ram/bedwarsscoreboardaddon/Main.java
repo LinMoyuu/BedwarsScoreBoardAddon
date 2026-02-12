@@ -213,7 +213,6 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new FastRespawn(), this);
         Bukkit.getPluginManager().registerEvents(new ChatFormat(), this);
         Bukkit.getPluginManager().registerEvents(new HidePlayer(), this);
-        Bukkit.getPluginManager().registerEvents(new WitherBow(), this);
         Bukkit.getPluginManager().registerEvents(new DeathItem(), this);
         Bukkit.getPluginManager().registerEvents(new Spectator(), this);
         Bukkit.getPluginManager().registerEvents(new GiveItem(), this);

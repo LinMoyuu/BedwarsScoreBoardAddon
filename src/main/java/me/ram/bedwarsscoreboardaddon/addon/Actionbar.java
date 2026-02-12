@@ -34,7 +34,7 @@ public class Actionbar {
     }
 
     public void sendActionbar() {
-        String actionbarConfig = arena.isEnabledWitherBow()
+        String actionbarConfig = arena.getWitherBow().isWitherbowEnabled()
                 ? Config.actionbar_witherbow
                 : Config.actionbar;
 
@@ -42,7 +42,7 @@ public class Actionbar {
 
         int wither = game.getTimeLeft() - Config.witherbow_gametime;
         String bowtime;
-        if (arena.isEnabledWitherBow()) {
+        if (arena.getWitherBow().isWitherbowEnabled()) {
             bowtime = Config.witherbow_already_start;
         } else {
             int minutes = wither / 60;

@@ -9,20 +9,17 @@ import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
 import lombok.Getter;
-import lombok.Setter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.addon.*;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
-import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
@@ -35,16 +32,16 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.*;
 
 public class Arena {
+
     @Getter
     private final Game game;
-    @Getter
-    private final ScoreBoard scoreBoard;
+    // 需要刷新的游戏资讯类 优先级较高
     @Getter
     private PlayerGameStorage playerGameStorage;
     @Getter
     private DeathMode deathMode;
     @Getter
-    private HealthLevel healthLevel;
+    private HealthBar healthBar;
     @Getter
     private NoBreakBed noBreakBed;
     @Getter
@@ -52,38 +49,46 @@ public class Arena {
     @Getter
     private Holographic holographic;
     @Getter
-    private InvisibilityPlayer invisiblePlayer;
+    private Graffiti graffiti;
     @Getter
-    private LobbyBlock lobbyBlock;
+    private RandomEvents randomEventsManager;
+    @Getter
+    private WitherBow witherBow;
     @Getter
     private Respawn respawn;
     @Getter
+    private HealthLevel healthLevel;
+    @Getter
+    private InvisibilityPlayer invisiblePlayer;
+
+    @Getter
     private Actionbar actionbar;
     @Getter
-    private Graffiti graffiti;
+    private ScoreBoard scoreBoard;
+    @Getter
+    private TimeTask timeTask;
+
+    //
+    @Getter
+    private AntiBedGapBreak antiBedGapBreak;
+    @Getter
+    private LobbyBlock lobbyBlock;
     @Getter
     private GameChest gameChest;
     @Getter
     private Rejoin rejoin;
-    @Getter
-    private TimeTask timeTask;
     private List<BukkitTask> gameTasks;
     @Getter
     private Shop shop;
     @Getter
     private boolean isOver = false;
     @Getter
-    @Setter
-    private boolean enabledWitherBow = false;
-    @Getter
     private KillStreak killStreak;
-    // 用于获取最终结算时 排列玩家击杀数 标题“最终击杀”的队伍颜色...==
+    // 用于获取最终结算时 排列玩家击杀数 标题"最终击杀"的队伍颜色...
     @Getter
     private Map<String, Team> playerNameTeams = new HashMap<>();
     @Getter
-    private RandomEvents randomEventsManager;
-    // 破坏队友脚下方块次数
-    private HashMap<Player, Integer> friendlyBreakCount;
+    private FriendlyBreak friendlyBreak;
     // 随机传送
     @Getter
     private TeleportTask teleportTask;
@@ -97,28 +102,35 @@ public class Arena {
         gameWorld.setGameRuleValue("doFireTick", "false");
         gameWorld.setGameRuleValue("doMobSpawning", "false");
         gameTasks = new ArrayList<>();
+
+        // 需要刷新的游戏资讯类 优先级较高
         playerGameStorage = new PlayerGameStorage(this);
-        scoreBoard = new ScoreBoard(this);
         deathMode = new DeathMode(this);
-        healthLevel = new HealthLevel(this);
+        healthBar = new HealthBar(this);
         noBreakBed = new NoBreakBed(this);
         resourceUpgrade = new ResourceUpgrade(this);
         holographic = new Holographic(this, resourceUpgrade);
-        invisiblePlayer = new InvisibilityPlayer(this);
-        lobbyBlock = new LobbyBlock(this);
-        respawn = new Respawn(this);
-        actionbar = new Actionbar(this);
         graffiti = new Graffiti(this);
+        randomEventsManager = new RandomEvents(this);
+        witherBow = new WitherBow(this);
+        respawn = new Respawn(this);
+        healthLevel = new HealthLevel(this);
+        invisiblePlayer = new InvisibilityPlayer(this);
+
+        // 游戏资讯刷新 务必将其放在靠后位置 否则容易空指针
+        actionbar = new Actionbar(this);
+        scoreBoard = new ScoreBoard(this);
+        timeTask = new TimeTask(this);
+        //
+        antiBedGapBreak = new AntiBedGapBreak(this);
+        lobbyBlock = new LobbyBlock(this);
         gameChest = new GameChest(this);
         rejoin = new Rejoin(this);
         if (Main.getInstance().isEnabledCitizens()) {
             shop = new Shop(this);
         }
-        timeTask = new TimeTask(this);
         killStreak = new KillStreak(this);
-        randomEventsManager = new RandomEvents(this);
-
-        friendlyBreakCount = new HashMap<>();
+        friendlyBreak = new FriendlyBreak(this);
         teleportTask = new TeleportTask(this);
     }
 
@@ -127,11 +139,11 @@ public class Arena {
     }
 
     public void onTargetBlockDestroyed(BedwarsTargetBlockDestroyedEvent e) {
-        if (!isAlivePlayer(e.getPlayer())) {
+        Player player = e.getPlayer();
+        if (!isAlivePlayer(player)) {
             return;
         }
         Map<String, Integer> beds = playerGameStorage.getPlayerBeds();
-        Player player = e.getPlayer();
         beds.put(player.getName(), beds.getOrDefault(player.getName(), 0) + 1);
         holographic.onTargetBlockDestroyed(e);
         scoreBoard.updateScoreboard();
@@ -139,9 +151,6 @@ public class Arena {
 
     public void onDeath(Player player) {
         invisiblePlayer.removePlayer(player);
-        if (!isGamePlayer(player)) {
-            return;
-        }
         Map<String, Integer> dies = playerGameStorage.getPlayerDies();
         dies.put(player.getName(), dies.getOrDefault(player.getName(), 0) + 1);
         PlaySound.playSound(player, Config.play_sound_sound_death);
@@ -150,73 +159,41 @@ public class Arena {
     }
 
     public void onDamage(EntityDamageEvent e) {
-        respawn.onDamage(e);
+        if (isAlivePlayer(game, (Player) e.getEntity())) {
+            respawn.onDamage(e);
+        }
     }
 
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        respawn.onPlayerAttack(e);
+        if (isAlivePlayer(game, (Player) e.getEntity()) && isAlivePlayer(game, (Player) e.getDamager())) {
+            respawn.onPlayerAttack(e);
+        }
     }
 
     public void onInteractEntity(PlayerInteractEntityEvent e) {
-        graffiti.onInteractEntity(e);
+        if (isAlivePlayer(game, e.getPlayer())) {
+            graffiti.onInteractEntity(e);
+        }
     }
 
     public void onInteract(PlayerInteractEvent e) {
-        gameChest.onInteract(e);
+        if (isAlivePlayer(game, e.getPlayer())) {
+            gameChest.onInteract(e);
+        }
     }
 
     public void onHangingBreak(HangingBreakEvent e) {
         graffiti.onHangingBreak(e);
     }
 
-    public void onFriendlyBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        Team team = game.getPlayerTeam(player);
-        if (team == null) return;
-        friendlyBreakCount.put(player, friendlyBreakCount.getOrDefault(player, 0) + 1);
-        int friendlyBreaks = friendlyBreakCount.getOrDefault(player, 0);
-        int max_breaks = Config.friendlybreak_kick_max_breaks;
-
-        player.sendMessage(ColorUtil.color(Config.friendlybreak_warning_message
-                .replace("{bwprefix}", Config.bwrelPrefix)
-                .replace("{breakcount}", String.valueOf(friendlyBreaks))
-                .replace("{max_breaks}", String.valueOf(max_breaks))));
-
-        if (friendlyBreaks >= max_breaks) {
-            friendlyBreakCount.remove(player);
-            player.kickPlayer(ColorUtil.color(Config.friendlybreak_kick_message
-                    .replace("{bwprefix}", Config.bwrelPrefix)
-                    .replace("{breakcount}", String.valueOf(friendlyBreaks))
-                    .replace("{max_breaks}", String.valueOf(max_breaks))));
-
-            String broadCastMessage = ColorUtil.color(Config.friendlybreak_broadcast_message
-                    .replace("{bwprefix}", Config.bwrelPrefix)
-                    .replace("{breakcount}", String.valueOf(friendlyBreaks))
-                    .replace("{max_breaks}", String.valueOf(max_breaks))
-                    .replace("{playername}", player.getName())
-                    .replace("{playerdisplayname}", player.getDisplayName())
-                    .replace("{team}", team.getDisplayName())
-                    .replace("{teamcolor}", team.getChatColor().toString()));
-            for (Player gamePlayer : game.getPlayers()) {
-                gamePlayer.sendMessage(broadCastMessage);
-            }
-        }
-    }
-
     public void onRespawn(Player player) {
-        if (!isGamePlayer(player)) {
-            return;
-        }
         respawn.onRespawn(player, false);
     }
 
     public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
-        if (!isGamePlayer(e.getPlayer()) || !isGamePlayer(e.getKiller())) {
-            return;
-        }
         Player player = e.getPlayer();
         Player killer = e.getKiller();
-        if (!game.getPlayers().contains(player) || !game.getPlayers().contains(killer) || game.isSpectator(player) || game.isSpectator(killer)) {
+        if (!isAlivePlayer(player) || !isAlivePlayer(killer)) {
             return;
         }
         Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
@@ -302,11 +279,12 @@ public class Arena {
                                 "&d&l全&e&l场&c&l最&b&l佳"));
             }, baseDelay + 2 * delayBetween);
 
-            for (Player player : game.getPlayers()) {
-                for (String msg : Config.overstats_message) {
-                    if (msg.isEmpty()) break;
-                    msg = PlaceholderAPIUtil.setPlaceholders(player, msg);
-                    player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list.toString()).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
+            if (!Config.overstats_message.isEmpty()) {
+                for (Player player : game.getPlayers()) {
+                    for (String msg : Config.overstats_message) {
+                        msg = PlaceholderAPIUtil.setPlaceholders(player, msg);
+                        player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list.toString()).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
+                    }
                 }
             }
         }
@@ -314,36 +292,48 @@ public class Arena {
 
     public void onEnd() {
         gameTasks.forEach(BukkitTask::cancel);
-        noBreakBed.onEnd();
-        holographic.remove();
-        if (Main.getInstance().isEnabledCitizens()) {
-            shop.remove();
-        }
-        invisiblePlayer.onEnd();
-        graffiti.reset();
-        gameChest.clearChest();
-        teleportTask.stopTask();
+        gameTasks = null;
+
         playerGameStorage = null;
         deathMode = null;
-        healthLevel = null;
-        resourceUpgrade = null;
-        lobbyBlock = null;
-        respawn = null;
-        gameTasks = null;
-        actionbar = null;
-        invisiblePlayer = null;
+        healthBar.onEnd();
+        healthBar = null;
+        noBreakBed.onEnd();
         noBreakBed = null;
+        resourceUpgrade = null;
+        holographic.remove();
         holographic = null;
-        gameChest = null;
-        shop = null;
+        graffiti.reset();
         graffiti = null;
-        rejoin = null;
-        timeTask = null;
-        playerNameTeams = null;
-        killStreak = null;
-        friendlyBreakCount = null;
-        teleportTask = null;
         randomEventsManager = null;
+        witherBow.onEnd();
+        witherBow = null;
+        respawn = null;
+        healthLevel = null;
+        invisiblePlayer.onEnd();
+        invisiblePlayer = null;
+
+        actionbar = null;
+        scoreBoard = null;
+        timeTask = null;
+
+        antiBedGapBreak.onEnd();
+        antiBedGapBreak = null;
+        lobbyBlock = null;
+        gameChest.clearChest();
+        gameChest = null;
+        rejoin = null;
+        if (Main.getInstance().isEnabledCitizens()) {
+            shop.remove();
+            shop = null;
+        }
+        killStreak = null;
+        playerNameTeams = null;
+        friendlyBreak.onEnd();
+        friendlyBreak = null;
+        teleportTask.stopTask();
+        teleportTask = null;
+
         Main.getInstance().getArenaManager().removeArena(game.getName());
     }
 
@@ -393,26 +383,24 @@ public class Arena {
         }
     }
 
-    private Boolean isGamePlayer(Player player) {
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) {
-            return false;
-        }
-        if (!game.getName().equals(this.game.getName())) {
-            return false;
-        }
-        return !game.isSpectator(player);
+    public Boolean isGame(Game game) {
+        return game != null && game.getName().equals(this.game.getName());
     }
 
-    private Boolean isAlivePlayer(Player player) {
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) {
-            return false;
-        }
-        if (!game.getName().equals(this.game.getName())) {
-            return false;
-        }
-        return !BedwarsUtil.isSpectator(game, player);
+    public Boolean isGamePlayer(Player player) {
+        return isGame(BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player)) && !this.game.isSpectator(player);
+    }
+
+    public Boolean isAlivePlayer(Player player) {
+        return isGame(BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player)) && !BedwarsUtil.isSpectator(this.game, player);
+    }
+
+    public Boolean isGamePlayer(Game game, Player player) {
+        return isGame(game) && !this.game.isSpectator(player);
+    }
+
+    public Boolean isAlivePlayer(Game game, Player player) {
+        return isGame(game) && !BedwarsUtil.isSpectator(this.game, player);
     }
 
     // 哈基米给的 我实在没能想出来花雨庭怎么算出来的KDA

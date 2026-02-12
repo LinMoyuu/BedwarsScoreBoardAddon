@@ -164,13 +164,7 @@ public class Respawn {
     }
 
     public void onDamage(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player)) {
-            return;
-        }
         Player player = (Player) e.getEntity();
-        if (!game.isInGame(player)) {
-            return;
-        }
         if (!protected_time.containsKey(player)) {
             return;
         }
@@ -183,14 +177,8 @@ public class Respawn {
     }
 
     public void onPlayerAttack(EntityDamageByEntityEvent e) {
-        if (!(e.getEntity() instanceof Player) || !(e.getDamager() instanceof Player)) {
-            return;
-        }
         Player player = (Player) e.getEntity();
         Player damager = (Player) e.getDamager();
-        if (!game.isInGame(player) || !game.isInGame(damager)) {
-            return;
-        }
 
         int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time * 1000 : 0;
 

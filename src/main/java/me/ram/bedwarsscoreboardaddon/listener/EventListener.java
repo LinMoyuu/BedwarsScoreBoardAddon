@@ -1,12 +1,6 @@
 package me.ram.bedwarsscoreboardaddon.listener;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.*;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import io.github.bedwarsrel.BedwarsRel;
-import io.github.bedwarsrel.events.BedwarsGameStartedEvent;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import io.github.bedwarsrel.game.Team;
@@ -16,24 +10,19 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.edit.EditGame;
 import me.ram.bedwarsscoreboardaddon.events.BedwarsTeamDeadEvent;
-import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerRespawnEvent;
 import me.ram.bedwarsscoreboardaddon.menu.MenuManager;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
-import me.ram.bedwarsscoreboardaddon.utils.ScoreboardUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -47,10 +36,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.Optional;
 
 public class EventListener implements Listener {
-
-    public EventListener() {
-        onPacketReceiving();
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
@@ -184,7 +169,7 @@ public class EventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDamageByEntity(EntityDamageByEntityEvent e) {
+    public void onInvisDamageByEntity(EntityDamageByEntityEvent e) {
         if (!Config.invisibility_player_enabled) {
             return;
         }
@@ -313,18 +298,16 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent e) {
-        Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
-            arena.onInteract(e);
-        });
+        Player player = e.getPlayer();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
+            Main.getInstance().getArenaManager().getArenas().get(game.getName()).onInteract(e);
+        }
         if (e.isCancelled()) {
             return;
         }
         if (e.getItem() == null || !(e.getItem().getType() == Material.WATER_BUCKET || e.getItem().getType() == Material.LAVA_BUCKET) || e.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-        Player player = e.getPlayer();
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) {
             return;
         }
         if (BedwarsUtil.isSpectator(game, player) || player.getGameMode() == GameMode.SPECTATOR) {
@@ -335,9 +318,12 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteractEntity(PlayerInteractEntityEvent e) {
-        Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
-            arena.onInteractEntity(e);
-        });
+        Player player = e.getPlayer();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
+            Main.getInstance().getArenaManager().getArenas().get(game.getName()).onInteractEntity(e);
+        }
     }
 
     @EventHandler
@@ -355,16 +341,24 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamage(EntityDamageEvent e) {
-        Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
-            arena.onDamage(e);
-        });
+        if (!(e.getEntity() instanceof Player)) return;
+        Player player = (Player) e.getEntity();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
+            Main.getInstance().getArenaManager().getArenas().get(game.getName()).onDamage(e);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDamage(EntityDamageByEntityEvent e) {
-        Main.getInstance().getArenaManager().getArenas().values().forEach(arena -> {
-            arena.onEntityDamageByEntity(e);
-        });
+    public void onDamageEntity(EntityDamageByEntityEvent e) {
+        if (!(e.getEntity() instanceof Player) || !(e.getDamager() instanceof Player)) return;
+        Player player = (Player) e.getEntity();
+        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
+        if (game == null) return;
+        if (Main.getInstance().getArenaManager().getArenas().containsKey(game.getName())) {
+            Main.getInstance().getArenaManager().getArenas().get(game.getName()).onEntityDamageByEntity(e);
+        }
     }
 
     @EventHandler
@@ -393,145 +387,6 @@ public class EventListener implements Listener {
         Player player = (Player) e.getPlayer();
         MenuManager man = Main.getInstance().getMenuManager();
         man.removePlayer(player);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onFriendlyBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        if (!Config.friendlybreak_kick_enabled || BedwarsRel.getInstance().getBooleanConfig("friendlybreak", true))
-            return;
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) return;
-        Team playerTeam = game.getPlayerTeam(player);
-        if (playerTeam == null) return;
-        Arena arena = Main.getInstance().getArenaManager().getArenas().get(game.getName());
-        if (arena == null) return;
-        for (Player teamPlayer : playerTeam.getPlayers()) {
-            if (player.equals(teamPlayer)) {
-                continue;
-            }
-
-            if (teamPlayer.getLocation().getBlock().getRelative(BlockFace.DOWN).equals(event.getBlock())) {
-                arena.onFriendlyBreak(event);
-                break;
-            }
-        }
-    }
-
-    // 生命值刷新
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHbEntityDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-
-        Player player = (Player) event.getEntity();
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) return;
-        int health = (int) Math.max(0, Math.ceil((player.getHealth() - event.getFinalDamage())));
-        for (Player target : game.getPlayers()) {
-            if (target == null || !target.isOnline()) {
-                continue;
-            }
-            ScoreboardUtil.sendHealthValuePacket(target, player, health);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHbEntityRegain(EntityRegainHealthEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-
-        Player player = (Player) event.getEntity();
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) return;
-        int health = (int) Math.ceil(player.getHealth() + event.getAmount());
-        for (Player target : game.getPlayers()) {
-            if (target == null || !target.isOnline()) {
-                continue;
-            }
-            ScoreboardUtil.sendHealthValuePacket(target, player, health);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHbRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) return;
-        for (Player target : game.getPlayers()) {
-            if (target == null || !target.isOnline()) {
-                continue;
-            }
-            ScoreboardUtil.sendHealthValuePacket(target, player, (int) Math.ceil(player.getHealth()));
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHbScoreboardRespawn(BoardAddonPlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        Game game = event.getGame();
-        if (game == null) return;
-        for (Player target : game.getPlayers()) {
-            if (target == null || !target.isOnline()) {
-                continue;
-            }
-            ScoreboardUtil.sendHealthValuePacket(target, player, (int) Math.ceil(player.getHealth()));
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHbStarted(BedwarsGameStartedEvent event) {
-        Game game = event.getGame();
-        if (game == null) return;
-        for (Player player : game.getPlayers()) {
-            if (player == null || !player.isOnline()) {
-                continue;
-            }
-            int currentHealth = (int) Math.max(0, Math.ceil(player.getHealth()));
-
-            for (Player target : game.getPlayers()) {
-                if (target != null && target.isOnline() && !target.equals(player)) {
-                    ScoreboardUtil.sendHealthValuePacket(target, player, currentHealth);
-                }
-            }
-            ScoreboardUtil.sendHealthValuePacket(player, player, currentHealth);
-        }
-    }
-
-    // 缝隙挖床
-    private void onPacketReceiving() {
-        PacketListener packetListener = new PacketAdapter(Main.getInstance(), ListenerPriority.HIGHEST, PacketType.Play.Client.BLOCK_DIG, PacketType.Play.Client.WINDOW_CLICK) {
-            public void onPacketReceiving(PacketEvent e) {
-                if (!Config.anti_gap_breakbed_enabled) return;
-                if (e.getPacketType() != PacketType.Play.Client.BLOCK_DIG) {
-                    return;
-                }
-                Player player = e.getPlayer();
-                PacketContainer packet = e.getPacket();
-                EnumWrappers.PlayerDigType digType = packet.getPlayerDigTypes().read(0);
-                if (digType != EnumWrappers.PlayerDigType.STOP_DESTROY_BLOCK) {
-                    return;
-                }
-                BlockPosition pos = packet.getBlockPositionModifier().read(0);
-                Location blockLocation = pos.toLocation(player.getWorld());
-
-                Block brokenBlock = blockLocation.getBlock();
-                if (brokenBlock.getType() != Material.BED_BLOCK) {
-                    return;
-                }
-                Block targetBlock = player.getTargetBlock(null, Config.anti_gap_breakbed_distance);
-
-                String gap_break_message = Config.anti_gap_breakbed_message;
-                if (targetBlock != null && !targetBlock.equals(brokenBlock)) {
-                    e.setCancelled(true);
-                    brokenBlock.getState().update(true);
-                    if (!gap_break_message.isEmpty()) player.sendMessage(gap_break_message);
-                }
-            }
-        };
-        ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
     }
 
     private Location toLocation(String loc) {

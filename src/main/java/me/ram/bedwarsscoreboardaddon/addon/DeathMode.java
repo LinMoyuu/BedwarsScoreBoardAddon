@@ -4,7 +4,6 @@ import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.Team;
 import lombok.Getter;
-import lombok.Setter;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonDeathModeEvent;
@@ -21,7 +20,6 @@ public class DeathMode {
     @Getter
     private String deathmode_time = "00:00";
     @Getter
-    @Setter
     private boolean enabledDeathMode = false;
 
     public DeathMode(Arena arena) {
@@ -39,7 +37,7 @@ public class DeathMode {
             if (deathModeEvent.isCancelled()) {
                 return;
             }
-            setEnabledDeathMode(true);
+            enabledDeathMode = true;
             for (Player player : game.getPlayers()) {
                 if (!Config.deathmode_title.isEmpty() || !Config.deathmode_subtitle.isEmpty()) {
                     Utils.sendTitle(player, 10, 80, 10, Config.deathmode_title, Config.deathmode_subtitle);

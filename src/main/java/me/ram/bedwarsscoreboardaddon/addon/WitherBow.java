@@ -4,24 +4,47 @@ import io.github.bedwarsrel.BedwarsRel;
 import io.github.bedwarsrel.events.BedwarsGameStartedEvent;
 import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
+import lombok.Getter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerShootWitherBowEvent;
-import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WitherBow implements Listener {
+
+    @Getter
+    private final Game game;
+    @Getter
+    private final Arena arena;
+    private final List<Listener> listeners;
+    @Getter
+    private boolean witherbowEnabled;
+
+    public WitherBow(Arena arena) {
+        this.arena = arena;
+        this.game = arena.getGame();
+        this.witherbowEnabled = false;
+        listeners = new ArrayList<>();
+        listeners.add(this);
+        Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+    }
 
     @EventHandler
     public void onShoot(EntityShootBowEvent e) {
@@ -32,10 +55,7 @@ public class WitherBow implements Listener {
             return;
         }
         Player player = (Player) e.getEntity();
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) return;
-        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-        if (arena == null || game.getState() != GameState.RUNNING || BedwarsUtil.isSpectator(game, player) || !arena.isEnabledWitherBow()) {
+        if (arena == null || game.getState() != GameState.RUNNING || !arena.isAlivePlayer(player) || !this.isWitherbowEnabled()) {
             return;
         }
         WitherSkull skull = player.launchProjectile(WitherSkull.class, e.getProjectile().getVelocity().multiply(0.3));
@@ -66,16 +86,7 @@ public class WitherBow implements Listener {
         }
         Player shooter = (Player) skull.getShooter();
         Player player = (Player) entity;
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) {
-            return;
-        }
-        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-        if (arena == null || !arena.isEnabledWitherBow()) {
-            return;
-        }
-        if (BedwarsUtil.isSpectator(game, player) || BedwarsUtil.isSpectator(game, shooter)) {
-            e.setCancelled(true);
+        if (arena == null || game.getState() != GameState.RUNNING || !arena.isAlivePlayer(player) || !arena.isAlivePlayer(shooter) || !this.isWitherbowEnabled()) {
             return;
         }
         if (game.getPlayerTeam(shooter).getName().equals(game.getPlayerTeam(player).getName())) {
@@ -87,13 +98,37 @@ public class WitherBow implements Listener {
     }
 
     @EventHandler
-    public void onStarted(BedwarsGameStartedEvent e) {
-        Game game = e.getGame();
+    public void onGameStarted(BedwarsGameStartedEvent event) {
+        if (!arena.isGame(event.getGame())) return;
         if (Config.witherbow_enabled && Config.witherbow_tips_on_start) {
             int enableAfterSec = BedwarsRel.getInstance().getMaxLength() - Config.witherbow_gametime;
             for (Player player : game.getPlayers()) {
                 player.sendMessage(ColorUtil.color(WitherBow.formatMessage(enableAfterSec)));
             }
+        }
+    }
+
+    public void checkWitherBow() {
+        if (!Config.witherbow_enabled || this.witherbowEnabled) return;
+        int enableAfterSec = (game.getTimeLeft() - Config.witherbow_gametime);
+
+        if (Config.witherbow_remind_times != null && !Config.witherbow_remind_times.isEmpty()) {
+            if (Config.witherbow_remind_times.contains(enableAfterSec)) {
+                for (Player player : game.getPlayers()) {
+                    player.sendMessage(WitherBow.formatMessage(enableAfterSec));
+                }
+            }
+        }
+
+        if (game.getTimeLeft() <= Config.witherbow_gametime) {
+            if (!Config.witherbow_title.isEmpty() || !Config.witherbow_subtitle.isEmpty()) {
+                game.getPlayers().forEach(player -> Utils.sendTitle(player, 10, 50, 10, Config.witherbow_title, Config.witherbow_subtitle));
+            }
+            if (!Config.witherbow_message.isEmpty()) {
+                game.getPlayers().forEach(player -> player.sendMessage(Config.witherbow_message.replace("{bwprefix}", Config.bwrelPrefix)));
+            }
+            PlaySound.playSound(game, Config.play_sound_sound_enable_witherbow);
+            this.witherbowEnabled = true;
         }
     }
 
@@ -125,5 +160,9 @@ public class WitherBow implements Listener {
                 .replace("{unit}", unit);
 
         return ColorUtil.color(formatted);
+    }
+
+    public void onEnd() {
+        listeners.forEach(HandlerList::unregisterAll);
     }
 }
