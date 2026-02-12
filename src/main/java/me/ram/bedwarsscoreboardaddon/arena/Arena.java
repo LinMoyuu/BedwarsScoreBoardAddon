@@ -327,6 +327,7 @@ public class Arena {
             shop.remove();
             shop = null;
         }
+        killStreak.onEnd();
         killStreak = null;
         playerNameTeams = null;
         friendlyBreak.onEnd();
