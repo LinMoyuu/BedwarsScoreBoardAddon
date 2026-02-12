@@ -41,19 +41,20 @@ public class KillStreak implements Listener {
 
     @EventHandler
     public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
+        Player player = e.getPlayer();
+        Player killer = e.getKiller();
         if (e.getPlayer() == null || e.getKiller() == null) {
             return;
         }
-        Player killer = e.getKiller();
-        Player player = e.getPlayer();
-        Game game = e.getGame();
+        if (!arena.isGamePlayer(game, player) || !arena.isGamePlayer(game, killer)) {
+            return;
+        }
         if (game.getState() != GameState.RUNNING) {
             return;
         }
         if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
             return;
         }
-        Arena arena = Main.getInstance().getArenaManager().getArena(e.getGame().getName());
         int killStreak = arena.getKillStreak().getKillStreaks(killer.getUniqueId());
         boolean needSendTitle = !BedwarsUtil.isXpMode(game) || BedwarsUtil.isXpMode(game) && BedwarsUtil.getPlayerXP(game, player) == 0;
 
