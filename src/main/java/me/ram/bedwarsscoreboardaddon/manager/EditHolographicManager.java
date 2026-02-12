@@ -20,7 +20,7 @@ public class EditHolographicManager {
     private final Map<Player, List<HolographicAPI>> holos;
 
     public EditHolographicManager() {
-        holos = new HashMap<Player, List<HolographicAPI>>();
+        holos = new HashMap<>();
     }
 
     public void displayGameLocation(Player player, String g) {

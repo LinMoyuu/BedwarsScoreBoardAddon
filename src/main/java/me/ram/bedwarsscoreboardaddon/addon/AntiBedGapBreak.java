@@ -44,7 +44,7 @@ public class AntiBedGapBreak {
                     return;
                 }
                 Player player = e.getPlayer();
-                if (!arena.isGamePlayer(player))
+                if (!arena.isGamePlayer(game, player))
                     return;
                 PacketContainer packet = e.getPacket();
                 EnumWrappers.PlayerDigType digType = packet.getPlayerDigTypes().read(0);

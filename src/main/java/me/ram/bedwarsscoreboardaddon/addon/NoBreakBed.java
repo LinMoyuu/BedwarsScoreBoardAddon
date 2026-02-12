@@ -11,7 +11,6 @@ import lombok.Getter;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
-import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -76,7 +75,7 @@ public class NoBreakBed {
                     return;
                 }
                 Player player = e.getPlayer();
-                if (BedwarsUtil.isSpectator(game, player) || game.getState() != GameState.RUNNING) {
+                if (arena.isAlivePlayer(game, player) || game.getState() != GameState.RUNNING) {
                     return;
                 }
                 if (!bre && e.getPacketType() == PacketType.Play.Client.BLOCK_DIG) {
