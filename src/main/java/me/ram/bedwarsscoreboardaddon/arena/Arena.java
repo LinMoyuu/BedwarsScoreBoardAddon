@@ -35,6 +35,8 @@ public class Arena {
 
     @Getter
     private final Game game;
+    @Getter
+    private boolean isOver;
     //
     @Getter
     private PlayerGameStorage playerGameStorage;
@@ -96,6 +98,7 @@ public class Arena {
     public Arena(Game game) {
         Main.getInstance().getArenaManager().addArena(game.getName(), this);
         this.game = game;
+        this.isOver = false;
         World gameWorld = game.getRegion().getWorld();
         gameWorld.setGameRuleValue("doDaylightCycle", "false");
         gameWorld.setGameRuleValue("doWeatherCycle", "false");
@@ -212,13 +215,17 @@ public class Arena {
     }
 
     public void onOver(BedwarsGameOverEvent e) {
+        isOver = true;
         // 刷新...
         timeTask.refresh();
         Bukkit.getScheduler().runTaskLater(Main.getInstance(), scoreBoard::updateScoreboard, 20L);
         // 恢复边界
         deathMode.onOver();
+        // 战绩结算
         if (Config.overstats_enabled && e.getWinner() != null) {
             Team winner = e.getWinner();
+
+            // 计算击杀数排名
             Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
             Map<Integer, List<String>> player_kills = new HashMap<>();
             totalkills.forEach((name, kills) -> {
@@ -229,23 +236,55 @@ public class Arena {
             List<Integer> kills_top = new ArrayList<>(player_kills.keySet());
             Collections.sort(kills_top);
             Collections.reverse(kills_top);
-            List<String> player_rank_name = new ArrayList<>();
-            List<Integer> player_rank_kills = new ArrayList<>();
+            List<String> player_kill_rank_name = new ArrayList<>();
+            List<Integer> player_kill_rank_kills = new ArrayList<>();
             for (Integer kills : kills_top) {
                 for (String name : player_kills.get(kills)) {
-                    if (player_rank_name.size() < 3) {
-                        player_rank_name.add(name);
-                        player_rank_kills.add(kills);
+                    if (player_kill_rank_name.size() < 3) {
+                        player_kill_rank_name.add(name);
+                        player_kill_rank_kills.add(kills);
                     } else {
                         break;
                     }
                 }
             }
-            int size = player_rank_name.size();
-            for (int i = 0; i < 3 - size; i++) {
-                player_rank_name.add("无");
-                player_rank_kills.add(0);
+
+            // 计算KDA
+            Set<String> allPlayers = new HashSet<>();
+            allPlayers.addAll(totalkills.keySet());
+            allPlayers.addAll(playerGameStorage.getPlayerBeds().keySet());
+            Map<String, Double> playerKdas = new HashMap<>();
+            for (String playerName : allPlayers) {
+                double kda = calculateSpecialKda(playerName);
+                playerKdas.put(playerName, kda);
             }
+
+            // 按KDA排序获取前三名
+            List<Map.Entry<String, Double>> sortedKdas = new ArrayList<>(playerKdas.entrySet());
+            sortedKdas.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+            List<String> player_kda_rank_name = new ArrayList<>();
+            List<Double> player_kda_rank_kda = new ArrayList<>();
+
+            for (int i = 0; i < Math.min(3, sortedKdas.size()); i++) {
+                Map.Entry<String, Double> entry = sortedKdas.get(i);
+                player_kda_rank_name.add(entry.getKey());
+                player_kda_rank_kda.add(entry.getValue());
+            }
+
+            // 填充不足3人的空位
+            int killSize = player_kill_rank_name.size();
+            for (int i = 0; i < 3 - killSize; i++) {
+                player_kill_rank_name.add("无");
+                player_kill_rank_kills.add(0);
+            }
+
+            int kdaSize = player_kda_rank_name.size();
+            for (int i = 0; i < 3 - kdaSize; i++) {
+                player_kda_rank_name.add("无");
+                player_kda_rank_kda.add(0.0);
+            }
+
             StringBuilder win_team_player_list = new StringBuilder();
             for (Player player : winner.getPlayers()) {
                 win_team_player_list.append((win_team_player_list.length() > 0) ? ", " + player.getName() : player.getName());
@@ -262,21 +301,22 @@ public class Arena {
             Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
                     Utils.sendTitle(player, 20, 40, 20,
                             "&c最高连杀： " + killStreak.getKillStreaks(player.getUniqueId()),
-                            "&eKDA： &c" + calculateSpecialKda(player))), baseDelay + delayBetween);
+                            "&eKDA： &c" + calculateSpecialKda(player.getName()))), baseDelay + delayBetween);
 
             // 第三阶段
             Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-                String firstKillerName = player_rank_name.get(0);
-                ChatColor firstKillerTeamColor = ChatColor.WHITE;
-                Team firstKillerTeam = playerNameTeams.get(firstKillerName);
-                if (firstKillerTeam != null) {
-                    firstKillerTeamColor = firstKillerTeam.getChatColor();
+                String firstKdaPlayerName = player_kda_rank_name.get(0);
+
+                ChatColor firstKdaPlayerTeamColor = ChatColor.WHITE;
+                Team firstKdaPlayerTeam = playerNameTeams.get(firstKdaPlayerName);
+                if (firstKdaPlayerTeam != null) {
+                    firstKdaPlayerTeamColor = firstKdaPlayerTeam.getChatColor();
                 }
 
-                final ChatColor finalColor = firstKillerTeamColor;
+                final ChatColor finalColor = firstKdaPlayerTeamColor;
                 game.getPlayers().forEach(player ->
                         Utils.sendTitle(player, 20, 40, 20,
-                                finalColor + firstKillerName,
+                                finalColor + firstKdaPlayerName,
                                 "&d&l全&e&l场&c&l最&b&l佳"));
             }, baseDelay + 2 * delayBetween);
 
@@ -284,7 +324,21 @@ public class Arena {
                 for (Player player : game.getPlayers()) {
                     for (String msg : Config.overstats_message) {
                         msg = PlaceholderAPIUtil.setPlaceholders(player, msg);
-                        player.sendMessage(msg.replace("{color}", winner.getChatColor() + "").replace("{win_team}", winner.getName()).replace("{win_team_players}", win_team_player_list.toString()).replace("{first_1_kills_player}", player_rank_name.get(0)).replace("{first_2_kills_player}", player_rank_name.get(1)).replace("{first_3_kills_player}", player_rank_name.get(2)).replace("{first_1_kills}", player_rank_kills.get(0) + "").replace("{first_2_kills}", player_rank_kills.get(1) + "").replace("{first_3_kills}", player_rank_kills.get(2) + ""));
+                        player.sendMessage(msg.replace("{color}", winner.getChatColor() + "")
+                                .replace("{win_team}", winner.getName())
+                                .replace("{win_team_players}", win_team_player_list.toString())
+                                .replace("{first_1_kills_player}", player_kill_rank_name.get(0))
+                                .replace("{first_2_kills_player}", player_kill_rank_name.get(1))
+                                .replace("{first_3_kills_player}", player_kill_rank_name.get(2))
+                                .replace("{first_1_kills}", player_kill_rank_kills.get(0) + "")
+                                .replace("{first_2_kills}", player_kill_rank_kills.get(1) + "")
+                                .replace("{first_3_kills}", player_kill_rank_kills.get(2) + "")
+                                .replace("{first_1_kda_player}", player_kda_rank_name.get(0))
+                                .replace("{first_2_kda_player}", player_kda_rank_name.get(1))
+                                .replace("{first_3_kda_player}", player_kda_rank_name.get(2))
+                                .replace("{first_1_kda}", String.format("%.2f", player_kda_rank_kda.get(0)))
+                                .replace("{first_2_kda}", String.format("%.2f", player_kda_rank_kda.get(1)))
+                                .replace("{first_3_kda}", String.format("%.2f", player_kda_rank_kda.get(2))));
                     }
                 }
             }
@@ -405,43 +459,12 @@ public class Arena {
         return isGame(game) && !BedwarsUtil.isSpectator(this.game, player);
     }
 
-    // 哈基米给的 我实在没能想出来花雨庭怎么算出来的KDA
-    // “我正在玩一款游戏 9杀 1死 最高4连杀 5张床 请帮我想一想她是怎么得出我的KDA是34.0的”
-    // “所以，你在该场游戏中的数据很可能是：9次击杀、1次死亡和25次助攻。”
-    // “可我没有25次助攻”
-    // “让我们来做一个合理的推测：在这个游戏中，破坏一张床（Bed Destroyed）会被换算成等同于数次击杀（Kill）的分数。”
-    // 可能最终击杀分数也有影响？
 
-    /**
-     * 计算特殊模式下的KDA，其中“破床”有额外加分。
-     * <p>
-     * 在这个算法中：
-     * - 每次“击杀”得1分。
-     * - 每次“破床”得5分。
-     * - KDA = (总得分) / 死亡次数
-     * <p>
-     * //     * @param kills          击杀数。
-     * //     * @param deaths         死亡数。
-     * //     * @param bedsDestroyed  破床数。
-     *
-     * @return 计算出的KDA值。
-     */
+    // 疑似一张床5分, 但不除以死亡数...
 //    public static double calculateSpecialKda(int kills, int deaths, int bedsDestroyed) {
-    public double calculateSpecialKda(Player player) {
-        int kills = playerGameStorage.getPlayerTotalKills().getOrDefault(player.getName(), 0);
-        int deaths = playerGameStorage.getPlayerDies().getOrDefault(player.getName(), 0);
-        int bedsDestroyed = playerGameStorage.getPlayerBeds().getOrDefault(player.getName(), 0);
-        // 计算总分，破床数乘以5，然后加上击杀数
-        int totalScore = kills + (bedsDestroyed * 5);
-
-        // 为了避免除以零的错误，如果死亡数为0，KDA就等于总分
-        if (deaths == 0) {
-            return totalScore;
-        } else {
-            // 否则，KDA = 总分 / 死亡数
-            // 注意：需要将其中一个操作数转换为double，以确保结果是浮点数而不是整数
-            double rawKda = (double) totalScore / deaths;
-            return Math.round(rawKda * 100.0) / 100.0;
-        }
+    public double calculateSpecialKda(String playerName) {
+        int kills = playerGameStorage.getPlayerTotalKills().getOrDefault(playerName, 0);
+        int bedsDestroyed = playerGameStorage.getPlayerBeds().getOrDefault(playerName, 0);
+        return kills + (bedsDestroyed * 5);
     }
 }

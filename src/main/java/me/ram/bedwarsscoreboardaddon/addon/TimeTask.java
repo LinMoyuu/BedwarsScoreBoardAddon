@@ -91,7 +91,7 @@ public class TimeTask {
      */
     public void checkPlans() {
         // 如果游戏结束
-        if (game.isOverSet()) {
+        if (arena.isOver()) {
             clearPlanInfo();
             return;
         }
