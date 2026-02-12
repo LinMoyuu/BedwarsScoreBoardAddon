@@ -113,7 +113,7 @@ public class GiveItem implements Listener {
                     }
                 }
             } catch (Exception e) {
-                System.err.println("无法创建或给予物品: " + key);
+                Main.getInstance().getLogger().severe("无法创建或给予物品: " + key);
                 e.printStackTrace();
             }
         }
@@ -146,7 +146,7 @@ public class GiveItem implements Listener {
             }
             return armorPiece;
         } catch (Exception e) {
-            System.err.println("反序列化盔甲失败: " + armorType);
+            Main.getInstance().getLogger().severe("反序列化盔甲失败: " + armorType);
             e.printStackTrace();
             return null;
         }
