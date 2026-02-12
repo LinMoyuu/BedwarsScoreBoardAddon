@@ -35,7 +35,7 @@ public class Arena {
 
     @Getter
     private final Game game;
-    // 需要刷新的游戏资讯类 优先级较高
+    //
     @Getter
     private PlayerGameStorage playerGameStorage;
     @Getter
@@ -60,7 +60,7 @@ public class Arena {
     private HealthLevel healthLevel;
     @Getter
     private InvisibilityPlayer invisiblePlayer;
-
+    //
     @Getter
     private Actionbar actionbar;
     @Getter
@@ -68,7 +68,7 @@ public class Arena {
     @Getter
     private TimeTask timeTask;
 
-    //
+    // 缝隙拆床
     @Getter
     private AntiBedGapBreak antiBedGapBreak;
     @Getter
@@ -80,13 +80,13 @@ public class Arena {
     private List<BukkitTask> gameTasks;
     @Getter
     private Shop shop;
-    @Getter
-    private boolean isOver = false;
+    // 连杀
     @Getter
     private KillStreak killStreak;
     // 用于获取最终结算时 排列玩家击杀数 标题"最终击杀"的队伍颜色...
     @Getter
     private Map<String, Team> playerNameTeams = new HashMap<>();
+    // 恶意破坏方块
     @Getter
     private FriendlyBreak friendlyBreak;
     // 随机传送
@@ -212,10 +212,11 @@ public class Arena {
     }
 
     public void onOver(BedwarsGameOverEvent e) {
-        if (!e.getGame().getName().equals(this.game.getName())) return;
-        isOver = true;
+        // 刷新...
         timeTask.refresh();
         Bukkit.getScheduler().runTaskLater(Main.getInstance(), scoreBoard::updateScoreboard, 20L);
+        // 恢复边界
+        deathMode.onOver();
         if (Config.overstats_enabled && e.getWinner() != null) {
             Team winner = e.getWinner();
             Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();

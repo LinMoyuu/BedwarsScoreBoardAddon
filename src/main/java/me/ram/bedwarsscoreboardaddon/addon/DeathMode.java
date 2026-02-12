@@ -22,9 +22,15 @@ public class DeathMode {
     @Getter
     private boolean enabledDeathMode = false;
 
+    private WorldBorder originalWorldBorder;
+    private Double originalSize;
+    private Location originalCenter;
+
+
     public DeathMode(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
+        saveOriginalWorldBorder();
     }
 
     public void checkDeathMode() {
@@ -93,5 +99,30 @@ public class DeathMode {
 
         // 设置缩小
         border.setSize(targetSize, shrinkDurationInSeconds);
+    }
+
+    private void saveOriginalWorldBorder() {
+        World world = game.getRegion().getWorld();
+        WorldBorder border = world.getWorldBorder();
+
+        originalSize = border.getSize();
+        originalCenter = new Location(world, border.getCenter().getX(), 0, border.getCenter().getZ());
+        originalWorldBorder = border;
+    }
+
+    public void restoreOriginalWorldBorder() {
+        if (originalWorldBorder != null && originalSize != null && originalCenter != null) {
+            World world = game.getRegion().getWorld();
+            WorldBorder border = world.getWorldBorder();
+
+            border.setCenter(originalCenter.getX(), originalCenter.getZ());
+            border.setSize(originalSize);
+            border.setDamageAmount(0.5);
+            border.setWarningDistance(5);
+        }
+    }
+
+    public void onOver() {
+        restoreOriginalWorldBorder();
     }
 }
