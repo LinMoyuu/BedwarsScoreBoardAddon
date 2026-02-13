@@ -43,7 +43,7 @@ public class FriendlyBreak implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFriendlyBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (!arena.isAlivePlayer(game, player)) return;
+        if (!arena.isAlivePlayer(player)) return;
         if (!Config.friendlybreak_kick_enabled || BedwarsRel.getInstance().getBooleanConfig("friendlybreak", true))
             return;
         Team playerTeam = game.getPlayerTeam(player);

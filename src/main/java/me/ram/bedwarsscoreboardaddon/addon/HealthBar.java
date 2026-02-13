@@ -47,7 +47,7 @@ public class HealthBar implements Listener {
         }
 
         Player player = (Player) event.getEntity();
-        if (!arena.isGamePlayer(game, player)) return;
+        if (!arena.isGamePlayer(player)) return;
         int health = (int) Math.max(0, Math.ceil((player.getHealth() - event.getFinalDamage())));
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
@@ -64,7 +64,7 @@ public class HealthBar implements Listener {
         }
 
         Player player = (Player) event.getEntity();
-        if (!arena.isGamePlayer(game, player)) return;
+        if (!arena.isGamePlayer(player)) return;
         int health = (int) Math.ceil(player.getHealth() + event.getAmount());
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
@@ -77,7 +77,7 @@ public class HealthBar implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHbRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (!arena.isGamePlayer(game, player)) return;
+        if (!arena.isGamePlayer(player)) return;
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
                 continue;
@@ -89,7 +89,7 @@ public class HealthBar implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHbScoreboardRespawn(BoardAddonPlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (!arena.isGamePlayer(game, player)) return;
+        if (!arena.isGamePlayer(player)) return;
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
                 continue;

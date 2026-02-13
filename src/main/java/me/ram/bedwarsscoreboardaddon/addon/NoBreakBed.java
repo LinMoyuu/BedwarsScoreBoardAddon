@@ -46,6 +46,7 @@ public class NoBreakBed {
 
         if (game.getTimeLeft() <= Config.nobreakbed_gametime) {
             this.bre = true;
+            onEnd();
 
             for (Player player : game.getPlayers()) {
                 if (!Config.nobreakbed_title.isEmpty() || !Config.nobreakbed_subtitle.isEmpty()) {
@@ -75,7 +76,7 @@ public class NoBreakBed {
                     return;
                 }
                 Player player = e.getPlayer();
-                if (arena.isAlivePlayer(game, player) || game.getState() != GameState.RUNNING) {
+                if (!arena.isAlivePlayer(player) || game.getState() != GameState.RUNNING) {
                     return;
                 }
                 if (!bre && e.getPacketType() == PacketType.Play.Client.BLOCK_DIG) {

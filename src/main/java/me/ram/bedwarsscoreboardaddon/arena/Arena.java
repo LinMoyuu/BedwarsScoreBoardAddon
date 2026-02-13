@@ -143,7 +143,8 @@ public class Arena {
 
     public void onTargetBlockDestroyed(BedwarsTargetBlockDestroyedEvent e) {
         Player player = e.getPlayer();
-        if (!isAlivePlayer(player)) {
+        Game eGame = e.getGame();
+        if (!isAlivePlayer(eGame, player)) {
             return;
         }
         Map<String, Integer> beds = playerGameStorage.getPlayerBeds();
@@ -162,25 +163,25 @@ public class Arena {
     }
 
     public void onDamage(EntityDamageEvent e) {
-        if (isAlivePlayer(game, (Player) e.getEntity())) {
+        if (isAlivePlayer((Player) e.getEntity())) {
             respawn.onDamage(e);
         }
     }
 
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        if (isAlivePlayer(game, (Player) e.getEntity()) && isAlivePlayer(game, (Player) e.getDamager())) {
+        if (isAlivePlayer((Player) e.getEntity()) && isAlivePlayer((Player) e.getDamager())) {
             respawn.onPlayerAttack(e);
         }
     }
 
     public void onInteractEntity(PlayerInteractEntityEvent e) {
-        if (isAlivePlayer(game, e.getPlayer())) {
+        if (isAlivePlayer(e.getPlayer())) {
             graffiti.onInteractEntity(e);
         }
     }
 
     public void onInteract(PlayerInteractEvent e) {
-        if (isAlivePlayer(game, e.getPlayer())) {
+        if (isAlivePlayer(e.getPlayer())) {
             gameChest.onInteract(e);
         }
     }
@@ -196,7 +197,8 @@ public class Arena {
     public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
         Player player = e.getPlayer();
         Player killer = e.getKiller();
-        if (!isAlivePlayer(player) || !isAlivePlayer(killer)) {
+        Game eGame = e.getGame();
+        if (!isGamePlayer(eGame, player) || !isGamePlayer(eGame, killer)) {
             return;
         }
         Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
@@ -444,7 +446,7 @@ public class Arena {
     }
 
     public Boolean isGamePlayer(Player player) {
-        return isGame(BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player)) && !this.game.isSpectator(player);
+        return isGame(BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player)) && this.game.getPlayers().contains(player);
     }
 
     public Boolean isAlivePlayer(Player player) {
@@ -452,7 +454,7 @@ public class Arena {
     }
 
     public Boolean isGamePlayer(Game game, Player player) {
-        return isGame(game) && !this.game.isSpectator(player);
+        return isGame(game) && this.game.getPlayers().contains(player);
     }
 
     public Boolean isAlivePlayer(Game game, Player player) {

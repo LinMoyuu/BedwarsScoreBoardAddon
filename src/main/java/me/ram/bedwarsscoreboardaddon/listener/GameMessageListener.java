@@ -18,6 +18,7 @@ import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -31,6 +32,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // 能改成这样也可以请高人了
 public class GameMessageListener implements Listener {
@@ -96,13 +99,13 @@ public class GameMessageListener implements Listener {
             finalkilled = ColorUtil.color(Config.killed_chat_final);
         }
 
-        String string = ColorUtil.color(Config.death_chat_message
+        String string = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.death_chat_message
                 .replace("{bwprefix}", Config.bwrelPrefix)
                 .replace("{playerTeamString}", ChatColor.GOLD + "(" + playerTeam.getDisplayName() + ChatColor.GOLD + ")")
                 .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
                 .replace("{playerTeam}", playerTeam.getDisplayName())
                 .replace("{player}", player.getDisplayName())
-                .replace("{final}", finalkilled));
+                .replace("{final}", finalkilled)));
         for (Player p : game.getPlayers()) {
             if (p.isOnline()) {
                 p.sendMessage(string);
@@ -197,7 +200,7 @@ public class GameMessageListener implements Listener {
             finalkilled = ColorUtil.color(Config.killed_chat_final);
         }
 
-        String string = ColorUtil.color(Config.killed_chat_message
+        String string = Config.killed_chat_message
                 .replace("{bwprefix}", Config.bwrelPrefix)
                 .replace("{playerTeamString}", ChatColor.GOLD + "(" + playerTeam.getDisplayName() + ChatColor.GOLD + ")")
                 .replace("{killerTeamString}", ChatColor.GOLD + "(" + killerTeam.getDisplayName() + ChatColor.GOLD + ")")
@@ -208,7 +211,12 @@ public class GameMessageListener implements Listener {
                 .replace("{hearts}", hearts)
                 .replace("{player}", player.getDisplayName())
                 .replace("{killer}", killer.getDisplayName())
-                .replace("{final}", finalkilled));
+                .replace("{final}", finalkilled);
+
+        string = replacePlaceholders(string, "{player:", player);
+        string = replacePlaceholders(string, "{killer:", killer);
+        string = ColorUtil.color(string);
+
         for (Player p : game.getPlayers()) {
             if (p.isOnline()) {
                 p.sendMessage(string);
@@ -285,14 +293,14 @@ public class GameMessageListener implements Listener {
         Team breakTeam = BedwarsUtil.getTeamOfBed(e.getBlock(), game, player);
         if (breakTeam == null) return;
 
-        String string = ColorUtil.color(Config.bedbreak_chat_message
+        String string = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.bedbreak_chat_message
                 .replace("{bwprefix}", Config.bwrelPrefix)
                 .replace("{playerTeamString}", ChatColor.GOLD + "(" + playerTeam.getDisplayName() + ChatColor.GOLD + ")")
                 .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
                 .replace("{playerTeam}", playerTeam.getDisplayName())
                 .replace("{player}", player.getDisplayName())
                 .replace("{deathTeam}", breakTeam.getDisplayName())
-                .replace("{deathTeamColor}", breakTeam.getChatColor().toString()));
+                .replace("{deathTeamColor}", breakTeam.getChatColor().toString())));
         for (Player p : game.getPlayers()) {
             if (p.isOnline()) {
                 p.sendMessage(string);
@@ -392,12 +400,12 @@ public class GameMessageListener implements Listener {
             if (playerTeam == null) return;
         }
 
-        String string = ColorUtil.color(Config.quit_chat_message
+        String string = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.quit_chat_message
                 .replace("{bwprefix}", Config.bwrelPrefix)
                 .replace("{playerTeamString}", ChatColor.GOLD + "(" + playerTeam.getDisplayName() + ChatColor.GOLD + ")")
                 .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
                 .replace("{playerTeam}", playerTeam.getDisplayName())
-                .replace("{player}", player.getDisplayName()));
+                .replace("{player}", player.getDisplayName())));
         for (Player p : game.getPlayers()) {
             if (p.isOnline()) {
                 p.sendMessage(string);
@@ -454,5 +462,21 @@ public class GameMessageListener implements Listener {
             }
         };
         ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
+    }
+
+    // PAPI
+    private String replacePlaceholders(String message, String placeholderPrefix, Player targetPlayer) {
+        Pattern pattern = Pattern.compile(Pattern.quote(placeholderPrefix) + "([^}]+)}");
+        Matcher matcher = pattern.matcher(message);
+
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            String placeholderContent = matcher.group(1);
+            String replacementValue = PlaceholderAPIUtil.setPlaceholders(targetPlayer, placeholderContent);
+            matcher.appendReplacement(result, replacementValue);
+        }
+        matcher.appendTail(result);
+
+        return result.toString();
     }
 }

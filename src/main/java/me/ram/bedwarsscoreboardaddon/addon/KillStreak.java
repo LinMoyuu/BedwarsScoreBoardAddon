@@ -46,7 +46,8 @@ public class KillStreak implements Listener {
         if (e.getPlayer() == null || e.getKiller() == null) {
             return;
         }
-        if (!arena.isGamePlayer(game, player) || !arena.isGamePlayer(game, killer)) {
+        Game eGame = e.getGame();
+        if (!arena.isGamePlayer(eGame, player) || !arena.isGamePlayer(eGame, killer)) {
             return;
         }
         if (game.getState() != GameState.RUNNING) {
