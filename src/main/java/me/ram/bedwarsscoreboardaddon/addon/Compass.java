@@ -78,7 +78,7 @@ public class Compass implements Listener {
     public void onRespawn(PlayerRespawnEvent e) {
         Player player = e.getPlayer();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (!Config.compass_enabled || game == null) {
+        if (!Config.compass_enabled || game == null || Config.respawn_enabled) {
             return;
         }
         if (!game.isSpectator(player)) {
