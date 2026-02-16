@@ -65,7 +65,7 @@ public class HealthBar implements Listener {
 
         Player player = (Player) event.getEntity();
         if (!arena.isGamePlayer(player)) return;
-        int health = (int) Math.ceil(player.getHealth() + event.getAmount());
+        int health = (int) Math.floor(player.getHealth() + event.getAmount());
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
                 continue;
@@ -89,7 +89,8 @@ public class HealthBar implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onHbScoreboardRespawn(BoardAddonPlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (!arena.isGamePlayer(player)) return;
+        Game eGame = event.getGame();
+        if (!arena.isGamePlayer(eGame,player)) return;
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
                 continue;

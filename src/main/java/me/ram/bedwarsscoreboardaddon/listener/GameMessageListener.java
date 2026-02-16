@@ -213,8 +213,8 @@ public class GameMessageListener implements Listener {
                 .replace("{killer}", killer.getDisplayName())
                 .replace("{final}", finalkilled);
 
-        string = replacePlaceholders(string, "{player:", player);
-        string = replacePlaceholders(string, "{killer:", killer);
+        string = PlaceholderAPIUtil.replacePlaceholdersWithPrefix(string, "{player:", player);
+        string = PlaceholderAPIUtil.replacePlaceholdersWithPrefix(string, "{killer:", killer);
         string = ColorUtil.color(string);
 
         for (Player p : game.getPlayers()) {
@@ -462,21 +462,5 @@ public class GameMessageListener implements Listener {
             }
         };
         ProtocolLibrary.getProtocolManager().addPacketListener(packetListener);
-    }
-
-    // PAPI
-    private String replacePlaceholders(String message, String placeholderPrefix, Player targetPlayer) {
-        Pattern pattern = Pattern.compile(Pattern.quote(placeholderPrefix) + "([^}]+)}");
-        Matcher matcher = pattern.matcher(message);
-
-        StringBuffer result = new StringBuffer();
-        while (matcher.find()) {
-            String placeholderContent = matcher.group(1);
-            String replacementValue = PlaceholderAPIUtil.setPlaceholders(targetPlayer, placeholderContent);
-            matcher.appendReplacement(result, replacementValue);
-        }
-        matcher.appendTail(result);
-
-        return result.toString();
     }
 }

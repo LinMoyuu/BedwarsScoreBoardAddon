@@ -116,10 +116,6 @@ public class HidePlayer implements Listener {
         if (game == null) {
             return;
         }
-        Team team = game.getPlayerTeam(player);
-        if (team == null) {
-            return;
-        }
         for (Player pl : game.getPlayers()) {
             if (BedwarsUtil.isSpectator(game, pl)) {
                 hidePlayer(player, pl);
