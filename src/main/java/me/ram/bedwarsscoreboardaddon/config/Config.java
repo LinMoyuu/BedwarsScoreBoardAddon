@@ -225,6 +225,11 @@ public class Config {
     public static List<String> holographic_resource;
     public static String holographic_bedtitle_bed_alive_title;
     public static String holographic_bedtitle_bed_destroyed_title;
+    public static boolean killsoul_enabled;
+    public static boolean killsoul_autodetect;
+    public static int killsoul_onkillstreak;
+    public static boolean pearlnodamage_autodetect;
+    public static boolean pearlnodamage_enabled;
     public static boolean overstats_enabled;
     public static List<String> overstats_message;
     public static String actionbar;
@@ -269,8 +274,8 @@ public class Config {
 
     private static FileConfiguration getVerifiedConfig(String fileName) {
         Map<String, String> configVersion = new HashMap<>();
-        configVersion.put("config.yml", "23");
-        configVersion.put("language.yml", "4");
+        configVersion.put("config.yml", "25");
+        configVersion.put("language.yml", "5");
         File file = new File(Main.getInstance().getDataFolder(), "/" + fileName);
         if (!file.exists()) {
             Main.getInstance().getLocaleConfig().saveResource(fileName);
@@ -502,6 +507,13 @@ public class Config {
         holographic_resource_enabled = config.getBoolean("holographic.resource.enabled");
         holographic_bed_title_bed_alive_enabled = config.getBoolean("holographic.bed_title.bed_alive.enabled");
         holographic_bed_title_bed_destroyed_enabled = config.getBoolean("holographic.bed_title.bed_destroyed.enabled");
+        killsoul_enabled = config.getBoolean("killsoul.enabled");
+        killsoul_autodetect = config.getBoolean("killsoul.autodetect");
+        killsoul_onkillstreak = config.getInt("killsoul.onkillstreak");
+        pearlnodamage_autodetect = config.getBoolean("pearlnodamage.autodetect");
+        pearlnodamage_enabled = config.getBoolean("pearlnodamage.enabled");
+        holographic_bed_title_bed_alive_enabled = config.getBoolean("holographic.bed_title.bed_alive.enabled");
+        holographic_bed_title_bed_destroyed_enabled = config.getBoolean("holographic.bed_title.bed_destroyed.enabled");
         holographic_resource_speed = config.getDouble("holographic.resource.speed");
         holographic_resource = new ArrayList<>(config.getConfigurationSection("holographic.resource.resources").getKeys(false));
         holographic_bedtitle_bed_destroyed_title = ColorUtil.color(config.getString("holographic.bed_title.bed_destroyed.title"));
@@ -512,9 +524,9 @@ public class Config {
         actionbar_witherbow = ColorUtil.color(config.getString("actionbar_witherbow"));
         friendlybreak_kick_enabled = config.getBoolean("friendlybreak_kick.enabled");
         friendlybreak_kick_max_breaks = config.getInt("friendlybreak_kick.max_breaks");
-        friendlybreak_warning_message = config.getString("friendlybreak_kick.warning_message");
-        friendlybreak_kick_message = config.getString("friendlybreak_kick.kick_message");
-        friendlybreak_broadcast_message = config.getString("friendlybreak_kick.broadcast_message");
+        friendlybreak_warning_message = config.getString("friendlybreak_kick.message.warning");
+        friendlybreak_kick_message = config.getString("friendlybreak_kick.message.kick");
+        friendlybreak_broadcast_message = config.getString("friendlybreak_kick.message.broadcast");
         anti_gap_breakbed_enabled = config.getBoolean("anti_gap_breakbed.enabled");
         anti_gap_breakbed_distance = config.getInt("anti_gap_breakbed.check-distance");
         anti_gap_breakbed_message = config.getString("anti_gap_breakbed.message");

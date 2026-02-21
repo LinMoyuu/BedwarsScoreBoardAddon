@@ -26,18 +26,11 @@ commands:
     remove_shop: "&a商店移除成功！"
     failed_remove_shop: "&c商店不存在！"
     shop_list: "&f已设置商店列表:"
-    add_spawner: "&a资源点添加成功！"
-    remove_spawner: "&a资源点移除成功！"
-    spawner_list: "&f队伍资源点列表:"
-    spawner_list_error: "&c游戏不存在或未设置资源点！"
-    failed_remove_spawner: "&c资源点不存在！"
     edit_game_error: "&c游戏不存在！"
     help:
       shop_list: "&e/bwsba shop list <游戏> &7-&f 已设置商店列表"
       remove_shop: "&e/bwsba shop remove <ID> &7-&f 移除一个商店"
       set_item_shop: "&e/bwsba shop set item <游戏> &7-&f 设置一个道具商店"
-      remove_spawner: "&e/bwsba spawner remove <ID> &7-&f 移除队伍资源点"
-      add_spawner: "&e/bwsba spawner add <游戏> <队伍> &7-&f 添加队伍资源点"
       edit_game: "&e/bwsba edit <游戏> &7-&f 编辑游戏"
       unknown: "未知指令！ 使用 &e/bwsba help &f显示帮助菜单"
 inventory:
@@ -57,7 +50,6 @@ item:
       set_spawn: "&f设置队伍出生点"
       set_item_shop: "&f设置物品商店"
       set_spawner: "&f设置资源生成点"
-      set_team_spawner: "&f队伍资源生成点"
       set_game_spawner: "&f游戏资源生成点"
       set_region_loc1: "&f设置游戏区域A"
       set_region_loc2: "&f设置游戏区域B"
@@ -85,6 +77,5 @@ holographic:
     bed: "{team}&f床"
     spawn: "{team}&f出生点"
     spawner: "&a{resource}资源点"
-    team_spawner: "{team}&f队伍资源点"
   shop:
     item: "&fID: &a{id} &e物品商店"

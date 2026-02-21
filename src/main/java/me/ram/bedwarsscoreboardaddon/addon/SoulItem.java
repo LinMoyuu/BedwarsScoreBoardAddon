@@ -6,6 +6,7 @@ import io.github.bedwarsrel.game.Game;
 import io.github.bedwarsrel.game.GameState;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
+import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import org.bukkit.Material;
@@ -29,34 +30,36 @@ public class SoulItem implements Listener {
 
     @EventHandler
     public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
-        if (e.getKiller() == null || e.getPlayer() == null) {
+        if (!Config.killsoul_enabled || e.getKiller() == null || e.getPlayer() == null) {
             return;
         }
         Player killer = e.getKiller();
         Player player = e.getPlayer();
         Game game = e.getGame();
-        if (game.getState() != GameState.RUNNING || BedwarsUtil.isXpMode(game)) {
+        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+        if (game.getState() != GameState.RUNNING || arena == null|| game.isSpectator(killer)) {
             return;
         }
         if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
             return;
         }
-        if (game.isSpectator(killer)) {
-            return;
+        int killStreaks = arena.getKillStreak().getKillStreaks(killer.getUniqueId());
+        // 判断条件
+        boolean shouldGiveSoul = false;
+        if (Config.killsoul_autodetect) {
+            // 是否是经验模式 如果是直接不执行后续语句
+            if (BedwarsUtil.isXpMode(game)) return;
+            // 判断是否队伍数量为8队 或 判断连杀数是否>=3 给予灵魂
+            if (game.getTeams().size() >= 8 || killStreaks >= 3) shouldGiveSoul = true;
+        } else if (killStreaks >= Config.killsoul_onkillstreak) {
+            shouldGiveSoul = true;
         }
-        // 灵魂
+        // 灵魂物品
         ItemStack soul = new ItemStack(Material.NETHER_STAR);
         ItemMeta soulMeta = soul.getItemMeta();
         soulMeta.setDisplayName(ColorUtil.color("&4灵魂"));
         soulMeta.setLore(Collections.singletonList(ColorUtil.color("死亡不掉落")));
         soul.setItemMeta(soulMeta);
-        // 预定判断是否给灵魂 8队时
-        boolean shouldGiveSoul = game.getTeams().size() >= 8;
-        // 如果不应该给(不是8队时), 则判断连杀数是否>=3
-        if (!shouldGiveSoul) {
-            Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-            shouldGiveSoul = arena != null && arena.getKillStreak().getKillStreaks(killer.getUniqueId()) >= 3;
-        }
         if (shouldGiveSoul) {
             killer.getInventory().addItem(soul);
         }

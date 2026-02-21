@@ -363,14 +363,13 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPearlDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof EnderPearl)) return;
         Player player = (Player) event.getEntity();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) return;
-        if (game.getState() != GameState.RUNNING) return;
-        if (BedwarsUtil.isXpMode(game)) return;
-
-        if (event.getDamager() instanceof EnderPearl) {
+        if (game == null || game.getState() != GameState.RUNNING) return;
+        if (Config.pearlnodamage_autodetect) {
+            if (!BedwarsUtil.isXpMode(game)) event.setCancelled(true);
+        } else if (Config.pearlnodamage_enabled) {
             event.setCancelled(true);
         }
     }
