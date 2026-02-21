@@ -29,7 +29,7 @@ public class FriendlyBreak implements Listener {
     private final Arena arena;
     @Getter
     private final HashMap<Player, Integer> friendlyBreakCount;
-    private final List<Listener> listeners;
+    private List<Listener> listeners;
 
     public FriendlyBreak(Arena arena) {
         this.arena = arena;
@@ -91,5 +91,6 @@ public class FriendlyBreak implements Listener {
 
     public void onEnd() {
         listeners.forEach(HandlerList::unregisterAll);
+        listeners = null;
     }
 }

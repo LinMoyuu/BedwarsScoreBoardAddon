@@ -17,6 +17,7 @@ import net.citizensnpcs.api.event.CitizensEnableEvent;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -63,8 +64,12 @@ public class ShopListener implements Listener {
     public void onCitizensEnable(CitizensEnableEvent e) {
         File folder = Config.getNPCFile();
         FileConfiguration npcconfig = YamlConfiguration.loadConfiguration(folder);
-        if (npcconfig.getKeys(false).contains("npcs")) {
-            List<String> npcs = npcconfig.getStringList("npcs");
+        String npcKey = "npcs";
+        if (Bukkit.getPluginManager().getPlugin("Citizens").getDescription().getVersion().equals("2.0.24-SNAPSHOT (build 1605)")) {
+            npcKey = "npc";
+        }
+        if (npcconfig.getKeys(false).contains(npcKey)) {
+            List<String> npcs = npcconfig.getStringList(npcKey);
             List<NPC> gamenpcs = new ArrayList<>();
             for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
                 if (npcs.contains(npc.getId() + "")) {
@@ -74,7 +79,7 @@ public class ShopListener implements Listener {
             for (NPC npc : gamenpcs) {
                 CitizensAPI.getNPCRegistry().deregister(npc);
             }
-            npcconfig.set("npcs", new ArrayList<>());
+            npcconfig.set(npcKey, new ArrayList<>());
             try {
                 npcconfig.save(folder);
             } catch (IOException e1) {

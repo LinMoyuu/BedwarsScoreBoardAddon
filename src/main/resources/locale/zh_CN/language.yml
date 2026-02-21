@@ -1,5 +1,5 @@
 #配置版本 (请勿修改)
-version: 4
+version: 5
 
 button:
   list_teleport: "&f[&e传送&f]"

@@ -27,14 +27,11 @@ public class HealthBar implements Listener {
     private final Game game;
     @Getter
     private final Arena arena;
-    @Getter
-    private final HashMap<Player, Integer> friendlyBreakCount;
-    private final List<Listener> listeners;
+    private List<Listener> listeners;
 
     public HealthBar(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
-        this.friendlyBreakCount = new HashMap<>();
         listeners = new ArrayList<>();
         listeners.add(this);
         Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
@@ -48,7 +45,7 @@ public class HealthBar implements Listener {
 
         Player player = (Player) event.getEntity();
         if (!arena.isGamePlayer(player)) return;
-        int health = (int) Math.max(0, Math.ceil((player.getHealth() - event.getFinalDamage())));
+        int health = (int) Math.max(0, Math.floor((player.getHealth() - event.getFinalDamage())));
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
                 continue;
@@ -119,5 +116,6 @@ public class HealthBar implements Listener {
 
     public void onEnd() {
         listeners.forEach(HandlerList::unregisterAll);
+        listeners = null;
     }
 }

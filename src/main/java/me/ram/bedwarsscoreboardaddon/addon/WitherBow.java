@@ -33,7 +33,7 @@ public class WitherBow implements Listener {
     private final Game game;
     @Getter
     private final Arena arena;
-    private final List<Listener> listeners;
+    private List<Listener> listeners;
     @Getter
     private boolean witherbowEnabled;
 
@@ -164,5 +164,6 @@ public class WitherBow implements Listener {
 
     public void onEnd() {
         listeners.forEach(HandlerList::unregisterAll);
+        listeners = null;
     }
 }

@@ -16,7 +16,6 @@ import me.ram.bedwarsscoreboardaddon.api.HolographicAPI;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.events.BoardAddonPlayerOpenItemShopEvent;
-import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.npc.skin.SkinnableEntity;
@@ -79,17 +78,15 @@ public class Shop {
         }
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
         if (game != null) {
-            if (shops.contains(npc)) {
-                if (isGamePlayer(player)) {
-                    isCancelled = true;
-                    BoardAddonPlayerOpenItemShopEvent openItemShopEvent = new BoardAddonPlayerOpenItemShopEvent(game, player);
-                    Bukkit.getPluginManager().callEvent(openItemShopEvent);
-                    if (!openItemShopEvent.isCancelled() && Config.shop_enabled_addonopen) {
-                        player.closeInventory();
-                        NewItemShop itemShop = game.openNewItemShop(player);
-                        itemShop.setCurrentCategory(null);
-                        itemShop.openCategoryInventory(player);
-                    }
+            if (shops.contains(npc) && arena.isAlivePlayer(game, player)) {
+                isCancelled = true;
+                BoardAddonPlayerOpenItemShopEvent openItemShopEvent = new BoardAddonPlayerOpenItemShopEvent(game, player);
+                Bukkit.getPluginManager().callEvent(openItemShopEvent);
+                if (!openItemShopEvent.isCancelled() && Config.shop_enabled_addonopen) {
+                    player.closeInventory();
+                    NewItemShop itemShop = game.openNewItemShop(player);
+                    itemShop.setCurrentCategory(null);
+                    itemShop.openCategoryInventory(player);
                 }
             }
         }
@@ -101,7 +98,7 @@ public class Shop {
             return;
         }
         Player player = (Player) e.getPlayer();
-        if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+        if (!arena.isAlivePlayer(game, player) || player.getGameMode().equals(GameMode.SPECTATOR)) {
             e.setCancelled(true);
         }
     }
@@ -119,17 +116,6 @@ public class Shop {
                 }
             }.runTaskLater(Main.getInstance(), 10L);
         }
-    }
-
-    private Boolean isGamePlayer(Player player) {
-        Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
-        if (game == null) {
-            return false;
-        }
-        if (BedwarsUtil.isSpectator(game, player)) {
-            return false;
-        }
-        return player.getGameMode() != GameMode.SPECTATOR;
     }
 
     private NPC spawnShop(Location location, boolean look, String type, String skin) {

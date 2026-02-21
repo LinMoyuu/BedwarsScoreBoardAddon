@@ -35,7 +35,7 @@ public class InvisibilityPlayer implements Listener {
     private final Game game;
     @Getter
     private final Arena arena;
-    private final List<Listener> listeners;
+    private List<Listener> listeners;
     @Getter
     private final List<UUID> players;
     private final List<UUID> hplayers;
@@ -54,6 +54,7 @@ public class InvisibilityPlayer implements Listener {
 
     public void onEnd() {
         listeners.forEach(HandlerList::unregisterAll);
+        listeners = null;
     }
 
     public void removePlayer(Player player) {

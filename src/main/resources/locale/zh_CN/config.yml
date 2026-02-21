@@ -6,7 +6,7 @@
 #  |____/ \___|\__,_| \_/\_/ \__,_|_|  |___/_____/ \___\___/|_|  \___|____/ \___/ \__,_|_|  \__,_/_/    \_\__,_|\__,_|\___/|_| |_|
 #
 #
-# By Ram
+# By Ram, LinMoyuu
 #
 # 更新时间: 2026年2月21日
 #
@@ -581,7 +581,7 @@ shop:
   enabled: true
   ## 是否使用BWSBA的商店打开方式
   ## 当NPC不为村民时可能需要用这个 如为村民时最好关闭
-  #https://github.com/SakuraKoi/BedwarsXP/issues/31
+  ## https://github.com/SakuraKoi/BedwarsXP/issues/31
   enabled_addonopen: false
 
   #物品商店
