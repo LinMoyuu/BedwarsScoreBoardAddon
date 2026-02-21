@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SoulItem implements Listener {
+public class KillSoulItem implements Listener {
 
     private final Map<UUID, Map<Integer, ItemStack>> itemsToKeep = new HashMap<>();
 
@@ -43,7 +43,7 @@ public class SoulItem implements Listener {
         if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
             return;
         }
-        int killStreaks = arena.getKillStreak().getKillStreaks(killer.getUniqueId());
+        int killStreaks = arena.getPlayerGameStorage().getKillStreaks(killer.getName());
         // 判断条件
         boolean shouldGiveSoul = false;
         if (Config.killsoul_autodetect) {

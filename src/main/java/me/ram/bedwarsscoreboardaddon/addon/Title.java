@@ -9,8 +9,11 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
+import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
+import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -195,6 +198,58 @@ public class Title implements Listener {
                     }
                 }, 1L);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
+        Player player = e.getPlayer();
+        Player killer = e.getKiller();
+        if (e.getPlayer() == null || e.getKiller() == null) {
+            return;
+        }
+        Game game = e.getGame();
+        Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
+        if (arena == null) return;
+        if (game.getState() != GameState.RUNNING) {
+            return;
+        }
+        if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
+            return;
+        }
+        int killStreak = arena.getPlayerGameStorage().getKillStreaks().getOrDefault(killer.getName(), 0);
+        // 不启用修复 默认此播报连杀数最高为10
+        if (killStreak >= 10 && !Config.killstreak_fix_display_count) killStreak = 10;
+        // 是否非经验起床模式 / 是经验模式 但经验为0 避免与killxp冲突
+        boolean autoDetectSendTitle = !BedwarsUtil.isXpMode(game) || BedwarsUtil.isXpMode(game) && BedwarsUtil.getPlayerXP(game, player) == 0;
+        // 自动判断 并且符合发送标题的条件 / 未启用自动判断 并且启用了始终发送标题
+        if (Config.killstreak_title_autodetect && autoDetectSendTitle || !Config.killstreak_title_autodetect && Config.killstreak_title_enabled) {
+            Utils.sendMainTitle(killer, 0, 60, 20, ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.killstreak_title_text
+                    .replace("{count}", killStreak + "")
+                    .replace("{kills}", arena.getPlayerGameStorage().getKills(player.getName()) + ""))));
+        }
+        if (Config.killstreak_message_enabled) {
+            Team playerTeam = game.getPlayerTeam(player);
+            Team killerTeam = game.getPlayerTeam(killer);
+            String message = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player,Config.killstreak_message_broadcasts.getOrDefault(killStreak, "")
+                    .replace("{count}", killStreak + "")
+                    .replace("{kills}", arena.getPlayerGameStorage().getKills(player.getName()) + "")
+                            .replace("{killerTeamString}", ChatColor.GOLD + "(" + killerTeam.getDisplayName() + ChatColor.GOLD + ")")
+                            .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                            .replace("{killerTeamColor}", killerTeam.getChatColor().toString())
+                            .replace("{playerTeam}", playerTeam.getDisplayName())
+                            .replace("{killerTeam}", killerTeam.getDisplayName())
+                            .replace("{hearts}", BedwarsUtil.getHealthsString(killer))
+                            .replace("{player}", player.getDisplayName())
+                            .replace("{killer}", killer.getDisplayName())
+                    ));
+            if (!message.isEmpty()) {
+                for (Player gamePlayers : game.getPlayers()) {
+                    gamePlayers.sendMessage(message);
+                }
+            }
+            // 神秘花雨庭会给被击杀者发送一个换行
+            if (Config.killstreak_message_send_killer_empty_message) killer.sendMessage("§k§i§e§n§d");
         }
     }
 

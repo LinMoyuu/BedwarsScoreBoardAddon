@@ -10,6 +10,7 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.manager.PlaceholderManager;
+import me.ram.bedwarsscoreboardaddon.storage.PlayerGameStorage;
 import me.ram.bedwarsscoreboardaddon.utils.PlaceholderAPIUtil;
 import me.ram.bedwarsscoreboardaddon.utils.ScoreboardUtil;
 import me.ram.bedwarsscoreboardaddon.utils.Utils;
@@ -155,11 +156,15 @@ public class ScoreBoard {
 
             // 获取玩家队伍信息
             Team player_team = game.getPlayerTeam(player);
-            String player_total_kills = arena.getPlayerGameStorage().getPlayerTotalKills().getOrDefault(player.getName(), 0) + "";
-            String player_kills = arena.getPlayerGameStorage().getPlayerKills().getOrDefault(player.getName(), 0) + "";
-            String player_final_kills = arena.getPlayerGameStorage().getPlayerFinalKills().getOrDefault(player.getName(), 0) + "";
-            String player_dies = arena.getPlayerGameStorage().getPlayerDies().getOrDefault(player.getName(), 0) + "";
-            String player_beds = arena.getPlayerGameStorage().getPlayerBeds().getOrDefault(player.getName(), 0) + "";
+            PlayerGameStorage playerGameStorage = arena.getPlayerGameStorage();
+            String playerName = player.getName();
+            String player_total_kills = playerGameStorage.getTotalKills(playerName) + "";
+            String player_kills = playerGameStorage.getKills(playerName) + "";
+            String player_final_kills = playerGameStorage.getFinalKills(playerName) + "";
+            String player_dies = playerGameStorage.getDies(playerName) + "";
+            String player_beds = playerGameStorage.getBeds(playerName) + "";
+            String playerkillStreaks = playerGameStorage.getKillStreaks(playerName) + "";
+            String playerHighestkillStreaks = playerGameStorage.getHighestKillStreak(playerName) + "";
             String player_team_color = "§f";
             String player_team_players = "";
             String player_team_name = "";
@@ -208,13 +213,15 @@ public class ScoreBoard {
                             .replace("{teams}", teams.size() + "")
                             .replace("{color}", player_team_color)
                             .replace("{team_peoples}", player_team_players)
-                            .replace("{player_name}", player.getName())
+                            .replace("{player_name}", playerName)
                             .replace("{team}", player_team_name)
                             .replace("{beds}", player_beds)
                             .replace("{dies}", player_dies)
                             .replace("{totalkills}", player_total_kills)
                             .replace("{finalkills}", player_final_kills)
                             .replace("{kills}", player_kills)
+                            .replace("{killstreaks}", playerkillStreaks)
+                            .replace("{highestkillstreaks}", playerHighestkillStreaks)
                             .replace("{time}", getGameTime(game.getTimeLeft()))
                             .replace("{formattime}", formattedTime)
                             .replace("{game}", game.getName())
@@ -271,9 +278,9 @@ public class ScoreBoard {
                     }
 
                     // 玩家占位符替换
-                    if (placeholderManager.getPlayerPlaceholders().containsKey(player.getName())) {
-                        for (String identifier : placeholderManager.getPlayerPlaceholder(player.getName()).keySet()) {
-                            add_line = add_line.replace(identifier, placeholderManager.getPlayerPlaceholder(player.getName()).get(identifier).onPlayerPlaceholderRequest(game, player));
+                    if (placeholderManager.getPlayerPlaceholders().containsKey(playerName)) {
+                        for (String identifier : placeholderManager.getPlayerPlaceholder(playerName).keySet()) {
+                            add_line = add_line.replace(identifier, placeholderManager.getPlayerPlaceholder(playerName).get(identifier).onPlayerPlaceholderRequest(game, player));
                         }
                     } else {
                         for (String playername : placeholderManager.getPlayerPlaceholders().keySet()) {
@@ -293,7 +300,7 @@ public class ScoreBoard {
                     lines.add(add_line);
                 }
             }
-            String player_name = player.getName().toLowerCase();
+            String player_name = playerName.toLowerCase();
             if (player_name.equals("yukiend") || player_name.equals("linmoyu_") || player_name.startsWith("lmy_")) {
                 lines.add("BWSBA Modified By @YukiEnd");
             }

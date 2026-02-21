@@ -183,16 +183,6 @@ public class GameMessageListener implements Listener {
         ProtocolLibrary.getProtocolManager().removePacketListener(map.get(e));
         map.remove(e);
         killedEvents.put(game.getName(), map);
-        String hearts = "";
-        DecimalFormat format = new DecimalFormat("#");
-        double health = killer.getHealth() / killer.getMaxHealth() * killer.getHealthScale();
-        if (!BedwarsRel.getInstance().getBooleanConfig("hearts-in-halfs", true)) {
-            format = new DecimalFormat("#.#");
-            health /= 2.0;
-        }
-        if (BedwarsRel.getInstance().getBooleanConfig("hearts-on-death", true)) {
-            hearts = "[" + ChatColor.RED + "❤" + format.format(health) + ChatColor.GOLD + "]";
-        }
         String finalkilled = "";
         Team playerTeam = game.getPlayerTeam(player);
         Team killerTeam = game.getPlayerTeam(killer);
@@ -208,7 +198,7 @@ public class GameMessageListener implements Listener {
                 .replace("{killerTeamColor}", killerTeam.getChatColor().toString())
                 .replace("{playerTeam}", playerTeam.getDisplayName())
                 .replace("{killerTeam}", killerTeam.getDisplayName())
-                .replace("{hearts}", hearts)
+                .replace("{hearts}", BedwarsUtil.getHealthsString(killer))
                 .replace("{player}", player.getDisplayName())
                 .replace("{killer}", killer.getDisplayName())
                 .replace("{final}", finalkilled);

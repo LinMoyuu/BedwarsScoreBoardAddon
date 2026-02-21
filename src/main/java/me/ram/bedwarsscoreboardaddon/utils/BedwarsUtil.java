@@ -7,10 +7,13 @@ import ldcr.BedwarsXP.api.XPManager;
 import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Bed;
+
+import java.text.DecimalFormat;
 
 public class BedwarsUtil {
 
@@ -131,5 +134,19 @@ public class BedwarsUtil {
         }
 
         return null; // 不是任何队伍的床
+    }
+
+    public static String getHealthsString(Player player) {
+        String hearts = "";
+        DecimalFormat format = new DecimalFormat("#");
+        double health = player.getHealth() / player.getMaxHealth() * player.getHealthScale();
+        if (!BedwarsRel.getInstance().getBooleanConfig("hearts-in-halfs", true)) {
+            format = new DecimalFormat("#.#");
+            health /= 2.0;
+        }
+        if (BedwarsRel.getInstance().getBooleanConfig("hearts-on-death", true)) {
+            hearts = "[" + ChatColor.RED + "❤" + format.format(health) + ChatColor.GOLD + "]";
+        }
+        return hearts;
     }
 }

@@ -228,9 +228,17 @@ public class Config {
     public static boolean killsoul_enabled;
     public static boolean killsoul_autodetect;
     public static int killsoul_onkillstreak;
+    public static boolean killstreak_fix_display_count;
+    public static boolean killstreak_title_autodetect;
+    public static boolean killstreak_title_enabled;
+    public static String killstreak_title_text;
+    public static boolean killstreak_message_enabled;
+    public static boolean killstreak_message_send_killer_empty_message;
+    public static Map<Integer, String> killstreak_message_broadcasts;
     public static boolean pearlnodamage_autodetect;
     public static boolean pearlnodamage_enabled;
     public static boolean overstats_enabled;
+    public static boolean overstats_enabled_title;
     public static List<String> overstats_message;
     public static String actionbar;
     public static String actionbar_witherbow;
@@ -510,6 +518,28 @@ public class Config {
         killsoul_enabled = config.getBoolean("killsoul.enabled");
         killsoul_autodetect = config.getBoolean("killsoul.autodetect");
         killsoul_onkillstreak = config.getInt("killsoul.onkillstreak");
+        killstreak_fix_display_count = config.getBoolean("killstreak.fix_display_count");
+        killstreak_title_autodetect = config.getBoolean("killstreak.title.autodetect");
+        killstreak_title_enabled = config.getBoolean("killstreak.title.enabled");
+        killstreak_title_text = config.getString("killstreak.title.text");
+        killstreak_message_enabled = config.getBoolean("killstreak.message.enabled");
+        killstreak_message_send_killer_empty_message = config.getBoolean("killstreak.message.send_killer_empty_message");
+        killstreak_message_broadcasts = new HashMap<>();
+        ConfigurationSection broadcastSection = config.getConfigurationSection("killstreak.message.broadcast");
+        if (broadcastSection != null) {
+            Set<String> keys = broadcastSection.getKeys(false);
+            for (String key : keys) {
+                try {
+                    int killCount = Integer.parseInt(key);
+                    String message = broadcastSection.getString(key);
+                    if (message != null && !message.isEmpty()) {
+                        killstreak_message_broadcasts.put(killCount, message);
+                    }
+                } catch (NumberFormatException e) {
+                    Bukkit.getLogger().warning("无效的连杀数: " + key);
+                }
+            }
+        }
         pearlnodamage_autodetect = config.getBoolean("pearlnodamage.autodetect");
         pearlnodamage_enabled = config.getBoolean("pearlnodamage.enabled");
         holographic_bed_title_bed_alive_enabled = config.getBoolean("holographic.bed_title.bed_alive.enabled");
@@ -519,6 +549,7 @@ public class Config {
         holographic_bedtitle_bed_destroyed_title = ColorUtil.color(config.getString("holographic.bed_title.bed_destroyed.title"));
         holographic_bedtitle_bed_alive_title = ColorUtil.color(config.getString("holographic.bed_title.bed_alive.title"));
         overstats_enabled = config.getBoolean("overstats.enabled");
+        overstats_enabled_title = config.getBoolean("overstats.title");
         overstats_message = ColorUtil.colorList(config.getStringList("overstats.message"));
         actionbar = ColorUtil.color(config.getString("actionbar"));
         actionbar_witherbow = ColorUtil.color(config.getString("actionbar_witherbow"));

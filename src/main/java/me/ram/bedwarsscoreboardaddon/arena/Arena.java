@@ -82,9 +82,6 @@ public class Arena {
     private List<BukkitTask> gameTasks;
     @Getter
     private Shop shop;
-    // 连杀
-    @Getter
-    private KillStreak killStreak;
     // 用于获取最终结算时 排列玩家击杀数 标题"最终击杀"的队伍颜色...
     @Getter
     private Map<String, Team> playerNameTeams = new HashMap<>();
@@ -132,7 +129,6 @@ public class Arena {
         if (Main.getInstance().isEnabledCitizens()) {
             shop = new Shop(this);
         }
-        killStreak = new KillStreak(this);
         friendlyBreak = new FriendlyBreak(this);
         teleportTask = new TeleportTask(this);
     }
@@ -147,18 +143,15 @@ public class Arena {
         if (!isAlivePlayer(eGame, player)) {
             return;
         }
-        Map<String, Integer> beds = playerGameStorage.getPlayerBeds();
-        beds.put(player.getName(), beds.getOrDefault(player.getName(), 0) + 1);
+        playerGameStorage.addBeds(player.getName(), 1);
         holographic.onTargetBlockDestroyed(e);
         scoreBoard.updateScoreboard();
     }
 
     public void onDeath(Player player) {
         invisiblePlayer.removePlayer(player);
-        Map<String, Integer> dies = playerGameStorage.getPlayerDies();
-        dies.put(player.getName(), dies.getOrDefault(player.getName(), 0) + 1);
+        playerGameStorage.onDie(player);
         PlaySound.playSound(player, Config.play_sound_sound_death);
-        killStreak.resetKillStreak(player.getUniqueId());
         scoreBoard.updateScoreboard();
     }
 
@@ -201,18 +194,9 @@ public class Arena {
         if (!isGamePlayer(eGame, player) || !isGamePlayer(eGame, killer)) {
             return;
         }
-        Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
-        Map<String, Integer> kills = playerGameStorage.getPlayerKills();
-        Map<String, Integer> finalkills = playerGameStorage.getPlayerFinalKills();
-        if (!game.getPlayerTeam(player).isDead(game)) {
-            kills.put(killer.getName(), kills.getOrDefault(killer.getName(), 0) + 1);
-        }
-        if (game.getPlayerTeam(player).isDead(game)) {
-            finalkills.put(killer.getName(), finalkills.getOrDefault(killer.getName(), 0) + 1);
-        }
-        totalkills.put(killer.getName(), totalkills.getOrDefault(killer.getName(), 0) + 1);
+        playerGameStorage.onKill(player, killer, game.getPlayerTeam(player).isDead(game));
         PlaySound.playSound(killer, Config.play_sound_sound_kill);
-        killStreak.onKill(player, killer);
+
         scoreBoard.updateScoreboard();
     }
 
@@ -228,7 +212,7 @@ public class Arena {
             Team winner = e.getWinner();
 
             // 计算击杀数排名
-            Map<String, Integer> totalkills = playerGameStorage.getPlayerTotalKills();
+            Map<String, Integer> totalkills = playerGameStorage.getTotalkills();
             Map<Integer, List<String>> player_kills = new HashMap<>();
             totalkills.forEach((name, kills) -> {
                 List<String> players = player_kills.getOrDefault(kills, new ArrayList<>());
@@ -254,7 +238,7 @@ public class Arena {
             // 计算KDA
             Set<String> allPlayers = new HashSet<>();
             allPlayers.addAll(totalkills.keySet());
-            allPlayers.addAll(playerGameStorage.getPlayerBeds().keySet());
+            allPlayers.addAll(playerGameStorage.getBeds().keySet());
             Map<String, Double> playerKdas = new HashMap<>();
             for (String playerName : allPlayers) {
                 double kda = calculateSpecialKda(playerName);
@@ -292,35 +276,37 @@ public class Arena {
                 win_team_player_list.append((win_team_player_list.length() > 0) ? ", " + player.getName() : player.getName());
             }
 
-            // 结算 Title
-            long baseDelay = 120L;
-            long delayBetween = 80L;
-            // 第一阶段
-            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
-                    Utils.sendTitle(player, 20, 40, 20, "&e游戏结束", "&e正在统计本局比赛..")), baseDelay);
+            if (Config.overstats_enabled_title) {
+                // 结算 Title
+                long baseDelay = 120L;
+                long delayBetween = 80L;
+                // 第一阶段
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
+                        Utils.sendTitle(player, 20, 40, 20, "&e游戏结束", "&e正在统计本局比赛..")), baseDelay);
 
-            // 第二阶段
-            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
-                    Utils.sendTitle(player, 20, 40, 20,
-                            "&c最高连杀： " + killStreak.getKillStreaks(player.getUniqueId()),
-                            "&eKDA： &c" + calculateSpecialKda(player.getName()))), baseDelay + delayBetween);
-
-            // 第三阶段
-            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-                String firstKdaPlayerName = player_kda_rank_name.get(0);
-
-                ChatColor firstKdaPlayerTeamColor = ChatColor.WHITE;
-                Team firstKdaPlayerTeam = playerNameTeams.get(firstKdaPlayerName);
-                if (firstKdaPlayerTeam != null) {
-                    firstKdaPlayerTeamColor = firstKdaPlayerTeam.getChatColor();
-                }
-
-                final ChatColor finalColor = firstKdaPlayerTeamColor;
-                game.getPlayers().forEach(player ->
+                // 第二阶段
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> game.getPlayers().forEach(player ->
                         Utils.sendTitle(player, 20, 40, 20,
-                                finalColor + firstKdaPlayerName,
-                                "&d&l全&e&l场&c&l最&b&l佳"));
-            }, baseDelay + 2 * delayBetween);
+                                "&c最高连杀： " + playerGameStorage.getKillStreaks().getOrDefault(player.getName(), 0),
+                                "&eKDA： &c" + calculateSpecialKda(player.getName()))), baseDelay + delayBetween);
+
+                // 第三阶段
+                Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+                    String firstKdaPlayerName = player_kda_rank_name.get(0);
+
+                    ChatColor firstKdaPlayerTeamColor = ChatColor.WHITE;
+                    Team firstKdaPlayerTeam = playerNameTeams.get(firstKdaPlayerName);
+                    if (firstKdaPlayerTeam != null) {
+                        firstKdaPlayerTeamColor = firstKdaPlayerTeam.getChatColor();
+                    }
+
+                    final ChatColor finalColor = firstKdaPlayerTeamColor;
+                    game.getPlayers().forEach(player ->
+                            Utils.sendTitle(player, 20, 40, 20,
+                                    finalColor + firstKdaPlayerName,
+                                    "&d&l全&e&l场&c&l最&b&l佳"));
+                }, baseDelay + 2 * delayBetween);
+            }
 
             if (!Config.overstats_message.isEmpty()) {
                 for (Player player : game.getPlayers()) {
@@ -384,8 +370,6 @@ public class Arena {
             shop.remove();
             shop = null;
         }
-        killStreak.onEnd();
-        killStreak = null;
         playerNameTeams = null;
         friendlyBreak.onEnd();
         friendlyBreak = null;
@@ -465,8 +449,8 @@ public class Arena {
     // 疑似一张床5分, 但不除以死亡数...
 //    public static double calculateSpecialKda(int kills, int deaths, int bedsDestroyed) {
     public double calculateSpecialKda(String playerName) {
-        int kills = playerGameStorage.getPlayerTotalKills().getOrDefault(playerName, 0);
-        int bedsDestroyed = playerGameStorage.getPlayerBeds().getOrDefault(playerName, 0);
+        int kills = playerGameStorage.getKills().getOrDefault(playerName, 0);
+        int bedsDestroyed = playerGameStorage.getBeds().getOrDefault(playerName, 0);
         return kills + (bedsDestroyed * 5);
     }
 }

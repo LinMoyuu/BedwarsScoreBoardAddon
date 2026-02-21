@@ -122,11 +122,11 @@ death_chat:
 ## {playerTeamColor} 玩家队伍颜色
 ## {playerTeam} 玩家队伍名
 ## {player} 玩家显示名
-## {hearts} 玩家剩余血量
 ## {killerTeamString} Rel队伍显示击杀者队伍字符串
 ## {killerTeamColor} 击杀者队伍颜色
 ## {killerTeam} 击杀者队伍名
 ## {killer} 击杀者显示名
+## {hearts} 击杀者剩余血量
 ## {final} 是否为最终击杀 自定义文字在killed_chat.final
 ## 支持PAPI 如需使用PAPI, 如下例:
 ## 被击杀者：{player:%player_name%}
@@ -1153,6 +1153,47 @@ killsoul:
   onkillstreak: 3
 
 
+killstreak:
+  ## 某服务器并没有11杀, 是否需要修复数字显示
+  fix_display_count: false
+  ## 标题显示
+  title:
+    ## 自动判断: 游戏是否在BedwarsXP启用, 是否队伍数量>=8(如果是给予 反之3杀后才给予)
+    ## 与后续配置项中只能启用一个
+    autodetect: true
+    ## 是否始终显示 上一配置启用则此配置项目无效
+    enabled: false
+    ## 显示标题 支持PAPI
+    ## {count} 连杀数
+    ## {kills} 击杀数
+    text: "&a&l{count} &a&l杀"
+  ## 连杀消息
+  message:
+    ## 是否启用
+    enabled: true
+    ## 是否给击杀者发送神秘换行(依旧某服务器)
+    send_killer_empty_message: true
+    ## 连杀消息播报 支持PAPI
+    ## {count} 连杀数
+    ## {kills} 击杀数
+    ## {playerTeamString} Rel队伍显示玩家队伍字符串
+    ## {playerTeamColor} 玩家队伍颜色
+    ## {playerTeam} 玩家队伍名
+    ## {player} 玩家显示名
+    ## {killerTeamString} Rel队伍显示击杀者队伍字符串
+    ## {killerTeamColor} 击杀者队伍颜色
+    ## {killerTeam} 击杀者队伍名
+    ## {killer} 击杀者显示名
+    ## {hearts} 击杀者剩余血量
+    ## 击杀数: "消息"
+    broadcast:
+      3: "&a{killer} &6正在大杀特杀！"
+      5: "&a{killer} &6无人可挡！"
+      7: "&a{killer} &6主宰服务器！"
+      9: "&a{killer} &6如同神一般！"
+      10: "&a{killer} &6已经超越神了！拜托谁去杀了他吧！"
+
+
 ## 珍珠无伤害
 pearlnodamage:
   ## 自动判断: 游戏是否在BedwarsXP中启用
@@ -1166,6 +1207,9 @@ overstats:
 
   #是否启用
   enabled: true
+
+  #结算TITLE
+  title: true
 
   #显示信息
   #变量:
