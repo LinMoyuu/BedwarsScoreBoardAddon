@@ -8,7 +8,6 @@ import me.ram.bedwarsscoreboardaddon.Main;
 import me.ram.bedwarsscoreboardaddon.arena.Arena;
 import me.ram.bedwarsscoreboardaddon.config.Config;
 import me.ram.bedwarsscoreboardaddon.utils.BedwarsUtil;
-import me.ram.bedwarsscoreboardaddon.utils.ColorUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +18,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -55,12 +53,12 @@ public class KillSoulItem implements Listener {
             shouldGiveSoul = true;
         }
         // 灵魂物品
-        ItemStack soul = new ItemStack(Material.NETHER_STAR);
-        ItemMeta soulMeta = soul.getItemMeta();
-        soulMeta.setDisplayName(ColorUtil.color("&4灵魂"));
-        soulMeta.setLore(Collections.singletonList(ColorUtil.color("死亡不掉落")));
-        soul.setItemMeta(soulMeta);
         if (shouldGiveSoul) {
+            ItemStack soul = new ItemStack(Material.valueOf(Config.killsoul_item_material));
+            ItemMeta soulMeta = soul.getItemMeta();
+            soulMeta.setDisplayName(Config.killsoul_item_name);
+            soulMeta.setLore(Config.killsoul_item_lore);
+            soul.setItemMeta(soulMeta);
             killer.getInventory().addItem(soul);
         }
     }
@@ -69,6 +67,9 @@ public class KillSoulItem implements Listener {
     // 所以就这么生草 交给哈基米写了
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
+        if (!Config.killsoul_enabled || !Config.killsoul_no_drop) {
+            return;
+        }
         Player player = event.getEntity().getPlayer();
         if (player == null) return;
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);
@@ -92,7 +93,7 @@ public class KillSoulItem implements Listener {
 
             // 检查物品是否为“灵魂绑定”
             // 哈基米没写空指针检查 无敌
-            if (item != null && item.getType().equals(Material.NETHER_STAR)) {
+            if (item != null && item.getType().equals(Material.valueOf(Config.killsoul_item_material))) {
                 // 记录物品和它所在的格子编号
                 keptItems.put(i, item);
                 // 从掉落列表中移除该物品，防止它掉在地上
@@ -106,6 +107,9 @@ public class KillSoulItem implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
+        if (!Config.killsoul_enabled || !Config.killsoul_no_drop) {
+            return;
+        }
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
         Game game = BedwarsRel.getInstance().getGameManager().getGameOfPlayer(player);

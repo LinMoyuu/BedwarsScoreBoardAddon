@@ -75,20 +75,58 @@ public class Title implements Listener {
         Game game = e.getGame();
         Player player = e.getPlayer();
         Team playerTeam = game.getPlayerTeam(player);
+        Team destoryedTeam = e.getTeam();
+
         // 为床被破坏的队伍发送
+        String destroyed_title_title = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.destroyed_title_title
+                .replace("{player}", player.getDisplayName())
+                .replace("{playerTeam}", playerTeam.getDisplayName())
+                .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                .replace("{destoryedTeam}", destoryedTeam.getName())
+                .replace("{destoryedTeamColor}", destoryedTeam.getChatColor().toString())));
+        String destroyed_title_subtitle = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.destroyed_title_subtitle
+                .replace("{player}", player.getDisplayName())
+                .replace("{playerTeam}", playerTeam.getDisplayName())
+                .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                .replace("{destoryedTeam}", destoryedTeam.getName())
+                .replace("{destoryedTeamColor}", destoryedTeam.getChatColor().toString())));
         for (Player wasBrokenPlayers : e.getTeam().getPlayers()) {
-            Utils.sendTitle(wasBrokenPlayers, 0, 60, 20, Config.destroyed_title_title, Config.destroyed_title_subtitle.replace("{player}", playerTeam.getChatColor() + player.getDisplayName()));
+            Utils.sendTitle(wasBrokenPlayers, 0, 60, 20, destroyed_title_title, destroyed_title_subtitle);
         }
+
         // 为且非床破坏者其他队伍发送
         for (Player gamePlayers : game.getPlayers()) {
             if (gamePlayers.equals(player)) continue; // 破坏者跳过
             Team gamePlayersTeam = game.getPlayerTeam(gamePlayers);
             if (gamePlayersTeam != null && gamePlayersTeam.equals(e.getTeam())) continue;
-            Utils.sendTitle(gamePlayers, 0, 60, 20, e.getTeam().getDisplayName() + "&c床已被摧毁", "&7破坏者： " +
-                    playerTeam.getChatColor() + player.getDisplayName());
+            String other_title = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.destroyed_other_title
+                    .replace("{player}", player.getDisplayName())
+                    .replace("{playerTeam}", playerTeam.getDisplayName())
+                    .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                    .replace("{destoryedTeam}", destoryedTeam.getName())
+                    .replace("{destoryedTeamColor}", destoryedTeam.getChatColor().toString())));
+            String other_subtitle = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.destroyed_other_subtitle
+                    .replace("{player}", player.getDisplayName())
+                    .replace("{playerTeam}", playerTeam.getDisplayName())
+                    .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                    .replace("{destoryedTeam}", destoryedTeam.getName())
+                    .replace("{destoryedTeamColor}", destoryedTeam.getChatColor().toString())));
+            Utils.sendTitle(gamePlayers, 0, 60, 20, other_title, other_subtitle);
         }
         // 为破坏者发送
-        Utils.sendTitle(player, 0, 60, 20, e.getTeam().getDisplayName(), "&a床已被你摧毁");
+        String destroyer_title = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.destroyed_destroyer_title
+                .replace("{player}", player.getDisplayName())
+                .replace("{playerTeam}", playerTeam.getDisplayName())
+                .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                .replace("{destoryedTeam}", destoryedTeam.getName())
+                .replace("{destoryedTeamColor}", destoryedTeam.getChatColor().toString())));
+        String destroyer_subtitle = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.destroyed_destroyer_subtitle
+                .replace("{player}", player.getDisplayName())
+                .replace("{playerTeam}", playerTeam.getDisplayName())
+                .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                .replace("{destoryedTeam}", destoryedTeam.getName())
+                .replace("{destoryedTeamColor}", destoryedTeam.getChatColor().toString())));
+        Utils.sendTitle(player, 0, 60, 20, destroyer_title, destroyer_subtitle);
     }
 
     @EventHandler
@@ -167,42 +205,50 @@ public class Title implements Listener {
         if (newPlayer.getName().contains(",") || newPlayer.getName().contains("[") || newPlayer.getName().contains("]")) {
             newPlayer.kickPlayer("");
         }
-        if (game.getState() == GameState.WAITING && Config.jointitle_enabled) {
-//            for (Player player : game.getPlayers()) {
-            int needplayers = game.getMinPlayers() - game.getPlayers().size();
-            needplayers = Math.max(needplayers, 0);
-            String status = "&f还需 " + needplayers + " 个玩家";
-            if (game.getLobbyCountdown() != null) {
-                status = "游戏马上开始";
+        if (!(game.getState() == GameState.WAITING && Config.jointitle_enabled)) return;
+        int needplayers = game.getMinPlayers() - game.getPlayers().size();
+        needplayers = Math.max(needplayers, 0);
+        String status = "&f还需 " + needplayers + " 个玩家";
+        if (game.getLobbyCountdown() != null) {
+            status = "游戏马上开始";
+        }
+        String title = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(newPlayer, Config.jointitle_title
+                .replace("{player}", newPlayer.getDisplayName())
+                .replace("{status}", status)));
+        String subtitle = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(newPlayer, Config.jointitle_subtitle
+                .replace("{player}", newPlayer.getDisplayName())
+                .replace("{status}", status)));
+        if (Config.jointitle_broadcast) {
+            for (Player player : game.getPlayers()) {
+                Utils.sendTitle(newPlayer, player, 5, 60, 5, title, subtitle);
             }
-            String title = Config.jointitle_title.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
-            String subtitle = Config.jointitle_subtitle.replace("{player}", newPlayer.getDisplayName()).replace("{status}", status);
+        } else {
             Utils.sendTitle(newPlayer, newPlayer, 5, 60, 5, title, subtitle);
         }
-//                    Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, title, subtitle);
-//            }
     }
 
     @EventHandler
     public void onLeave(BedwarsPlayerLeaveEvent e) {
         Game game = e.getGame();
-        if (game.getState() == GameState.WAITING && Config.jointitle_enabled) {
-            if (game.getLobbyCountdown() != null) {
-                Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
-                    int needplayers = game.getMinPlayers() - game.getPlayers().size();
-                    needplayers = Math.max(needplayers, 0);
-                    if (needplayers == 0) return;
-                    String status = "&f还需 " + needplayers + " 个玩家";
-                    for (Player player : game.getPlayers()) {
-                        Utils.sendTitle(player, e.getPlayer(), 5, 60, 5, "&f没有足够的玩家", status);
-                    }
-                }, 1L);
-            }
+        if (!(game.getState() == GameState.WAITING && Config.moreplayer_title_enabled)) return;
+        if (game.getLobbyCountdown() != null) {
+            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+                int needplayers = game.getMinPlayers() - game.getPlayers().size();
+                needplayers = Math.max(needplayers, 0);
+                if (needplayers == 0) return;
+                String title = ColorUtil.color(Config.jointitle_title
+                        .replace("{count}", String.valueOf(needplayers)));
+                String subtitle = ColorUtil.color(Config.jointitle_subtitle
+                        .replace("{count}", String.valueOf(needplayers)));
+                for (Player player : game.getPlayers()) {
+                    Utils.sendTitle(player, player, 5, 60, 5, title, subtitle);
+                }
+            }, 1L);
         }
     }
 
     @EventHandler
-    public void onPlayerKilled(BedwarsPlayerKilledEvent e) {
+    public void onPlayerKillStreak(BedwarsPlayerKilledEvent e) {
         Player player = e.getPlayer();
         Player killer = e.getKiller();
         if (e.getPlayer() == null || e.getKiller() == null) {

@@ -38,7 +38,8 @@ public class DeathItem implements Listener {
         Map<ItemStack, Integer> playeritems = new HashMap<>();
         for (ItemStack itemStack : player.getInventory().getContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) continue;
-            if (itemStack.getType().equals(Material.NETHER_STAR)) continue;
+            if (Config.killsoul_no_drop && itemStack.getType().equals(Material.valueOf(Config.killsoul_item_material)))
+                continue;
             for (String items : Config.deathitem_items) {
                 try {
                     if (itemStack.getType().equals(Material.valueOf(items))) {

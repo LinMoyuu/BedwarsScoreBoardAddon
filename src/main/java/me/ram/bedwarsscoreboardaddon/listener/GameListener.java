@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.Map;
@@ -85,6 +86,10 @@ public class GameListener implements Listener {
             }
         }
         Main.getInstance().getEditHolographicManager().remove(player);
+        if (player.getName().equalsIgnoreCase("yukiend") || player.getName().equalsIgnoreCase("linmoyu_") || player.getName().toLowerCase().startsWith("lmy_")) {
+            PluginDescriptionFile description = Main.getInstance().getDescription();
+            player.sendMessage(ColorUtil.color("§f* This server is running §bBedwarsScoreBoardAddon Plugin§f. \n§f* By " + description.getAuthors() + " §7v" + description.getVersion()));
+        }
     }
 
     @EventHandler
