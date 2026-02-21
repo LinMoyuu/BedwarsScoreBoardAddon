@@ -60,6 +60,10 @@ public class ScoreboardUtil {
         try {
             updateScoreboardObjective(scoreboard, "bwsba-lobby", elements);
             setupTeamsForScoreboard(player, game, scoreboard);
+            List<UUID> invisiblePlayers = getInvisiblePlayers(game);
+            for (Team playerTeam : game.getTeams().values()) {
+                updateTeamMembership(player, game, scoreboard, playerTeam, invisiblePlayers);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
