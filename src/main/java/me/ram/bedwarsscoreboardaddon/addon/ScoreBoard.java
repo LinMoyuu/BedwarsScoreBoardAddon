@@ -31,7 +31,7 @@ public class ScoreBoard {
     private final Map<String, String> team_status;
     private int title_index = 0;
     @Getter
-    private Map<String, String> plan_infos;
+    private final Map<String, String> plan_infos;
 
     public ScoreBoard(Arena arena) {
         this.arena = arena;

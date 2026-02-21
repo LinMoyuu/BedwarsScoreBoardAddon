@@ -330,13 +330,25 @@ jointitle:
   ## 是否为所有人发送
   broadcast: false
 
+  ## 状态变量
+  status:
+
+    ## 还没有开始倒计时
+    waiting: "&f还需 {count} 个玩家"
+
+    ## 游戏开始倒计时
+    starting: "游戏马上开始"
+
 
 ## 没有足够的玩家
-moreplayer_title_title:
+moreplayer_title:
+
   ##是否启用
   enabled: true
+
   ##大标题
   title: "&f还需 {count} 个玩家"
+
   ##小标题
   subtitle: "&f没有足够的玩家"
 
@@ -388,13 +400,23 @@ destroyed_title:
 
   #小标题
   subtitle: "&7你将不能重生!"
+
   ## 其他人
   other_team:
+
+    ## 大标题
     title: "{destoryedTeamColor}{destoryedTeam}&c床已被摧毁"
+
+    ## 小标题
     subtitle: "&7破坏者： {playerTeamColor}{player}"
+
   ## 拆床者自身
   destroyer:
+
+    ## 大标题
     title: "{destoryedTeamColor}{destoryedTeam}"
+
+    ## 小标题
     subtitle: "&a床已被你摧毁"
 
 
@@ -580,7 +602,7 @@ shop:
   #是否启用
   enabled: true
   ## 是否使用BWSBA的商店打开方式
-  ## 当NPC不为村民时可能需要用这个 如为村民时最好关闭
+  ## 当商店NPC不为村民时可能需要用这个 如为村民时最好关闭
   ## https://github.com/SakuraKoi/BedwarsXP/issues/31
   enabled_addonopen: false
 
@@ -630,13 +652,20 @@ respawn:
     time: 5
 
     message:
+
       ## 重生后提示获得无敌时间
       ## {bwprefix} BedwarsRel 消息前缀
       ## {protectedTime} 无敌时间
       respawn: "{bwprefix}&a您获得了{protectedTime}秒的无敌时间！"
+
       ## 攻击无敌时间玩家
+      ## {bwprefix} BedwarsRel 消息前缀
+      ## {protectedTime} 无敌时间剩余秒数
       attack_protected: "{bwprefix}&a该玩家正处于无敌时间！"
+
       ## 无敌时间玩家被攻击
+      ## {bwprefix} BedwarsRel 消息前缀
+      ## {protectedTime} 无敌时间剩余秒数
       has_protected: "{bwprefix}&a无敌时间，无法攻击！"
 
   #正在重生时
@@ -669,7 +698,8 @@ giveitem:
 
   #死亡后不重置护甲
   keeparmor: false
-  ##护甲移动被拒绝 提示
+
+  ## 护甲移动被拒绝 提示
   deny_move_message: "§4§l你无法移动该物品!"
 
   #护甲
@@ -814,6 +844,7 @@ giveitem:
           Unbreakable: true
         probability: 1
 
+
 #血量设置
 sethealth:
 
@@ -916,8 +947,10 @@ resourceupgrade:
       - "EMERALD,600"
     message: "&2绿宝石生成点&e已升至&cV&e级"
 
+
 #第一次刷新资源时不掉落
 resource_no_drop_on_first_spawn: true
+
 
 #资源数量上限
 resourcelimit:
@@ -939,6 +972,7 @@ game_chest:
 
   #是否启用
   enabled: false
+
   # 自动归属队伍箱 此功能与上一项功能二选一启用
   auto_create_team_chest: true
 
@@ -975,10 +1009,14 @@ witherbow:
   #当游戏剩余多少秒时开启
   gametime: 2400
 
-  #何时提示
+  ## 游戏开始时是否提示倒计时
   tips_on_start: true
-  #大于60秒时为分，反之秒(自动转换)
+
+  ## 在剩余多少秒时发送提示
   remind_times: [900, 600, 300, 180, 60, 30, 20, 10, 5, 4, 3, 2, 1]
+
+  ## 倒计时提示消息
+  ## 大于60秒时为分，反之秒(自动转换)
   countdown_message: "{bwprefix}§f§l凋零弓 §7将在 §a{time}{unit} §7后开启!"
 
   #当凋零弓开启后变量 {bowtime} 的值
@@ -1176,42 +1214,63 @@ holographic:
 
 ## 击杀给予灵魂
 killsoul:
+
   ## 是否启用
   enabled: true
   ## 自动判断: 游戏是否在BedwarsXP启用, 是否队伍数量>=8(如果是给予 反之3杀后才给予)
   ## 与后续配置项中只能启用一个
+
   autodetect: true
+
   ## 在多少连杀数后给予 上一配置启用则此配置项目无效
   onkillstreak: 3
+
   ## 死亡不掉落
   no_drop: true
+
   ## 物品配置
   item:
+
+    ## 物品
     material: NETHER_STAR
+
+    ## 显示名称
     name: "&4灵魂"
-    lore: "死亡不掉落"
+
+    ## Lore介绍
+    lore:
+      - "死亡不掉落"
 
 
 killstreak:
+
   ## 某服务器并没有11杀, 是否需要修复数字显示
   fix_display_count: false
+
   ## 标题显示
   title:
+
     ## 自动判断: 游戏是否在BedwarsXP启用, 是否队伍数量>=8(如果是给予 反之3杀后才给予)
     ## 与后续配置项中只能启用一个
     autodetect: true
+
     ## 是否始终显示 上一配置启用则此配置项目无效
     enabled: false
+
     ## 显示标题 支持PAPI
     ## {count} 连杀数
     ## {kills} 击杀数
     text: "&a&l{count} &a&l杀"
+
   ## 连杀消息
   message:
+
     ## 是否启用
     enabled: true
+
     ## 是否给击杀者发送神秘换行(依旧某服务器)
     send_killer_empty_message: true
+
     ## 连杀消息播报 支持PAPI
     ## {count} 连杀数
     ## {kills} 击杀数
@@ -1290,31 +1349,41 @@ overstats:
 # {alive_players}      存活玩家数量
 ## {direction}        玩家队伍出生点方向
 actionbar: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
+
 ## 凋零弓启用后
 actionbar_witherbow: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
 
 
 ## 恶意挖掘移出
 friendlybreak_kick:
+
   ## 是否启用
   enabled: true
+
   ## 最大破坏次数
   max_breaks: 5
+
   ## 消息
   message:
+
     ## 挖掘警告
     warning: "{bwprefix}&c&l恶意挖掘队友脚下方块将会被踢出({breakcount}/{max_breaks})"
+
     ## 移出消息
     kick: "&c&l你由于涉嫌恶意挖掘队友脚下方块而被踢出游戏！"
+
     ## 播报
     broadcast: "{bwprefix}&c&l由于恶意挖掘队友脚下方块而被踢出游戏，请大家引以为戒!"
 
 ## 缝隙拆床
 anti_gap_breakbed:
+
   ## 是否启用
   enabled: true
+
   ## 检测距离
   check-distance: 5
+
   ## 拦截消息
   message: ""
 
@@ -1430,7 +1499,7 @@ planinfo:
       plan_2: "{formattime}"
 
 
-#玩家头顶名称称号 ## 支持PAPI
+#玩家头顶名称称号
 #变量:
 # {team}               玩家队伍名称
 # {team_initials}      玩家队伍名称首字母

@@ -33,6 +33,7 @@ public class RandomEvents {
     private RandomEvents currentActiveEvent;
     @Getter
     private List<RandomEvents> currentGameEvents;
+
     // 静态事件构造函数
     private RandomEvents(String eventName, PotionEffectType effectType, String subtitle) {
         this.eventName = eventName;

@@ -172,8 +172,8 @@ public class ScoreboardUtil {
                         .replace("{team_initials}", teamInitials)
                         .replace("{team}", teamName);
 
-        bukkitTeam.setPrefix(ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, prefix)));
-        bukkitTeam.setSuffix(ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, suffix)));
+        bukkitTeam.setPrefix(ColorUtil.color(prefix));
+        bukkitTeam.setSuffix(ColorUtil.color(suffix));
         bukkitTeam.setAllowFriendlyFire(false);
     }
 
@@ -370,9 +370,9 @@ public class ScoreboardUtil {
                             .replace("{team}", teamName);
 
             for (Player teamPlayer : bedwarsTeam.getPlayers()) {
-                String playerName = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, prefix)) +
+                String playerName = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(teamPlayer, prefix)) +
                         teamPlayer.getName() +
-                        ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, suffix));
+                        ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(teamPlayer, suffix));
                 teamPlayer.setPlayerListName(playerName);
 
                 if (!bukkitTeam.hasPlayer(teamPlayer)) {

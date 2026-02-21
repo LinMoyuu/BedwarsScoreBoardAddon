@@ -35,7 +35,7 @@ public class KillSoulItem implements Listener {
         Player player = e.getPlayer();
         Game game = e.getGame();
         Arena arena = Main.getInstance().getArenaManager().getArena(game.getName());
-        if (game.getState() != GameState.RUNNING || arena == null|| game.isSpectator(killer)) {
+        if (game.getState() != GameState.RUNNING || arena == null || game.isSpectator(killer)) {
             return;
         }
         if (game.getPlayerTeam(player) == null || game.getPlayerTeam(killer) == null) {
@@ -57,7 +57,7 @@ public class KillSoulItem implements Listener {
             ItemStack soul = new ItemStack(Material.valueOf(Config.killsoul_item_material));
             ItemMeta soulMeta = soul.getItemMeta();
             soulMeta.setDisplayName(Config.killsoul_item_name);
-            soulMeta.setLore(Config.killsoul_item_lore);
+            if (!Config.killsoul_item_lore.isEmpty()) soulMeta.setLore(Config.killsoul_item_lore);
             soul.setItemMeta(soulMeta);
             killer.getInventory().addItem(soul);
         }

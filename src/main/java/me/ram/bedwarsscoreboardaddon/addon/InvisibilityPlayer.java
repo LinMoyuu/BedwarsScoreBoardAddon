@@ -35,11 +35,11 @@ public class InvisibilityPlayer implements Listener {
     private final Game game;
     @Getter
     private final Arena arena;
-    private List<Listener> listeners;
     @Getter
     private final List<UUID> players;
     private final List<UUID> hplayers;
     private final HashMap<Player, Integer> steps;
+    private List<Listener> listeners;
 
     public InvisibilityPlayer(Arena arena) {
         this.arena = arena;

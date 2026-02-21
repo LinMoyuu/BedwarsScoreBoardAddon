@@ -204,13 +204,14 @@ public class Title implements Listener {
         Player newPlayer = e.getPlayer();
         if (newPlayer.getName().contains(",") || newPlayer.getName().contains("[") || newPlayer.getName().contains("]")) {
             newPlayer.kickPlayer("");
+            return;
         }
         if (!(game.getState() == GameState.WAITING && Config.jointitle_enabled)) return;
         int needplayers = game.getMinPlayers() - game.getPlayers().size();
         needplayers = Math.max(needplayers, 0);
-        String status = "&f还需 " + needplayers + " 个玩家";
+        String status = Config.jointitle_status_waiting.replace("{count}", String.valueOf(needplayers));
         if (game.getLobbyCountdown() != null) {
-            status = "游戏马上开始";
+            status = Config.jointitle_status_starting;
         }
         String title = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(newPlayer, Config.jointitle_title
                 .replace("{player}", newPlayer.getDisplayName())
@@ -277,18 +278,18 @@ public class Title implements Listener {
         if (Config.killstreak_message_enabled) {
             Team playerTeam = game.getPlayerTeam(player);
             Team killerTeam = game.getPlayerTeam(killer);
-            String message = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player,Config.killstreak_message_broadcasts.getOrDefault(killStreak, "")
+            String message = ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.killstreak_message_broadcasts.getOrDefault(killStreak, "")
                     .replace("{count}", killStreak + "")
                     .replace("{kills}", arena.getPlayerGameStorage().getKills(player.getName()) + "")
-                            .replace("{killerTeamString}", ChatColor.GOLD + "(" + killerTeam.getDisplayName() + ChatColor.GOLD + ")")
-                            .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
-                            .replace("{killerTeamColor}", killerTeam.getChatColor().toString())
-                            .replace("{playerTeam}", playerTeam.getDisplayName())
-                            .replace("{killerTeam}", killerTeam.getDisplayName())
-                            .replace("{hearts}", BedwarsUtil.getHealthsString(killer))
-                            .replace("{player}", player.getDisplayName())
-                            .replace("{killer}", killer.getDisplayName())
-                    ));
+                    .replace("{killerTeamString}", ChatColor.GOLD + "(" + killerTeam.getDisplayName() + ChatColor.GOLD + ")")
+                    .replace("{playerTeamColor}", playerTeam.getChatColor().toString())
+                    .replace("{killerTeamColor}", killerTeam.getChatColor().toString())
+                    .replace("{playerTeam}", playerTeam.getDisplayName())
+                    .replace("{killerTeam}", killerTeam.getDisplayName())
+                    .replace("{hearts}", BedwarsUtil.getHealthsString(killer))
+                    .replace("{player}", player.getDisplayName())
+                    .replace("{killer}", killer.getDisplayName())
+            ));
             if (!message.isEmpty()) {
                 for (Player gamePlayers : game.getPlayers()) {
                     gamePlayers.sendMessage(message);

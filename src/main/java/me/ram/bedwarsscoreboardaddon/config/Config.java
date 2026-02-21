@@ -83,8 +83,10 @@ public class Config {
     public static String jointitle_title;
     public static String jointitle_subtitle;
     public static boolean jointitle_broadcast;
+    public static String jointitle_status_waiting;
+    public static String jointitle_status_starting;
     public static boolean moreplayer_title_enabled;
-    public static String moreplayer_title_title;
+    public static String moreplayer_title;
     public static String moreplayer_title_subtitle;
     public static boolean die_out_title_enabled;
     public static String die_out_title_title;
@@ -398,10 +400,12 @@ public class Config {
         jointitle_enabled = config.getBoolean("jointitle.enabled");
         jointitle_title = config.getString("jointitle.title");
         jointitle_subtitle = config.getString("jointitle.subtitle");
-        jointitle_enabled = config.getBoolean("jointitle.enabled");
-        moreplayer_title_enabled = config.getBoolean("moreplayer_title_title.enabled");
-        moreplayer_title_title = config.getString("moreplayer_title_title.title");
-        moreplayer_title_subtitle = config.getString("moreplayer_title_title.subtitle");
+        jointitle_broadcast = config.getBoolean("jointitle.broadcast");
+        jointitle_status_waiting = config.getString("jointitle.status.waiting");
+        jointitle_status_starting = config.getString("jointitle.status.starting");
+        moreplayer_title_enabled = config.getBoolean("moreplayer_title.enabled");
+        moreplayer_title = config.getString("moreplayer_title.title");
+        moreplayer_title_subtitle = config.getString("moreplayer_title.subtitle");
         die_out_title_enabled = config.getBoolean("die_out_title.enabled");
         die_out_title_title = ColorUtil.color(config.getString("die_out_title.title"));
         die_out_title_subtitle = ColorUtil.color(config.getString("die_out_title.subtitle"));

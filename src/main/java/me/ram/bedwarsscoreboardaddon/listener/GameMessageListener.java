@@ -32,8 +32,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 // 能改成这样也可以请高人了
 public class GameMessageListener implements Listener {

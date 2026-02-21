@@ -18,7 +18,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class HealthBar implements Listener {
@@ -87,7 +86,7 @@ public class HealthBar implements Listener {
     public void onHbScoreboardRespawn(BoardAddonPlayerRespawnEvent event) {
         Player player = event.getPlayer();
         Game eGame = event.getGame();
-        if (!arena.isGamePlayer(eGame,player)) return;
+        if (!arena.isGamePlayer(eGame, player)) return;
         for (Player target : game.getPlayers()) {
             if (target == null || !target.isOnline()) {
                 continue;
