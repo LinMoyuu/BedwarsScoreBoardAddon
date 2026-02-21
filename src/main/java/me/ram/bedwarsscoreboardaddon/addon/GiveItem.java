@@ -192,22 +192,22 @@ public class GiveItem implements Listener {
         }
         if (e.getRawSlot() == 5 && !Config.giveitem_armor_helmet_move) {
             e.setCancelled(true);
-            player.sendMessage("§4§l你无法移动该物品!");
+            if (!Config.giveitem_deny_move_message.isEmpty()) player.sendMessage(Config.giveitem_deny_move_message);
             return;
         }
         if (e.getRawSlot() == 6 && !Config.giveitem_armor_chestplate_move) {
             e.setCancelled(true);
-            player.sendMessage("§4§l你无法移动该物品!");
+            if (!Config.giveitem_deny_move_message.isEmpty()) player.sendMessage(Config.giveitem_deny_move_message);
             return;
         }
         if (e.getRawSlot() == 7 && !Config.giveitem_armor_leggings_move) {
             e.setCancelled(true);
-            player.sendMessage("§4§l你无法移动该物品!");
+            if (!Config.giveitem_deny_move_message.isEmpty()) player.sendMessage(Config.giveitem_deny_move_message);
             return;
         }
         if (e.getRawSlot() == 8 && !Config.giveitem_armor_boots_move) {
             e.setCancelled(true);
-            player.sendMessage("§4§l你无法移动该物品!");
+            if (!Config.giveitem_deny_move_message.isEmpty()) player.sendMessage(Config.giveitem_deny_move_message);
         }
     }
 

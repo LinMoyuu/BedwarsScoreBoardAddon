@@ -152,7 +152,8 @@ public class Respawn {
                         }
                         int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time : 0;
                         if (respawn_protectedTime > 0) {
-                            player.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a您获得了" + respawn_protectedTime + "秒的无敌时间!"));
+                            if (!Config.respawn_respawn_message_respawn.isEmpty())
+                                player.sendMessage(ColorUtil.color(Config.respawn_respawn_message_respawn).replace("{bwprefix}", Config.bwrelPrefix).replace("{protectedTime}", String.valueOf(respawn_protectedTime)));
                         }
                         Bukkit.getPluginManager().callEvent(new BoardAddonPlayerRespawnEvent(game, player));
                         return;
@@ -184,9 +185,20 @@ public class Respawn {
 
         // 检查被攻击玩家是否在保护时间内
         if (protected_time.containsKey(player)) {
-            if ((System.currentTimeMillis() - protected_time.get(player)) < respawn_protectedTime) {
+            long currentTime = System.currentTimeMillis();
+            long timePassed = currentTime - protected_time.get(player);
+
+            if (timePassed < respawn_protectedTime) {
                 e.setCancelled(true);
-                damager.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a该玩家正处于无敌时间!"));
+
+                int remainingSeconds = (int) Math.ceil((respawn_protectedTime - timePassed) / 1000.0);
+
+                if (!Config.respawn_respawn_message_attack_protected.isEmpty()) {
+                    String message = ColorUtil.color(Config.respawn_respawn_message_attack_protected)
+                            .replace("{bwprefix}", Config.bwrelPrefix)
+                            .replace("{protectedTime}", String.valueOf(remainingSeconds));
+                    damager.sendMessage(message);
+                }
                 return;
             }
             protected_time.remove(player);
@@ -194,9 +206,20 @@ public class Respawn {
 
         // 检查攻击玩家是否在保护时间内
         if (protected_time.containsKey(damager)) {
-            if ((System.currentTimeMillis() - protected_time.get(damager)) < respawn_protectedTime) {
+            long currentTime = System.currentTimeMillis();
+            long timePassed = currentTime - protected_time.get(damager);
+
+            if (timePassed < respawn_protectedTime) {
                 e.setCancelled(true);
-                damager.sendMessage(ColorUtil.color(Config.bwrelPrefix + "&a无敌时间，无法攻击！"));
+
+                int remainingSeconds = (int) Math.ceil((respawn_protectedTime - timePassed) / 1000.0);
+
+                if (!Config.respawn_respawn_message_has_protected.isEmpty()) {
+                    String message = ColorUtil.color(Config.respawn_respawn_message_has_protected)
+                            .replace("{bwprefix}", Config.bwrelPrefix)
+                            .replace("{protectedTime}", String.valueOf(remainingSeconds));
+                    damager.sendMessage(message);
+                }
                 return;
             }
             protected_time.remove(damager);

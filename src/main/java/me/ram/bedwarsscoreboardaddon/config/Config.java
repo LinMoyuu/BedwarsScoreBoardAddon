@@ -159,6 +159,9 @@ public class Config {
     public static double respawn_centre_height;
     public static boolean respawn_protected_enabled;
     public static int respawn_protected_time;
+    public static String respawn_respawn_message_respawn;
+    public static String respawn_respawn_message_attack_protected;
+    public static String respawn_respawn_message_has_protected;
     public static int respawn_respawn_delay;
     public static String respawn_countdown_title;
     public static String respawn_countdown_subtitle;
@@ -167,6 +170,7 @@ public class Config {
     public static String respawn_respawn_subtitle;
     public static String respawn_respawn_message;
     public static boolean giveitem_keeparmor;
+    public static String giveitem_deny_move_message;
     public static Map<String, Object> giveitem_armor_helmet_item;
     public static Map<String, Object> giveitem_armor_chestplate_item;
     public static Map<String, Object> giveitem_armor_leggings_item;
@@ -354,6 +358,7 @@ public class Config {
         quit_chat_message = ColorUtil.color(config.getString("quit_chat.message"));
         timecommand_startcommand = ColorUtil.colorList(config.getStringList("timecommand.startcommand"));
         giveitem_keeparmor = config.getBoolean("giveitem.keeparmor");
+        giveitem_deny_move_message = config.getString("giveitem.deny_move_message");
         giveitem_armor_helmet_item = (Map<String, Object>) config.getList("giveitem.armor.helmet.item").get(0);
         giveitem_armor_chestplate_item = (Map<String, Object>) config.getList("giveitem.armor.chestplate.item").get(0);
         giveitem_armor_leggings_item = (Map<String, Object>) config.getList("giveitem.armor.leggings.item").get(0);
@@ -474,6 +479,9 @@ public class Config {
         respawn_centre_height = config.getDouble("respawn.centre.height");
         respawn_protected_enabled = config.getBoolean("respawn.protected.enabled");
         respawn_protected_time = config.getInt("respawn.protected.time");
+        respawn_respawn_message_respawn = config.getString("respawn.protected.message.respawn");
+        respawn_respawn_message_attack_protected = config.getString("respawn.protected.message.attack_protected");
+        respawn_respawn_message_has_protected = config.getString("respawn.protected.message.has_protected");
         respawn_respawn_delay = config.getInt("respawn.respawn_delay");
         respawn_countdown_title = ColorUtil.color(config.getString("respawn.countdown.title"));
         respawn_countdown_subtitle = ColorUtil.color(config.getString("respawn.countdown.subtitle"));

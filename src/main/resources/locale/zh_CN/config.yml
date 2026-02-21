@@ -629,6 +629,16 @@ respawn:
     #时间 (秒)
     time: 5
 
+    message:
+      ## 重生后提示获得无敌时间
+      ## {bwprefix} BedwarsRel 消息前缀
+      ## {protectedTime} 无敌时间
+      respawn: "{bwprefix}&a您获得了{protectedTime}秒的无敌时间！"
+      ## 攻击无敌时间玩家
+      attack_protected: "{bwprefix}&a该玩家正处于无敌时间！"
+      ## 无敌时间玩家被攻击
+      has_protected: "{bwprefix}&a无敌时间，无法攻击！"
+
   #正在重生时
   countdown:
 
@@ -659,6 +669,8 @@ giveitem:
 
   #死亡后不重置护甲
   keeparmor: false
+  ##护甲移动被拒绝 提示
+  deny_move_message: "§4§l你无法移动该物品!"
 
   #护甲
   armor:
