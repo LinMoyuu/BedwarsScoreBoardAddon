@@ -259,7 +259,8 @@ public class Config {
     public static boolean overstats_title_enabled;
     public static boolean overstats_title_fix_kda;
     public static List<String> overstats_message;
-    public static String actionbar;
+    public static boolean actionbar_enabled;
+    public static String actionbar_normal;
     public static String actionbar_witherbow;
     public static boolean friendlybreak_kick_enabled;
     public static int friendlybreak_kick_max_breaks;
@@ -589,8 +590,9 @@ public class Config {
         overstats_title_enabled = config.getBoolean("overstats.title.enabled");
         overstats_title_fix_kda = config.getBoolean("overstats.title.fix_kda");
         overstats_message = ColorUtil.colorList(config.getStringList("overstats.message"));
-        actionbar = ColorUtil.color(config.getString("actionbar"));
-        actionbar_witherbow = ColorUtil.color(config.getString("actionbar_witherbow"));
+        actionbar_enabled = config.getBoolean("actionbar.enabled");
+        actionbar_normal = ColorUtil.color(config.getString("actionbar.normal"));
+        actionbar_witherbow = ColorUtil.color(config.getString("actionbar.witherbow"));
         friendlybreak_kick_enabled = config.getBoolean("friendlybreak_kick.enabled");
         friendlybreak_kick_max_breaks = config.getInt("friendlybreak_kick.max_breaks");
         friendlybreak_warning_message = config.getString("friendlybreak_kick.message.warning");

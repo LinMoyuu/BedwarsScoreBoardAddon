@@ -1246,6 +1246,7 @@ killsoul:
       - "死亡不掉落"
 
 
+## 连杀标题&播报
 killstreak:
 
   ## 某服务器并没有11杀, 是否需要修复数字显示
@@ -1306,6 +1307,7 @@ pearlnodamage:
   ## 是否启用 上一配置启用则此配置无效
   enabled: false
 
+
 #游戏结束时信息统计
 overstats:
 
@@ -1360,10 +1362,16 @@ overstats:
 # {team_peoples}       玩家队伍人数
 # {alive_players}      存活玩家数量
 ## {direction}        玩家队伍出生点方向
-actionbar: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
+actionbar:
 
-## 凋零弓启用后
-actionbar_witherbow: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
+  ## 是否启用
+  enabled: false
+
+  # 未启用凋零弓时
+  normal: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
+
+  ## 凋零弓启用后
+  witherbow: "&f队伍: {color}{team} &f凋零弓: {color}{bowtime} &f追踪: {color}{range}米"
 
 
 ## 恶意挖掘移出
@@ -1718,6 +1726,8 @@ scoreboard:
   # {totalkills}              总击杀数
   # {dies}                    死亡数
   # {beds}                    破坏床数
+  ## {killstreaks}            当前连杀数
+  ## {highestkillstreaks}     最高连杀数
   # {team}                    玩家队伍名称
   # {color}                   玩家队伍颜色
   # {teams}                   队伍数量
@@ -1733,7 +1743,7 @@ scoreboard:
   # {team_<team>_status}      指定队伍状态
   # {team_<team>_bed_status}  指定队伍床状态
   # {team_<team>_peoples}     指定队伍人数
-  # {timer_<编号>}            自定义倒计时
+  ## 原Timer已废弃, 获取事件时间: {plan_timer_sec_编号}
   lines:
 
     #默认

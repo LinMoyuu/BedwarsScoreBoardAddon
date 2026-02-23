@@ -29,9 +29,9 @@ public class ScoreBoard {
     private final Map<String, String> timer_placeholder;
     private final PlaceholderManager placeholderManager;
     private final Map<String, String> team_status;
-    private int title_index = 0;
     @Getter
     private final Map<String, String> plan_infos;
+    private int title_index = 0;
 
     public ScoreBoard(Arena arena) {
         this.arena = arena;
