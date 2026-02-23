@@ -237,9 +237,9 @@ public class Title implements Listener {
                 int needplayers = game.getMinPlayers() - game.getPlayers().size();
                 needplayers = Math.max(needplayers, 0);
                 if (needplayers == 0) return;
-                String title = ColorUtil.color(Config.jointitle_title
+                String title = ColorUtil.color(Config.moreplayer_title
                         .replace("{count}", String.valueOf(needplayers)));
-                String subtitle = ColorUtil.color(Config.jointitle_subtitle
+                String subtitle = ColorUtil.color(Config.moreplayer_title_subtitle
                         .replace("{count}", String.valueOf(needplayers)));
                 for (Player player : game.getPlayers()) {
                     Utils.sendTitle(player, player, 5, 60, 5, title, subtitle);

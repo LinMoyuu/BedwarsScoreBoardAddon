@@ -34,9 +34,10 @@ public class Actionbar {
     }
 
     public void sendActionbar() {
+        if (!Config.actionbar_enabled) return;
         String actionbarConfig = arena.getWitherBow().isWitherbowEnabled()
                 ? Config.actionbar_witherbow
-                : Config.actionbar;
+                : Config.actionbar_normal;
 
         if (actionbarConfig == null || actionbarConfig.isEmpty()) return;
 

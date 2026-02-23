@@ -61,19 +61,19 @@ public class FriendlyBreak implements Listener {
             int friendlyBreaks = friendlyBreakCount.getOrDefault(player, 0);
             int max_breaks = Config.friendlybreak_kick_max_breaks;
 
-            player.sendMessage(ColorUtil.color(Config.friendlybreak_warning_message
+            player.sendMessage(ColorUtil.color(Config.friendlybreak_message_warning
                     .replace("{bwprefix}", Config.bwrelPrefix)
                     .replace("{breakcount}", String.valueOf(friendlyBreaks))
                     .replace("{max_breaks}", String.valueOf(max_breaks))));
 
             if (friendlyBreaks >= max_breaks) {
                 friendlyBreakCount.remove(player);
-                player.kickPlayer(ColorUtil.color(Config.friendlybreak_kick_message
+                player.kickPlayer(ColorUtil.color(Config.friendlybreak_message_kick
                         .replace("{bwprefix}", Config.bwrelPrefix)
                         .replace("{breakcount}", String.valueOf(friendlyBreaks))
                         .replace("{max_breaks}", String.valueOf(max_breaks))));
 
-                String broadCastMessage = ColorUtil.color(Config.friendlybreak_broadcast_message
+                String broadCastMessage = ColorUtil.color(Config.friendlybreak_message_broadcast
                         .replace("{bwprefix}", Config.bwrelPrefix)
                         .replace("{breakcount}", String.valueOf(friendlyBreaks))
                         .replace("{max_breaks}", String.valueOf(max_breaks))
