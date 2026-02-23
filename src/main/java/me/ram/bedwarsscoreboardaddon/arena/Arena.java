@@ -276,7 +276,7 @@ public class Arena {
                 win_team_player_list.append((win_team_player_list.length() > 0) ? ", " + player.getName() : player.getName());
             }
 
-            if (Config.overstats_enabled_title) {
+            if (Config.overstats_title_enabled) {
                 // 结算 Title
                 long baseDelay = 120L;
                 long delayBetween = 80L;
@@ -446,11 +446,21 @@ public class Arena {
     }
 
 
-    // 疑似一张床5分, 但不除以死亡数...
-//    public static double calculateSpecialKda(int kills, int deaths, int bedsDestroyed) {
     public double calculateSpecialKda(String playerName) {
-        int kills = playerGameStorage.getKills().getOrDefault(playerName, 0);
-        int bedsDestroyed = playerGameStorage.getBeds().getOrDefault(playerName, 0);
-        return kills + (bedsDestroyed * 5);
+        int kills = playerGameStorage.getKills(playerName);
+        int deaths = playerGameStorage.getDies(playerName);
+        int bedsDestroyed = playerGameStorage.getBeds(playerName);
+        int totalScore = kills + (bedsDestroyed * 5);
+
+        if (!Config.overstats_title_fix_kda) {
+            return totalScore;
+        }
+
+        if (deaths == 0) {
+            return totalScore;
+        } else {
+            double rawKda = (double) totalScore / deaths;
+            return Math.round(rawKda * 100.0) / 100.0;
+        }
     }
 }

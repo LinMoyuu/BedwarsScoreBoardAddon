@@ -256,7 +256,8 @@ public class Config {
     public static boolean pearlnodamage_autodetect;
     public static boolean pearlnodamage_enabled;
     public static boolean overstats_enabled;
-    public static boolean overstats_enabled_title;
+    public static boolean overstats_title_enabled;
+    public static boolean overstats_title_fix_kda;
     public static List<String> overstats_message;
     public static String actionbar;
     public static String actionbar_witherbow;
@@ -585,7 +586,8 @@ public class Config {
         holographic_bedtitle_bed_destroyed_title = ColorUtil.color(config.getString("holographic.bed_title.bed_destroyed.title"));
         holographic_bedtitle_bed_alive_title = ColorUtil.color(config.getString("holographic.bed_title.bed_alive.title"));
         overstats_enabled = config.getBoolean("overstats.enabled");
-        overstats_enabled_title = config.getBoolean("overstats.title");
+        overstats_title_enabled = config.getBoolean("overstats.title.enabled");
+        overstats_title_fix_kda = config.getBoolean("overstats.title.fix_kda");
         overstats_message = ColorUtil.colorList(config.getStringList("overstats.message"));
         actionbar = ColorUtil.color(config.getString("actionbar"));
         actionbar_witherbow = ColorUtil.color(config.getString("actionbar_witherbow"));
