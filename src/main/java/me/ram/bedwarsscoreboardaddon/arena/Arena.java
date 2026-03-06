@@ -27,6 +27,7 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
@@ -204,7 +205,18 @@ public class Arena {
         isOver = true;
         // 刷新...
         timeTask.refresh();
-        Bukkit.getScheduler().runTaskLater(Main.getInstance(), scoreBoard::updateScoreboard, 20L);
+        // ScoreBoard 为了避免刷新不同步 在计分板刷新tick为20时与游戏计时任务一同刷新
+        // 但是游戏结束时的计分板变量不一定会及时刷新. 因此游戏结束后另开一个Task, 游戏End的时候他自会结束...
+        this.addGameTask(new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (game == null || scoreBoard == null || timeTask == null || game.getState() == GameState.STOPPED) {
+                    this.cancel();
+                    return;
+                }
+                scoreBoard.updateScoreboard();
+            }
+        }.runTaskTimer(Main.getInstance(), 0L, Config.scoreboard_interval));
         // 恢复边界
         deathMode.onOver();
         // 战绩结算
