@@ -111,7 +111,7 @@ public class Commands implements CommandExecutor {
                 }
                 for (Player player : game.getPlayers()) {
                     if (!title.isEmpty() || !subtitle.isEmpty()) {
-                        Utils.sendTitle(player, 0, 60, 10, ColorUtil.color(title), ColorUtil.color(subtitle));
+                        Utils.sendTitle(player, 0, 60, 10, title, subtitle);
                     }
                 }
                 return true;

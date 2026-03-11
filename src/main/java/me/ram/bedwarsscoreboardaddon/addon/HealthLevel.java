@@ -85,7 +85,7 @@ public class HealthLevel {
                     }
 
                     if (title != null && !title.isEmpty() || subtitle != null && !subtitle.isEmpty()) {
-                        Utils.sendTitle(player, 10, 50, 10, ColorUtil.color(title), ColorUtil.color(subtitle));
+                        Utils.sendTitle(player, 10, 50, 10, title, subtitle);
                     }
                     if (message != null && !message.isEmpty()) {
                         player.sendMessage(ColorUtil.color(message));

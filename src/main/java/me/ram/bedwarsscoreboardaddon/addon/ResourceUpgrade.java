@@ -154,7 +154,7 @@ public class ResourceUpgrade {
                 }
                 if (title != null && !title.isEmpty() || subtitle != null && !subtitle.isEmpty()) {
                     for (Player player : game.getPlayers()) {
-                        Utils.sendTitle(player, 0, 60, 20, ColorUtil.color(title), ColorUtil.color(subtitle));
+                        Utils.sendTitle(player, 0, 60, 20, title, subtitle);
                     }
                 }
 

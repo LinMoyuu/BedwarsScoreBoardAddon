@@ -271,9 +271,9 @@ public class Title implements Listener {
         boolean autoDetectSendTitle = !BedwarsUtil.isXpMode(game) || BedwarsUtil.isXpMode(game) && BedwarsUtil.getPlayerXP(game, player) == 0;
         // 自动判断 并且符合发送标题的条件 / 未启用自动判断 并且启用了始终发送标题
         if (Config.killstreak_title_autodetect && autoDetectSendTitle || !Config.killstreak_title_autodetect && Config.killstreak_title_enabled) {
-            Utils.sendMainTitle(killer, 0, 60, 20, ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.killstreak_title_text
+            Utils.sendTitle(killer, 0, 60, 20, ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.killstreak_title_text
                     .replace("{count}", killStreak + "")
-                    .replace("{kills}", arena.getPlayerGameStorage().getKills(player.getName()) + ""))));
+                    .replace("{kills}", arena.getPlayerGameStorage().getKills(player.getName()) + ""))), null);
         }
         if (Config.killstreak_message_enabled) {
             Team playerTeam = game.getPlayerTeam(player);
