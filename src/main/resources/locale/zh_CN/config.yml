@@ -971,8 +971,14 @@ game_chest:
   #是否启用
   enabled: false
 
-  # 自动归属队伍箱 此功能与上一项功能二选一启用
-  auto_create_team_chest: true
+  ## 自动归属队伍箱 此功能与上一项功能二选一启用
+  auto_create_team_chest:
+
+    ## 是否启用
+    enabled: true
+
+    ## 重生时是否可以打开队伍箱(这不是BUG)
+    respawning_open: true
 
   #箱子与出生点距离
   #用于自动检测箱子位置
@@ -1066,6 +1072,8 @@ deathmode:
     ## 在距离边界多少秒时对玩家警告
     warningdistance: 10
 
+  ## 是否播放爆炸粒子
+  explosion_effect: true
 
 
 #击杀资源抢夺

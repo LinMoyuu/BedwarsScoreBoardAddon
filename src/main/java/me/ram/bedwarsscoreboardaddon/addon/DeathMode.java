@@ -73,6 +73,10 @@ public class DeathMode {
                 team.getTargetHeadBlock().getBlock().setType(Material.AIR);
             }
         }
+        if (Config.deathmode_explosion_effect) {
+            Location location = team.getTargetHeadBlock();
+            location.getWorld().playEffect(location.add(0.5, 0.5, 0.5), Effect.EXPLOSION_HUGE, 0);
+        }
     }
 
     public void startShrinking() {

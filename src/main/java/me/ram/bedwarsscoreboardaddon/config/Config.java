@@ -190,7 +190,8 @@ public class Config {
     public static boolean resourcelimit_enabled;
     public static List<String[]> resourcelimit_limit;
     public static boolean game_chest_enabled;
-    public static boolean game_chest_auto_create_team_chest;
+    public static boolean game_chest_auto_create_team_chest_enabled;
+    public static boolean game_chest_auto_create_team_chest_respawning_open;
     public static int game_chest_range;
     public static String game_chest_message;
     public static boolean invisibility_player_enabled;
@@ -216,6 +217,7 @@ public class Config {
     public static double deathmode_border_size;
     public static double deathmode_border_damage;
     public static int deathmode_border_warningdistance;
+    public static boolean deathmode_explosion_effect;
     public static boolean deathitem_enabled;
     public static List<String> deathitem_items;
     public static boolean deathitem_item_name_chinesize;
@@ -503,7 +505,8 @@ public class Config {
             resourcelimit_limit.add(ary);
         }
         game_chest_enabled = config.getBoolean("game_chest.enabled");
-        game_chest_auto_create_team_chest = config.getBoolean("game_chest.auto_create_team_chest");
+        game_chest_auto_create_team_chest_enabled = config.getBoolean("game_chest.auto_create_team_chest.enabled");
+        game_chest_auto_create_team_chest_respawning_open = config.getBoolean("game_chest.auto_create_team_chest.respawning_open");
         game_chest_range = config.getInt("game_chest.range");
         game_chest_message = ColorUtil.color(config.getString("game_chest.message"));
         invisibility_player_enabled = config.getBoolean("invisibility_player.enabled");
@@ -529,6 +532,7 @@ public class Config {
         deathmode_border_size = config.getDouble("deathmode.border.size");
         deathmode_border_damage = config.getDouble("deathmode.border.damage");
         deathmode_border_warningdistance = config.getInt("deathmode.border.warningdistance");
+        deathmode_explosion_effect = config.getBoolean("deathmode.explosion_effect");
         deathitem_enabled = config.getBoolean("deathitem.enabled");
         deathitem_items = config.getStringList("deathitem.items");
         deathitem_item_name_chinesize = config.getBoolean("deathitem.item_name_chinesize");
