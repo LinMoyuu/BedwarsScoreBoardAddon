@@ -188,7 +188,7 @@ public class Config {
     public static int sethealth_start_health;
     public static boolean resource_no_drop_on_first_spawn;
     public static boolean resource_genspilt_enabled;
-    public static int resource_genspilt_range;
+    public static double resource_genspilt_range;
     public static List<String> resource_genspilt_items;
     public static boolean resourcelimit_enabled;
     public static List<String[]> resourcelimit_limit;
@@ -502,7 +502,7 @@ public class Config {
         sethealth_start_health = config.getInt("sethealth.start.health");
         resource_no_drop_on_first_spawn = config.getBoolean("resource.no_drop_on_first_spawn");
         resource_genspilt_enabled = config.getBoolean("resource.genspilt.enabled");
-        resource_genspilt_range = config.getInt("resource.genspilt.range");
+        resource_genspilt_range = config.getDouble("resource.genspilt.range");
         resource_genspilt_items = config.getStringList("resource.genspilt.items");
         deathitem_items = config.getStringList("deathitem.items");
         resourcelimit_enabled = config.getBoolean("resource.limit.enabled");

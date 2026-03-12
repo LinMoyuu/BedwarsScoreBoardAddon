@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class PlaceholderAPIUtil {
 
     public static String setPlaceholders(Player player, String text) {
+        if (player == null || text == null) return null;
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             return PlaceholderAPI.setPlaceholders(player, text);
         }

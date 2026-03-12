@@ -64,7 +64,7 @@ public class GenSpilt implements Listener {
         Player player = e.getPlayer();
 
         Location playerLocation = e.getPlayer().getLocation();
-        int splitRange = Config.resource_genspilt_range;
+        double splitRange = Config.resource_genspilt_range;
         Collection<Entity> nearbyEntities = playerLocation.getWorld().getNearbyEntities(playerLocation, splitRange, splitRange, 2.0);
 
         for (Entity entity : playerLocation.getWorld().getEntities()) {
@@ -75,8 +75,7 @@ public class GenSpilt implements Listener {
                     Team rt = game.getPlayerTeam(pickupPlayer);
                     if (!arena.isAlivePlayer(game, player) || !arena.isAlivePlayer(game, pickupPlayer) || team != rt)
                         continue;
-                    ItemStack item = new ItemStack(itemStack.getType(), itemStack.getAmount());
-                    pickupPlayer.getInventory().addItem(item);
+                    pickupPlayer.getInventory().addItem(itemStack.clone());
                 }
             }
         }

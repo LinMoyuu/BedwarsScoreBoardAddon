@@ -62,8 +62,12 @@ public class Utils {
     }
 
     public static void sendTitle(Player player, Player PlaceholderPlayer, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
-        title = PlaceholderAPIUtil.setPlaceholders(PlaceholderPlayer, title);
-        subtitle = PlaceholderAPIUtil.setPlaceholders(PlaceholderPlayer, subtitle);
+        if (title != null) {
+            title = PlaceholderAPIUtil.setPlaceholders(PlaceholderPlayer, title);
+        }
+        if (subtitle != null) {
+            subtitle = PlaceholderAPIUtil.setPlaceholders(PlaceholderPlayer, subtitle);
+        }
         sendTitle(player, fadeIn, stay, fadeOut, title, subtitle);
     }
 

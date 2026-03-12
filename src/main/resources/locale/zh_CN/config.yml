@@ -959,7 +959,7 @@ resource:
     enabled: true
 
     ## 距离
-    range: 2
+    range: 2.0
 
     #启用物品
     items:
