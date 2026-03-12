@@ -946,18 +946,33 @@ resourceupgrade:
     message: "&2绿宝石生成点&e已升至&cV&e级"
 
 
-#第一次刷新资源时不掉落
-resource_no_drop_on_first_spawn: true
+## 部分资源设置
+resource:
 
+  ## 第一次刷新资源时不掉落
+  no_drop_on_first_spawn: true
 
-#资源数量上限
-resourcelimit:
+  ## 资源分摊
+  genspilt:
 
-  #是否启用
-  enabled: true
+    #是否启用
+    enabled: true
 
-  #设置上限
+    ## 距离
+    range: 2
+
+    #启用物品
+    items:
+      - 'IRON_INGOT'
+
+  #资源数量上限
   limit:
+
+    #是否启用
+    enabled: true
+
+    #设置上限
+    limit:
     - 'CLAY_BRICK,45'
     - 'IRON_INGOT,30'
     - 'GOLD_INGOT,5'

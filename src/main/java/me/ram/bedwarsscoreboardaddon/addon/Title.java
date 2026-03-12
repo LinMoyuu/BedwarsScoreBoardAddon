@@ -270,7 +270,7 @@ public class Title implements Listener {
         // 是否非经验起床模式 / 是经验模式 但经验为0 避免与killxp冲突
         boolean autoDetectSendTitle = !BedwarsUtil.isXpMode(game) || BedwarsUtil.isXpMode(game) && BedwarsUtil.getPlayerXP(game, player) == 0;
         // 自动判断 并且符合发送标题的条件 / 未启用自动判断 并且启用了始终发送标题
-        if (Config.killstreak_title_autodetect && autoDetectSendTitle || !Config.killstreak_title_autodetect && Config.killstreak_title_enabled) {
+        if ((Config.killstreak_title_autodetect && autoDetectSendTitle) || (!Config.killstreak_title_autodetect && Config.killstreak_title_enabled)) {
             Utils.sendTitle(killer, killer, 0, 60, 20, Config.killstreak_title_text
                     .replace("{count}", killStreak + "")
                     .replace("{kills}", arena.getPlayerGameStorage().getKills(player.getName()) + ""), null);
