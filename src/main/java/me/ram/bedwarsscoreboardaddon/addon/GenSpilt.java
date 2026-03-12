@@ -56,6 +56,7 @@ public class GenSpilt implements Listener {
             try {
                 if (itemStack.getType().equals(Material.valueOf(items))) {
                     shouldCoutiune = true;
+                    break;
                 }
             } catch (IllegalArgumentException ignored) {
             }
