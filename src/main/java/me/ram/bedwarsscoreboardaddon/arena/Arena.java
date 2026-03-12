@@ -176,7 +176,7 @@ public class Arena {
 
     public void onInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        if (isGamePlayer(player)) return;
+        if (!isGamePlayer(game, player)) return;
         // 如果重生者可以打开 同时不是旁观者
         // 否则 判断是否正在重生/是旁观者
         if (Config.game_chest_auto_create_team_chest_respawning_open && !game.isSpectator(player)) {
