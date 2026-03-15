@@ -206,7 +206,7 @@ public class Title implements Listener {
             newPlayer.kickPlayer("");
             return;
         }
-        if (!(game.getState() == GameState.WAITING && Config.jointitle_enabled)) return;
+        if (!(Config.jointitle_enabled)) return;
         int needplayers = game.getMinPlayers() - game.getPlayers().size();
         needplayers = Math.max(needplayers, 0);
         String status = Config.jointitle_status_waiting.replace("{count}", String.valueOf(needplayers));
