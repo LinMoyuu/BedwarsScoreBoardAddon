@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -177,20 +176,21 @@ public class Respawn {
         protected_time.remove(player);
     }
 
-    public void onPlayerAttack(EntityDamageByEntityEvent e) {
-        Player player = (Player) e.getEntity();
-        Player damager = (Player) e.getDamager();
-
+    /**
+     * 判断是否需要取消攻击
+     *
+     * @param player  攻击者
+     * @param damager 被攻击者
+     * @return true 需要取消事件.
+     */
+    public boolean onPlayerAttack(Player player, Player damager) {
         int respawn_protectedTime = Config.respawn_protected_enabled ? Config.respawn_protected_time * 1000 : 0;
-
         // 检查被攻击玩家是否在保护时间内
         if (protected_time.containsKey(player)) {
             long currentTime = System.currentTimeMillis();
             long timePassed = currentTime - protected_time.get(player);
 
             if (timePassed < respawn_protectedTime) {
-                e.setCancelled(true);
-
                 int remainingSeconds = (int) Math.ceil((respawn_protectedTime - timePassed) / 1000.0);
 
                 if (!Config.respawn_respawn_message_attack_protected.isEmpty()) {
@@ -199,7 +199,7 @@ public class Respawn {
                             .replace("{protectedTime}", String.valueOf(remainingSeconds));
                     damager.sendMessage(message);
                 }
-                return;
+                return true;
             }
             protected_time.remove(player);
         }
@@ -210,8 +210,6 @@ public class Respawn {
             long timePassed = currentTime - protected_time.get(damager);
 
             if (timePassed < respawn_protectedTime) {
-                e.setCancelled(true);
-
                 int remainingSeconds = (int) Math.ceil((respawn_protectedTime - timePassed) / 1000.0);
 
                 if (!Config.respawn_respawn_message_has_protected.isEmpty()) {
@@ -220,10 +218,11 @@ public class Respawn {
                             .replace("{protectedTime}", String.valueOf(remainingSeconds));
                     damager.sendMessage(message);
                 }
-                return;
+                return true;
             }
             protected_time.remove(damager);
         }
+        return false;
     }
 
 

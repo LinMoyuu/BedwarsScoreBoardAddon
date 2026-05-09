@@ -166,8 +166,11 @@ public class Arena {
     }
 
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        if (isAlivePlayer((Player) e.getEntity()) && isAlivePlayer((Player) e.getDamager())) {
-            respawn.onPlayerAttack(e);
+        if (!(e.getEntity() instanceof Player) || !(e.getDamager() instanceof Player)) return;
+        Player player = (Player) e.getEntity();
+        Player damager = (Player) e.getDamager();
+        if (isAlivePlayer(player) && isAlivePlayer(damager) && respawn.onPlayerAttack(player, damager)) {
+            e.setCancelled(true);
         }
     }
 

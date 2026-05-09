@@ -18,20 +18,16 @@ import java.util.*;
 
 public class ScoreboardUtil {
 
-    private static Map<Player, Scoreboard> scoreboards = new HashMap<>();
-    private static Map<Player, Map<Player, Integer>> player_health = new HashMap<>();
+    private static final Map<Player, Scoreboard> scoreboards = new HashMap<>();
+    private static final Map<Player, Map<Player, Integer>> player_health = new HashMap<>();
 
     public static Map<Player, Scoreboard> getScoreboards() {
         return scoreboards;
     }
 
     public static void removePlayer(Player player) {
-        if (scoreboards.containsKey(player)) {
-            scoreboards.remove(player);
-        }
-        if (player_health.containsKey(player)) {
-            player_health.remove(player);
-        }
+        scoreboards.remove(player);
+        player_health.remove(player);
 
         resetPlayerListName(player);
     }
@@ -332,17 +328,17 @@ public class ScoreboardUtil {
 
         String prefix = Config.playerlist_prefix.isEmpty() ? "" :
                 ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.playerlist_prefix.replace("{color}", team.getChatColor() + "")
-                        .replace("{color_initials}", team.getChatColor().name().substring(0, 1))
-                        .replace("{color_name}", upperInitials(team.getChatColor().name()))
-                        .replace("{team_initials}", team.getName().substring(0, 1))
-                        .replace("{team}", team.getName())));
+                                                                           .replace("{color_initials}", team.getChatColor().name().substring(0, 1))
+                                                                           .replace("{color_name}", upperInitials(team.getChatColor().name()))
+                                                                           .replace("{team_initials}", team.getName().substring(0, 1))
+                                                                           .replace("{team}", team.getName())));
 
         String suffix = Config.playerlist_suffix.isEmpty() ? "" :
                 ColorUtil.color(PlaceholderAPIUtil.setPlaceholders(player, Config.playerlist_suffix.replace("{color}", team.getChatColor() + "")
-                        .replace("{color_initials}", team.getChatColor().name().substring(0, 1))
-                        .replace("{color_name}", upperInitials(team.getChatColor().name()))
-                        .replace("{team_initials}", team.getName().substring(0, 1))
-                        .replace("{team}", team.getName())));
+                                                                           .replace("{color_initials}", team.getChatColor().name().substring(0, 1))
+                                                                           .replace("{color_name}", upperInitials(team.getChatColor().name()))
+                                                                           .replace("{team_initials}", team.getName().substring(0, 1))
+                                                                           .replace("{team}", team.getName())));
 
         String newName = prefix + player.getName() + suffix;
 

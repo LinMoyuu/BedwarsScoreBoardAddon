@@ -134,8 +134,8 @@ public class ScoreBoard {
         String score_title = Config.scoreboard_title.isEmpty()
                 ? "BedWars"
                 : Config.scoreboard_title.get(title_index)
-                .replace("{game}", game.getName())
-                .replace("{time}", formattedTime);
+                  .replace("{game}", game.getName())
+                  .replace("{time}", formattedTime);
         title_index++;
 
         // 获取计分板行配置

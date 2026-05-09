@@ -15,15 +15,12 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AntiBedGapBreak {
-
-    @Getter
-    private final Game game;
-    @Getter
-    private final Arena arena;
-    private PacketListener packetListener;
 
     private static final Set<Material> TRANSPARENT_MATERIALS;
 
@@ -39,6 +36,12 @@ public class AntiBedGapBreak {
 
         TRANSPARENT_MATERIALS = Collections.unmodifiableSet(tempSet);
     }
+
+    @Getter
+    private final Game game;
+    @Getter
+    private final Arena arena;
+    private PacketListener packetListener;
 
     public AntiBedGapBreak(Arena arena) {
         this.arena = arena;
