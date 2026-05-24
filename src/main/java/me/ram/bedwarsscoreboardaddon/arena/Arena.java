@@ -79,7 +79,7 @@ public class Arena {
     @Getter
     private GameChest gameChest;
     @Getter
-    private GenSpilt genSpilt;
+    private GenSplit genSplit;
     @Getter
     private Rejoin rejoin;
     private List<BukkitTask> gameTasks;
@@ -128,7 +128,7 @@ public class Arena {
         antiBedGapBreak = new AntiBedGapBreak(this);
         lobbyBlock = new LobbyBlock(this);
         gameChest = new GameChest(this);
-        genSpilt = new GenSpilt(this);
+        genSplit = new GenSplit(this);
         rejoin = new Rejoin(this);
         if (Main.getInstance().isEnabledCitizens()) {
             shop = new Shop(this);
@@ -389,8 +389,8 @@ public class Arena {
         lobbyBlock = null;
         gameChest.clearChest();
         gameChest = null;
-        genSpilt.onEnd();
-        genSpilt = null;
+        genSplit.onEnd();
+        genSplit = null;
         rejoin = null;
         if (Main.getInstance().isEnabledCitizens()) {
             shop.remove();

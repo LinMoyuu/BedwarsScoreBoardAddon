@@ -953,7 +953,7 @@ resource:
   no_drop_on_first_spawn: true
 
   ## 资源分摊
-  genspilt:
+  gensplit:
 
     #是否启用
     enabled: true

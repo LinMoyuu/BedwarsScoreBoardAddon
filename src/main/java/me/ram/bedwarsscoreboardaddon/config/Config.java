@@ -187,9 +187,9 @@ public class Config {
     public static boolean sethealth_start_enabled;
     public static int sethealth_start_health;
     public static boolean resource_no_drop_on_first_spawn;
-    public static boolean resource_genspilt_enabled;
-    public static double resource_genspilt_range;
-    public static List<String> resource_genspilt_items;
+    public static boolean resource_gensplit_enabled;
+    public static double resource_gensplit_range;
+    public static List<String> resource_gensplit_items;
     public static boolean resourcelimit_enabled;
     public static List<String[]> resourcelimit_limit;
     public static boolean game_chest_enabled;
@@ -501,9 +501,9 @@ public class Config {
         sethealth_start_enabled = config.getBoolean("sethealth.start.enabled");
         sethealth_start_health = config.getInt("sethealth.start.health");
         resource_no_drop_on_first_spawn = config.getBoolean("resource.no_drop_on_first_spawn");
-        resource_genspilt_enabled = config.getBoolean("resource.genspilt.enabled");
-        resource_genspilt_range = config.getDouble("resource.genspilt.range");
-        resource_genspilt_items = config.getStringList("resource.genspilt.items");
+        resource_gensplit_enabled = config.getBoolean("resource.gensplit.enabled");
+        resource_gensplit_range = config.getDouble("resource.gensplit.range");
+        resource_gensplit_items = config.getStringList("resource.gensplit.items");
         deathitem_items = config.getStringList("deathitem.items");
         resourcelimit_enabled = config.getBoolean("resource.limit.enabled");
         resourcelimit_limit = new ArrayList<>();

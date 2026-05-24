@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 // https://github.com/tomkeuper/BedWars2023/blob/development/bedwars-plugin/src/main/java/com/tomkeuper/bedwars/arena/feature/GenSplitFeature.java
-public class GenSpilt implements Listener {
+public class GenSplit implements Listener {
 
     @Getter
     private final Game game;
@@ -30,7 +30,7 @@ public class GenSpilt implements Listener {
     private final Arena arena;
     private List<Listener> listeners;
 
-    public GenSpilt(Arena arena) {
+    public GenSplit(Arena arena) {
         this.arena = arena;
         this.game = arena.getGame();
         listeners = new ArrayList<>();
@@ -45,14 +45,14 @@ public class GenSpilt implements Listener {
 
     @EventHandler
     public void onResPickup(PlayerPickupItemEvent e) {
-        if (!Config.resource_genspilt_enabled) return;
+        if (!Config.resource_gensplit_enabled) return;
         if (e.isCancelled()) return;
         if (e.getItem() == null) return;
         ItemStack itemStack = e.getItem().getItemStack();
         if (itemStack == null) return;
 
         boolean shouldCoutiune = false;
-        for (String items : Config.resource_genspilt_items) {
+        for (String items : Config.resource_gensplit_items) {
             try {
                 if (itemStack.getType().equals(Material.valueOf(items))) {
                     shouldCoutiune = true;
@@ -65,7 +65,7 @@ public class GenSpilt implements Listener {
         Player player = e.getPlayer();
 
         Location playerLocation = e.getPlayer().getLocation();
-        double splitRange = Config.resource_genspilt_range;
+        double splitRange = Config.resource_gensplit_range;
         Collection<Entity> nearbyEntities = playerLocation.getWorld().getNearbyEntities(playerLocation, splitRange, splitRange, 2.0);
 
         for (Entity entity : playerLocation.getWorld().getEntities()) {
